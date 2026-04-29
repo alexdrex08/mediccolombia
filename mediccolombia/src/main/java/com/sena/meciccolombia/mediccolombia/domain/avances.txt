@@ -1,0 +1,36 @@
+Fecha desconocida: Se creo el proyecto y se instalaron las dependencias. 
+
+Fecha 15-04-26: Se crearon gran parte de las clases que se divieron por grupos, en este dia se trataron los siguientes:
+Usuarios, Estados, Pedidos, Cliente, Dirección, Teléfono (y los tipo)
+
+Producto
+Categoria
+MovimientoProd
+TipoMovimiento
+DetalleProveedorProducto
+Proveedor
+
+PedidoCompra
+EstadoPedido
+DetallePedido
+VentaRegistro
+DetalleVenta 
+
+falta por maquetar:
+
+ReporteInv
+FiltroBusqueda
+DetalleFiltro
+AlertaInv
+Proyecciones
+TipoProyeccion
+MetodoProyeccion
+
+
+Creando los DTOs de producto.
+
+CreateProductoRequestDTO
+UpdateProductoRequestDTO
+ProductoInventarioDTO
+ProductoDetalleDTO
+ProductoResumenDTO
