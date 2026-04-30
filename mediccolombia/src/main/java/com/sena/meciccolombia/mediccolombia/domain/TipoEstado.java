@@ -8,7 +8,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "TipoEstado")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,11 +19,14 @@ public class TipoEstado implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name ="id_tipo_estado")
     private Long id;
 
     private String nombreTipo;
 
     @OneToMany(mappedBy = "tipoEstado", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<EstadoUsuario> estadosUsuario;
 
 }

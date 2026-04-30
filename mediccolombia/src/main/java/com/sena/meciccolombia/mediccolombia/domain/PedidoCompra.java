@@ -10,7 +10,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "PedidoCompra")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -20,22 +21,27 @@ public class PedidoCompra implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name ="id_pedido")
     private Long id;
 
     private LocalDateTime fechaPedido;
+
     private BigDecimal totalPedido;
+
     private String observacion;
 
     @ManyToOne
-    @JoinColumn(name="idEstadoPedido")
+    @JoinColumn(name="estado_pedido_id")
     private EstadoPedido estadoPedido;
 
     @ManyToOne
-    @JoinColumn(name="idProveedor")
+    @JoinColumn(name="proveedor_id")
     private Proveedor proveedor;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DetallePedido> detalles;
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<DetallePedido> detallePedido;
 
 
 

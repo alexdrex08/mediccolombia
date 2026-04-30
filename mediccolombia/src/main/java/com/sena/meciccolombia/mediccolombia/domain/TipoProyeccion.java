@@ -8,7 +8,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "TipoProyeccion")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,11 +19,14 @@ public class TipoProyeccion implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name ="id_tipo_proyeccion")
     private Long id;
 
     private String nombreProyeccion;
 
     @OneToMany(mappedBy ="tipoProyeccion", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Proyecciones> proyecciones;
 
 }

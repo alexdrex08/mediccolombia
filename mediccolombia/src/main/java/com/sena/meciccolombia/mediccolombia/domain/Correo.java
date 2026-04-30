@@ -7,7 +7,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "Correo")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -17,16 +18,21 @@ public class Correo implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id_correo")
     private Long id;
 
     private String correoElectronico;
 
     @ManyToOne
-    @JoinColumn(name ="idCliente")
+    @JoinColumn(name ="cliente_id")
     private Cliente cliente;
 
     @ManyToOne
-    @JoinColumn(name ="idTipoCorreo")
+    @JoinColumn(name ="proveedor_id")
+    private Proveedor proveedor;
+
+    @ManyToOne
+    @JoinColumn(name ="tipo_correo_id")
     private TipoCorreo tipoCorreo;
 
 }

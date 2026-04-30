@@ -2,8 +2,10 @@ package com.sena.meciccolombia.mediccolombia.impl;
 
 import com.sena.meciccolombia.mediccolombia.dao.CategoriaDAO;
 import com.sena.meciccolombia.mediccolombia.dao.ProductoDAO;
+import com.sena.meciccolombia.mediccolombia.dao.UsuarioDAO;
 import com.sena.meciccolombia.mediccolombia.domain.Categoria;
 import com.sena.meciccolombia.mediccolombia.domain.Producto;
+import com.sena.meciccolombia.mediccolombia.domain.Usuario;
 import com.sena.meciccolombia.mediccolombia.web.dto.ProductoCreateRequestDto;
 import com.sena.meciccolombia.mediccolombia.web.dto.ProductoUpdateRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.ProductoDetalleDTO;
@@ -22,15 +24,20 @@ import java.util.stream.Collectors;
 public class ProductoServiceImpl implements ProductoService {
 
     private final ProductoDAO productoDAO;
+    private final UsuarioDAO usuarioDAO;
     private final CategoriaDAO categoriaDAO;
     private final ProductoMapper productoMapper;
+
 
     @Override
     public ProductoDetalleDTO crearProducto(ProductoCreateRequestDto dto) {
         Categoria categoria = categoriaDAO.findById(dto.getIdCategoria())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+        
+        Usuario usuario = usuarioDAO.findById(dto.getIdUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        Producto producto = productoMapper.toEntity(dto, categoria);
+        Producto producto = productoMapper.toEntity(dto, categoria, usuario);
         Producto guardado = productoDAO.save(producto);
         return productoMapper.toDetalleDTO(guardado);
     }
@@ -46,6 +53,7 @@ public class ProductoServiceImpl implements ProductoService {
         producto.setNombreProducto(dto.getNombreProducto());
         producto.setFechaExpiracion(dto.getFechaExpiracion());
         producto.setLote(dto.getLote());
+        producto.setStock(dto.getStock());
         producto.setStockMinimo(dto.getStockMinimo());
         producto.setStockMaximo(dto.getStockMaximo());
         producto.setCategoria(categoria);

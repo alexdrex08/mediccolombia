@@ -25,4 +25,6 @@ public class ProductoCreateRequestDto {
 
     private Long idCategoria;
 
+    private Long idUsuario;
+
 }   

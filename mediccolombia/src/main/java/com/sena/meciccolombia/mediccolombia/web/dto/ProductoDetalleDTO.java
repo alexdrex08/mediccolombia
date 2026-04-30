@@ -12,6 +12,8 @@ public class ProductoDetalleDTO {
 
     private Long id;
 
+    private String usuarioIngresado;
+
     private String nombreProducto;
 
     private String categoria;
@@ -31,4 +33,7 @@ public class ProductoDetalleDTO {
     private LocalDateTime fechaModificacion;
 
     private LocalDateTime fechaExpiracion;
+
+
 }
+

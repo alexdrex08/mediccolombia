@@ -8,7 +8,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Proyecciones")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,26 +19,35 @@ public class Proyecciones implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name ="id_proyecciones")
     private Long id;
 
     private String resultadoProyeccion;
+
     private String referenciaTipo;
+
     private Integer pedidosEstimados;
     private LocalDateTime fechaGeneracion;
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;
 
+    private String unidad_medida;
+
     @ManyToOne
-    @JoinColumn(name ="idMetodoProyeccion")
+    @JoinColumn(name ="metodo_proyeccion_id")
     private MetodoProyeccion metodoProyeccion;
 
     @ManyToOne
-    @JoinColumn(name ="idTipoProyeccion")
+    @JoinColumn(name ="tipo_proyeccion_id")
     private TipoProyeccion tipoProyeccion;
 
     @ManyToOne
-    @JoinColumn(name ="idProducto")
+    @JoinColumn(name ="producto_id")
     private Producto producto;
+
+    @ManyToOne
+    @JoinColumn(name ="categoria_id")
+    private Categoria categoria;
 
 
 }

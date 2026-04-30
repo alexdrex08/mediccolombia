@@ -37,7 +37,7 @@ public class Producto implements Serializable {
     @Column(name ="stock", nullable = false)
     private Integer stock;
 
-    @Column(name ="lote", nullable = false)
+    @Column(name ="lote_producto", nullable = false)
     private String lote;
 
     @Column(name ="stock_minimo", nullable = false)
@@ -55,8 +55,12 @@ public class Producto implements Serializable {
     private LocalDateTime fechaModificacion;
 
     @ManyToOne
-    @JoinColumn(name = "idCategoria")
+    @JoinColumn(name = "categoria_id")
     private Categoria categoria;
+
+     @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @ToString.Exclude

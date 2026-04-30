@@ -22,6 +22,7 @@ public interface ProductoService {
 
     List<ProductoResumenDTO> buscarPorNombre(String nombre);
 
+    
     List<ProductoResumenDTO> filtrarPorCategoria(Long idCategoria);
 
     List<ProductoResumenDTO> productosConStockBajo();

@@ -8,7 +8,8 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "DetalleVenta")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,17 +19,18 @@ public class DetalleVenta implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name ="id_detalle_venta")
     private Long id;
 
     private Integer cantidad;
     private BigDecimal precioUnitario;
 
     @ManyToOne
-    @JoinColumn(name="idProducto")
+    @JoinColumn(name="producto_id")
     private Producto producto;
 
     @ManyToOne
-    @JoinColumn(name ="idVenta")
+    @JoinColumn(name ="venta_registro_id")
     private VentaRegistro venta;
 
 }

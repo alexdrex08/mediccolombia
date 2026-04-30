@@ -7,7 +7,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "Direccion")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -17,21 +18,27 @@ public class Direccion implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name ="id_direccion")
     private Long id;
 
-    private String direccionX;
+    @Column(name="direccion", nullable = false)
+    private String direccion;
     private String complemento;
 
     @ManyToOne 
-    @JoinColumn(name ="idCliente")
+    @JoinColumn(name ="cliente_id")
     private Cliente cliente;
 
-    @ManyToOne
-    @JoinColumn(name ="idTipoDireccion")
-    private TipoDireccion tipoDireccion;
+    @ManyToOne 
+    @JoinColumn(name ="proveedor_id")
+    private Proveedor proveedor;
 
     @ManyToOne
-    @JoinColumn(name ="idBarrio")
+    @JoinColumn(name ="tipo_direccion_id")
+    private TipoDireccion tipoDireccion;
+
+    @ManyToOne  
+    @JoinColumn(name ="barrio_id")
     private BarrioDireccion barrio;
 
 }

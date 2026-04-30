@@ -5,11 +5,12 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
+
 
 @Entity
 @Table(name = "ReporteInv")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -22,20 +23,27 @@ public class ReporteInv implements Serializable{
     private Long id;
 
     private LocalDateTime fechaGeneracion;
+
     private String tipoResultado;
+
+    @Column(name ="url_resultado")
     private String resultado;
 
+    private String tipo_reporte;
+
     @ManyToOne
-    @JoinColumn(name = "idFiltroBusqueda")
+    @JoinColumn(name = "filtro_busqueda_id")
     private FiltroBusqueda filtroBusqueda;
 
     @ManyToOne
-    @JoinColumn(name ="idUsuario")
+    @JoinColumn(name ="usuario_id")
     private Usuario usuario;
 
-    @OneToMany(mappedBy ="reporteInv", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AlertaInv> alertas;
+    @ManyToOne
+    @JoinColumn(name ="movimiento_prod_id")
+    private MovimientoProd movimientoProd;
 
-
-    
+    @ManyToOne
+    @JoinColumn(name ="alerta_inv_id")
+    private AlertaInv alertaInv; 
 }

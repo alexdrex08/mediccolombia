@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.sena.meciccolombia.mediccolombia.domain.Categoria;
 import com.sena.meciccolombia.mediccolombia.domain.Producto;
+import com.sena.meciccolombia.mediccolombia.domain.Usuario;
 import com.sena.meciccolombia.mediccolombia.web.dto.ProductoCreateRequestDto;
 import com.sena.meciccolombia.mediccolombia.web.dto.ProductoDetalleDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.ProductoResumenDTO;
@@ -16,7 +17,7 @@ import lombok.Builder;
 @Builder 
 public class ProductoMapper {
 
-    public Producto toEntity(ProductoCreateRequestDto dto, Categoria categoria) {
+    public Producto toEntity(ProductoCreateRequestDto dto, Categoria categoria, Usuario usuario) {
         if (dto == null) {
             return null;
         }
@@ -29,6 +30,7 @@ public class ProductoMapper {
                 .stockMaximo(dto.getStockMaximo())
                 .fechaIngreso(LocalDateTime.now())
                 .categoria(categoria)
+                .usuario(usuario)
                 .build();
     }
 
@@ -51,6 +53,7 @@ public class ProductoMapper {
         }
         return ProductoDetalleDTO.builder()
                 .id(producto.getId())
+                .usuarioIngresado(producto.getUsuario().getNombre())
                 .nombreProducto(producto.getNombreProducto())
                 .categoria(producto.getCategoria().getNombre())
                 .stock(producto.getStock())
@@ -68,9 +71,9 @@ public class ProductoMapper {
         if (producto.getStock() <= producto.getStockMinimo()) {
             return "Crítico";
         } else if (producto.getStock() > producto.getStockMinimo() && producto.getStock() <= producto.getStockMaximo()) {
-            return "Bajo";
-        } else {
             return "Suficiente";
+        } else {
+            return "Exceso";
         }
     }
     

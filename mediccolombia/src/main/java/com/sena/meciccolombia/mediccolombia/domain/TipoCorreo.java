@@ -7,7 +7,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "TipoCorreo")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -17,11 +18,14 @@ public class TipoCorreo implements java.io.Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id_tipo_correo")
     private Long id;
 
     private String nombreTipo;
 
     @OneToMany(mappedBy ="tipoCorreo", cascade = CascadeType.ALL, orphanRemoval =  true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Correo> correos;
 
 }

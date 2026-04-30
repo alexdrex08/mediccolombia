@@ -17,6 +17,8 @@ public class ProductoUpdateRequestDTO {
 
     private String lote;
 
+    private Integer stock;
+
     private Integer stockMinimo;
 
     private Integer stockMaximo;

@@ -11,7 +11,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "VentaRegistro")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -21,14 +22,19 @@ public class VentaRegistro implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name ="id_venta")
     private Long id;
 
     private LocalDateTime fechaVenta;
     private BigDecimal totalVenta;
 
     @ManyToOne
-    @JoinColumn(name="idCliente")
+    @JoinColumn(name="cliente_id")
     private Cliente cliente;
+
+    @ManyToOne
+    @JoinColumn(name="usuario_id")
+    private Usuario usuario;
 
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetalleVenta> detalles;

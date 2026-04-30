@@ -8,7 +8,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "BarrioDireccion")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,11 +19,14 @@ public class BarrioDireccion implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name ="id_barrio")
     private Long id;
 
     private String nombreBarrio;
 
     @OneToMany(mappedBy = "barrio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Direccion> direcciones;
 
 }

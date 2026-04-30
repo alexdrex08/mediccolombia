@@ -7,7 +7,8 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "DetalleFiltro")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -17,6 +18,7 @@ public class DetalleFiltro implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name ="id_detalle_filtro")
     private Long id;
 
     private String valorFiltro;
@@ -24,7 +26,7 @@ public class DetalleFiltro implements Serializable{
     private String tipoDato;
 
     @ManyToOne
-    @JoinColumn(name ="idFiltroBusqueda")
+    @JoinColumn(name ="filtro_busqueda_id")
     private FiltroBusqueda filtroBusqueda;
 
 }

@@ -7,7 +7,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "Telefono")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -17,16 +18,23 @@ public class Telefono implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name ="id_telefono")
     private Long id;
 
     private String numero;
 
+    private String complemento;
+
     @ManyToOne
-    @JoinColumn(name ="idCliente")
+    @JoinColumn(name ="cliente_id")
     private Cliente cliente;
 
     @ManyToOne
-    @JoinColumn(name = "idTipoTelefono")
+    @JoinColumn(name ="proveedor_id")
+    private Proveedor proveedor;
+
+    @ManyToOne
+    @JoinColumn(name = "tipo_telefono_id")
     private TipoTelefono tipoTelefono;
 
 
