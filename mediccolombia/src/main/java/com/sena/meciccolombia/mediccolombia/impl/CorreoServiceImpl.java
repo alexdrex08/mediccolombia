@@ -25,6 +25,8 @@ public class CorreoServiceImpl implements CorreoService {
     private final ProveedorDAO proveedorDAO;
     private final TipoCorreoDAO tipoCorreoDAO;
 
+    private String msg = "no encotrado";
+
     @Override
     @Transactional
     public CorreoResponseDTO crear(CorreoRequestDTO dto) {
@@ -37,18 +39,18 @@ public class CorreoServiceImpl implements CorreoService {
             throw new IllegalArgumentException("El correo solo puede pertenecer a un cliente o proveedor a la vez");
         }
         TipoCorreo tipoCorreo = tipoCorreoDAO.findById(dto.getIdTipoCorreo())
-                .orElseThrow( () -> new RuntimeException("TipoCorreo no encontrado"));  
+                .orElseThrow( () -> new RuntimeException("TipoCorreo " + msg));  
 
         Cliente cliente = null;
         Proveedor proveedor = null;
 
         if (dto.getIdCliente() != null){
             cliente = clienteDAO.findById(dto.getIdCliente())
-                        .orElseThrow( () -> new RuntimeException("Cliente no encontrado"));
+                        .orElseThrow( () -> new RuntimeException("Cliente" + msg));
         }
         if(dto.getIdProveedor() != null){
             proveedor = proveedorDAO.findById(dto.getIdProveedor())
-                        .orElseThrow( () -> new RuntimeException("Proveedor no encontrado"));
+                        .orElseThrow( () -> new RuntimeException("Proveedor " + msg));
         }
        Correo correo = correoMapper.toEntity(dto, tipoCorreo, cliente, proveedor);
         return correoMapper.toResponseDTO(correoDAO.save(correo));
@@ -68,14 +70,14 @@ public class CorreoServiceImpl implements CorreoService {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
         return correoDAO.findById(id)
                 .map(correoMapper::toResponseDTO)
-                .orElseThrow(() -> new RuntimeException("Correo con ID " + id + " no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Correo con ID " + id + msg));
     }
 
     @Override
     @Transactional
     public void eliminar(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        if (!correoDAO.existsById(id)) throw new RuntimeException("Correo con ID " + id + " no encontrado");
+        if (!correoDAO.existsById(id)) throw new RuntimeException("Correo con ID " + id + msg);
         correoDAO.deleteById(id);
     }
 
@@ -89,7 +91,7 @@ public class CorreoServiceImpl implements CorreoService {
                         .orElseThrow(() -> new RuntimeException("Correo con ID " + id +" no encontrado"));
 
         TipoCorreo tipoCorreo = tipoCorreoDAO.findById(dto.getIdTipoCorreo())
-                                .orElseThrow(() -> new RuntimeException("TipoCorreo con ID" + dto.getIdTipoCorreo() + " no encontrado"));
+                                .orElseThrow(() -> new RuntimeException("TipoCorreo con ID" + dto.getIdTipoCorreo() + msg));
         
         correo.setCorreoElectronico(dto.getCorreoElectronico());
         correo.setTipoCorreo(tipoCorreo);

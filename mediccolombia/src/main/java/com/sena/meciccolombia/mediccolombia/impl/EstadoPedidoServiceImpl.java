@@ -15,22 +15,22 @@ import com.sena.meciccolombia.mediccolombia.web.dto.response.EstadoPedidoRespons
 @RequiredArgsConstructor
 public class EstadoPedidoServiceImpl implements EstadoPedidoService {
 
-    private final EstadoPedidoDAO estado_pedidoDAO;
-    private final EstadoPedidoMapper estado_pedidoMapper;
+    private final EstadoPedidoDAO estadoPedidoDAO;
+    private final EstadoPedidoMapper estadoPedidoMapper;
 
     @Override
     @Transactional
     public EstadoPedidoResponseDTO crear(EstadoPedidoRequestDTO dto) {
         if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
-        EstadoPedido entity = estado_pedidoMapper.toEntity(dto);
-        return estado_pedidoMapper.toResponseDTO(estado_pedidoDAO.save(entity));
+        EstadoPedido entity = estadoPedidoMapper.toEntity(dto);
+        return estadoPedidoMapper.toResponseDTO(estadoPedidoDAO.save(entity));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<EstadoPedidoResponseDTO> listar() {
-        return estado_pedidoDAO.findAll().stream()
-                .map(estado_pedidoMapper::toResponseDTO)
+        return estadoPedidoDAO.findAll().stream()
+                .map(estadoPedidoMapper::toResponseDTO)
                 .toList();
     }
 
@@ -38,8 +38,8 @@ public class EstadoPedidoServiceImpl implements EstadoPedidoService {
     @Transactional(readOnly = true)
     public EstadoPedidoResponseDTO obtenerPorId(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        return estado_pedidoDAO.findById(id)
-                .map(estado_pedidoMapper::toResponseDTO)
+        return estadoPedidoDAO.findById(id)
+                .map(estadoPedidoMapper::toResponseDTO)
                 .orElseThrow(() -> new RuntimeException("EstadoPedido con ID " + id + " no encontrado"));
     }
 
@@ -47,8 +47,8 @@ public class EstadoPedidoServiceImpl implements EstadoPedidoService {
     @Transactional
     public void eliminar(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        if (!estado_pedidoDAO.existsById(id)) throw new RuntimeException("EstadoPedido con ID " + id + " no encontrado");
-        estado_pedidoDAO.deleteById(id);
+        if (!estadoPedidoDAO.existsById(id)) throw new RuntimeException("EstadoPedido con ID " + id + " no encontrado");
+        estadoPedidoDAO.deleteById(id);
     }
 
     @Override
@@ -56,9 +56,9 @@ public class EstadoPedidoServiceImpl implements EstadoPedidoService {
     public EstadoPedidoResponseDTO actualizar(Long id, EstadoPedidoRequestDTO dto) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
         if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
-        EstadoPedido entity = estado_pedidoDAO.findById(id)
+        EstadoPedido entity = estadoPedidoDAO.findById(id)
                 .orElseThrow(() -> new RuntimeException("EstadoPedido con ID " + id + " no encontrado"));
         entity.setDescripcion(dto.getDescripcion());
-        return estado_pedidoMapper.toResponseDTO(estado_pedidoDAO.save(entity));
+        return estadoPedidoMapper.toResponseDTO(estadoPedidoDAO.save(entity));
     }
 }

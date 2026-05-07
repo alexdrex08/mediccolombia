@@ -12,7 +12,6 @@ import com.sena.meciccolombia.mediccolombia.dao.ProveedorDAO;
 import com.sena.meciccolombia.mediccolombia.dao.TipoDireccionDAO;
 import com.sena.meciccolombia.mediccolombia.domain.*;
 import com.sena.meciccolombia.mediccolombia.service.DireccionService;
-import com.sena.meciccolombia.mediccolombia.web.controller.BarrioDireccionController;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.DireccionRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.DireccionUpdateRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.DireccionResponseDTO;
