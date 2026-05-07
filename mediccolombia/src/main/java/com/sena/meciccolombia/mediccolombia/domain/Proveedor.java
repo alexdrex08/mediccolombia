@@ -22,7 +22,9 @@ public class Proveedor implements Serializable{
     @Column(name ="id_proveedor")
     private Long id;
 
+    @Column(name ="nombre_prov")
     private String nombreProv;
+    
     private String nit;
 
     @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL, orphanRemoval = true)

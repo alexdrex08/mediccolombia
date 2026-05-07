@@ -34,3 +34,9 @@ UpdateProductoRequestDTO
 ProductoInventarioDTO
 ProductoDetalleDTO
 ProductoResumenDTO
+
+4/5/26 9:51 p.m. - se mapearon bastantes entidades con comprejidades simples o medias con crud simple y relaciones simples. 
+copiar logica de CORREO a las demas entidades que compartan id_cliente e id_proveedor. 
+
+5/5/26 10:20 a.m. - Ajuste a logica Correo (se añadio el toEntity y se utilizó); creacion de la logica Telefono.
+

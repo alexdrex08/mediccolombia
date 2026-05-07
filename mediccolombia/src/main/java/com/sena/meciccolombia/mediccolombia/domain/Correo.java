@@ -27,11 +27,11 @@ public class Correo implements Serializable{
     @JoinColumn(name ="cliente_id")
     private Cliente cliente;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="proveedor_id")
     private Proveedor proveedor;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="tipo_correo_id")
     private TipoCorreo tipoCorreo;
 
