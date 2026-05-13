@@ -4,7 +4,10 @@ import org.springframework.stereotype.Component;
 import com.sena.meciccolombia.mediccolombia.dao.*;
 import com.sena.meciccolombia.mediccolombia.domain.*;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.CorreoRequestDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.CorreoResponseClienteDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.CorreoResponseDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.CorreoResponseProveedorDTO;
+
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -28,6 +31,26 @@ public class CorreoMapper {
                 .tipoCorreo(entity.getTipoCorreo() != null ? entity.getTipoCorreo().getNombreTipo() : null)
                 .idCliente(entity.getCliente() != null ? entity.getCliente().getId() : null)
                 .idProveedor(entity.getProveedor() != null ? entity.getProveedor().getId() : null)
+                .build();
+    }
+
+       public CorreoResponseProveedorDTO toResponseProveedorDTO(Correo entity) {
+        if (entity == null) return null;
+        return CorreoResponseProveedorDTO.builder()
+                .id(entity.getId())
+                .correoElectronico(entity.getCorreoElectronico())
+                .tipoCorreo(entity.getTipoCorreo() != null ? entity.getTipoCorreo().getNombreTipo() : null)
+                .idProveedor(entity.getProveedor() != null ? entity.getProveedor().getId() : null)
+                .build();
+    }
+
+       public CorreoResponseClienteDTO toResponseClienteDTO(Correo entity) {
+        if (entity == null) return null;
+        return CorreoResponseClienteDTO.builder()
+                .id(entity.getId())
+                .correoElectronico(entity.getCorreoElectronico())
+                .tipoCorreo(entity.getTipoCorreo() != null ? entity.getTipoCorreo().getNombreTipo() : null)
+                .idCliente(entity.getCliente() != null ? entity.getCliente().getId() : null)
                 .build();
     }
 }

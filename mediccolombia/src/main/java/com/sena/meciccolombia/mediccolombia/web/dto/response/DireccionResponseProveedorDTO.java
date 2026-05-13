@@ -1,0 +1,18 @@
+package com.sena.meciccolombia.mediccolombia.web.dto.response;
+
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class DireccionResponseProveedorDTO {
+
+       private Long id;
+    private String direccion;
+    private String complemento;
+    private String barrio;
+    private Long idProveedor;
+    private String tipoDireccion;
+}

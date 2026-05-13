@@ -40,3 +40,9 @@ copiar logica de CORREO a las demas entidades que compartan id_cliente e id_prov
 
 5/5/26 10:20 a.m. - Ajuste a logica Correo (se añadio el toEntity y se utilizó); creacion de la logica Telefono.
 
+12-5-26 11:54 a.m. - Se añadió toda la logica de Proveedor y Cliente y se añadieron endPoints para busquedas llanas y busquedas por detalle.
+- Proxima Tarea: crear un mapper de Direccion, telefono, correo, para Cliente y proveedor donde el atributo
+id = null no aparezca; crear el ResponseDTO, modificaciones en DTOs y en los servicios.
+
+13-5-26 1:28 p.m - se mapeo y separó la logica de cliente y proveedor. 
+
