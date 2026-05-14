@@ -14,6 +14,7 @@ import com.sena.meciccolombia.mediccolombia.dao.CorreoDAO;
 import com.sena.meciccolombia.mediccolombia.dao.DireccionDAO;
 import com.sena.meciccolombia.mediccolombia.dao.TelefonoDAO;
 import com.sena.meciccolombia.mediccolombia.domain.Cliente;
+import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
 import com.sena.meciccolombia.mediccolombia.service.ClienteService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.ClienteResquestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.ClienteDetalleResponseDTO;
@@ -44,7 +45,7 @@ public class ClienteServiceImpl implements ClienteService{
         if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
 
         if(clienteDAO.findByIdentificacion(dto.getIdentificacion()).isPresent()){
-            throw new RuntimeException("Ya existe un cliente con esa Identificacion: " + dto.getIdentificacion());
+            throw new ResourceNotFoundException("Ya existe un cliente con esa Identificacion: " + dto.getIdentificacion());
         }
 
         Cliente cliente = clienteMapper.toEntity(dto);
@@ -73,7 +74,7 @@ public class ClienteServiceImpl implements ClienteService{
     public void eliminar(Long id) {
 
         if(id == null ) throw new IllegalArgumentException("el ID no puede ser nulo");
-        if(!clienteDAO.existsById(id)) throw new RuntimeException("Cliente con ID" + id + " no encontrado");
+        if(!clienteDAO.existsById(id)) throw new ResourceNotFoundException("Cliente con ID" + id + " no encontrado");
         clienteDAO.deleteById(id);
     }
     

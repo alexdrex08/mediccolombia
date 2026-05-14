@@ -1,7 +1,6 @@
 package com.sena.meciccolombia.mediccolombia.component;
 
 import org.springframework.stereotype.Component;
-import com.sena.meciccolombia.mediccolombia.dao.*;
 import com.sena.meciccolombia.mediccolombia.domain.*;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.DireccionRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.DireccionResponseClienteDTO;

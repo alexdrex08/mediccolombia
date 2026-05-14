@@ -14,31 +14,31 @@ import com.sena.meciccolombia.mediccolombia.web.dto.response.DetalleFiltroRespon
 @RequiredArgsConstructor
 public class DetalleFiltroController {
 
-    private final DetalleFiltroService detalle_filtroService;
+    private final DetalleFiltroService detalleFiltroService;
 
     @PostMapping
     public ResponseEntity<DetalleFiltroResponseDTO> crear(@RequestBody DetalleFiltroRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(detalle_filtroService.crear(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(detalleFiltroService.crear(dto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<DetalleFiltroResponseDTO> actualizar(@PathVariable Long id, @RequestBody DetalleFiltroRequestDTO dto) {
-        return ResponseEntity.ok(detalle_filtroService.actualizar(id, dto));
+        return ResponseEntity.ok(detalleFiltroService.actualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        detalle_filtroService.eliminar(id);
+        detalleFiltroService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<DetalleFiltroResponseDTO> obtenerPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(detalle_filtroService.obtenerPorId(id));
+        return ResponseEntity.ok(detalleFiltroService.obtenerPorId(id));
     }
 
-    @GetMapping
-    public ResponseEntity<List<DetalleFiltroResponseDTO>> listar() {
-        return ResponseEntity.ok(detalle_filtroService.listar());
+    @GetMapping("/filtro/{idFiltroBusqueda}")
+    public ResponseEntity<List<DetalleFiltroResponseDTO>> listarPorFiltro(@PathVariable Long idFiltroBusqueda) {
+        return ResponseEntity.ok(detalleFiltroService.listarPorFiltro(idFiltroBusqueda));
     }
 }

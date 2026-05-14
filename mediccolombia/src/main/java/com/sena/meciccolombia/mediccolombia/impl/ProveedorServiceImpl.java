@@ -9,6 +9,7 @@ import com.sena.meciccolombia.mediccolombia.dao.DireccionDAO;
 import com.sena.meciccolombia.mediccolombia.dao.ProveedorDAO;
 import com.sena.meciccolombia.mediccolombia.dao.TelefonoDAO;
 import com.sena.meciccolombia.mediccolombia.domain.Proveedor;
+import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class ProveedorServiceImpl implements ProveedorService{
         if(dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
 
         if(proveedorDAO.findByNit(dto.getNit()).isPresent()){
-            throw new RuntimeException("El proveedor con el NIT: "+ dto.getNit() + " ya existe");
+            throw new ResourceNotFoundException("El proveedor con el NIT: "+ dto.getNit() + " ya existe");
         }
 
         Proveedor proveedor = proveedorMapper.toEntity(dto);
@@ -70,7 +71,7 @@ public class ProveedorServiceImpl implements ProveedorService{
     @Override
     public void eliminar(Long id) {
         if(id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        if(!proveedorDAO.existsById(id)) throw new RuntimeException("El cliente con ID: "+ id+ " no fue encontrado");
+        if(!proveedorDAO.existsById(id)) throw new ResourceNotFoundException("El cliente con ID: "+ id+ " no fue encontrado");
         proveedorDAO.deleteById(id);
      }
 

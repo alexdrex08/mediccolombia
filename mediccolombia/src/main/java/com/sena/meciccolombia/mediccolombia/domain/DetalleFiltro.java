@@ -21,8 +21,13 @@ public class DetalleFiltro implements Serializable{
     @Column(name ="id_detalle_filtro")
     private Long id;
 
+    @Column(name="valor_filtro")
     private String valorFiltro;
+
+    @Column(name ="campo_filtro")
     private String campoFiltro;
+
+    @Column(name ="tipo_dato")
     private String tipoDato;
 
     @ManyToOne

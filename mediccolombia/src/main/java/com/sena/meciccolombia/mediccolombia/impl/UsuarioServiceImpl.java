@@ -1,0 +1,112 @@
+package com.sena.meciccolombia.mediccolombia.impl;
+
+import java.util.List;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.sena.meciccolombia.mediccolombia.component.UsuarioMapper;
+import com.sena.meciccolombia.mediccolombia.dao.UsuarioDAO;
+import com.sena.meciccolombia.mediccolombia.domain.Usuario;
+import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
+import com.sena.meciccolombia.mediccolombia.service.UsuarioService;
+import com.sena.meciccolombia.mediccolombia.web.dto.UsuarioResponseDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.request.UsuarioCambiarContrasenaDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.request.UsuarioCreateRequestDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.request.UsuarioUpdateRequest;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class UsuarioServiceImpl implements UsuarioService{
+
+    private final UsuarioDAO usuarioDAO;
+    private final UsuarioMapper usuarioMapper;
+    private final PasswordEncoder passwordEncoder;
+
+    @Override
+    @Transactional
+    public UsuarioResponseDTO crear(UsuarioCreateRequestDTO dto) {
+        if(dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
+        if(usuarioDAO.existsByCorreo(dto.getCorreo())){
+            throw new ResourceNotFoundException("Ya existe un usuario con este correo");
+        }
+
+        String contrasenaCodificada = passwordEncoder.encode(dto.getContrasena());
+        Usuario usuario = usuarioMapper.toEntity(dto, contrasenaCodificada);
+        return usuarioMapper.toResponseDTO(usuarioDAO.save(usuario));
+    }
+
+
+    @Override
+    @Transactional
+    public UsuarioResponseDTO actualizar(Long id, UsuarioUpdateRequest dto) {
+        if(dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
+
+        if(id  == null) throw new IllegalArgumentException("El ID no puede ser nulo");
+
+        Usuario usuario = usuarioDAO.findById(id)
+                                    .orElseThrow(() -> new ResourceNotFoundException("El usuario con el ID:"+ id + " no fue encontrado o no existe"));
+        if(!usuario.getCorreo().equalsIgnoreCase(dto.getCorreo()) && usuarioDAO.existsByCorreo(dto.getCorreo())){
+            throw new ResourceNotFoundException("Ya existe un usuario con ese correo");
+        }
+
+        usuario.setNombre(dto.getNombre());
+        usuario.setCorreo(dto.getCorreo());
+        usuario.setRol(dto.getRol());
+
+        return usuarioMapper.toResponseDTO(usuarioDAO.save(usuario));
+    }
+
+    @Override
+    @Transactional
+    public void eliminar(Long id) {
+        if(id == null)  throw new IllegalArgumentException("El ID no puede ser nulo");
+        if(!usuarioDAO.existsById(id)) throw new ResourceNotFoundException("Usuario con ID" + id + " no encontrado");
+        usuarioDAO.deleteById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UsuarioResponseDTO obtenerPorId(Long id) {
+        if(id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
+        return usuarioDAO.findById(id)
+                        .map(usuarioMapper::toResponseDTO)
+                        .orElseThrow(() -> new ResourceNotFoundException("Usuario con el ID: "+ id + " no fue encontrado"));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UsuarioResponseDTO> listar() {
+        return usuarioDAO.findAll()
+                        .stream()
+                        .map(usuarioMapper::toResponseDTO)
+                        .toList();
+    }
+
+    @Override
+    public UsuarioResponseDTO buscarPorCorreo(String correo) {
+        if(correo == null) throw new IllegalArgumentException("El correo no puede ser nulo");
+        return usuarioDAO.findByCorreo(correo)
+                        .map(usuarioMapper::toResponseDTO)
+                        .orElseThrow(() -> new ResourceNotFoundException("Usuario con correo: " +correo+ " no encontrado"));
+    }
+
+    @Override
+    public void cambiarContrasena(Long id, UsuarioCambiarContrasenaDTO dto) {
+        if(id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
+        if(dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
+
+        Usuario usuario = usuarioDAO.findById(id)
+                                    .orElseThrow(() -> new ResourceNotFoundException("El usuario con el ID:" + id + " no encontrado"));
+        if (!passwordEncoder.matches(dto.getContrasenaActual(), usuario.getContrasena())){
+            throw new IllegalArgumentException("La contraseña actual es incorrecta");
+        }
+
+        usuario.setContrasena(passwordEncoder.encode(dto.getNuevaContrasena()));
+        usuarioDAO.save(usuario);
+    }
+    
+}

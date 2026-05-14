@@ -19,7 +19,6 @@ import com.sena.meciccolombia.mediccolombia.web.dto.response.ProveedorDetalleRes
 import com.sena.meciccolombia.mediccolombia.web.dto.response.ProveedorResponseDTO;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController

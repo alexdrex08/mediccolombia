@@ -10,5 +10,5 @@ public interface DetalleFiltroService {
     DetalleFiltroResponseDTO actualizar(Long id, DetalleFiltroRequestDTO dto);
     void eliminar(Long id);
     DetalleFiltroResponseDTO obtenerPorId(Long id);
-    List<DetalleFiltroResponseDTO> listar();
+    List<DetalleFiltroResponseDTO> listarPorFiltro(Long idFiltroBusqueda);
 }

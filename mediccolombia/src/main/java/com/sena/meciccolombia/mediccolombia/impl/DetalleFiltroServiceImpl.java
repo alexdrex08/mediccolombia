@@ -6,7 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import com.sena.meciccolombia.mediccolombia.component.DetalleFiltroMapper;
 import com.sena.meciccolombia.mediccolombia.dao.DetalleFiltroDAO;
+import com.sena.meciccolombia.mediccolombia.dao.FiltroBusquedaDAO;
 import com.sena.meciccolombia.mediccolombia.domain.*;
+import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
 import com.sena.meciccolombia.mediccolombia.service.DetalleFiltroService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.DetalleFiltroRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.DetalleFiltroResponseDTO;
@@ -15,41 +17,44 @@ import com.sena.meciccolombia.mediccolombia.web.dto.response.DetalleFiltroRespon
 @RequiredArgsConstructor
 public class DetalleFiltroServiceImpl implements DetalleFiltroService {
 
-    private final DetalleFiltroDAO detalle_filtroDAO;
-    private final DetalleFiltroMapper detalle_filtroMapper;
-    // Inject additional DAOs here for FK resolution
+    private final DetalleFiltroDAO detalleFiltroDAO;
+    private final FiltroBusquedaDAO filtroBusquedaDAO;
+    private final DetalleFiltroMapper detalleFiltroMapper;
 
     @Override
     @Transactional
     public DetalleFiltroResponseDTO crear(DetalleFiltroRequestDTO dto) {
         if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
-        // TODO: resolve FK entities from DAOs before building entity
-        throw new UnsupportedOperationException("Implementar resolución de FKs");
+
+        FiltroBusqueda filtro = filtroBusquedaDAO.findById(dto.getIdFiltroBusqueda())
+                                                .orElseThrow(() -> new ResourceNotFoundException("El FiltroBusqueda con ID:" + dto.getIdFiltroBusqueda() + " no fue encontrado o no existe"));
+        DetalleFiltro detalleFiltro = detalleFiltroMapper.toEntity(dto, filtro);
+        return detalleFiltroMapper.toResponseDTO(detalleFiltroDAO.save(detalleFiltro));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<DetalleFiltroResponseDTO> listar() {
-        return detalle_filtroDAO.findAll().stream()
-                .map(detalle_filtroMapper::toResponseDTO)
-                .toList();
+    public List<DetalleFiltroResponseDTO> listarPorFiltro(Long idFiltroBusqueda) {
+        if(idFiltroBusqueda == null) throw new IllegalArgumentException("El ID no puede ser nulo");
+        return detalleFiltroDAO.findByFiltroBusquedaId(idFiltroBusqueda)
+            .stream().map(detalleFiltroMapper::toResponseDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public DetalleFiltroResponseDTO obtenerPorId(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        return detalle_filtroDAO.findById(id)
-                .map(detalle_filtroMapper::toResponseDTO)
-                .orElseThrow(() -> new RuntimeException("DetalleFiltro con ID " + id + " no encontrado"));
+        return detalleFiltroDAO.findById(id)
+                .map(detalleFiltroMapper::toResponseDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("DetalleFiltro con ID " + id + " no encontrado"));
     }
 
     @Override
     @Transactional
     public void eliminar(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        if (!detalle_filtroDAO.existsById(id)) throw new RuntimeException("DetalleFiltro con ID " + id + " no encontrado");
-        detalle_filtroDAO.deleteById(id);
+        if (!detalleFiltroDAO.existsById(id)) throw new ResourceNotFoundException("DetalleFiltro con ID " + id + " no encontrado");
+        detalleFiltroDAO.deleteById(id);
     }
 
     @Override
@@ -57,7 +62,13 @@ public class DetalleFiltroServiceImpl implements DetalleFiltroService {
     public DetalleFiltroResponseDTO actualizar(Long id, DetalleFiltroRequestDTO dto) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
         if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
-        // TODO: resolve FK entities and apply setters
-        throw new UnsupportedOperationException("Implementar resolución de FKs");
+
+        DetalleFiltro detalle = detalleFiltroDAO.findById(id)
+                                                .orElseThrow(() -> new ResourceNotFoundException("DetalleFiltro con ID: " + id + " no encontrado o no existe"));
+        detalle.setCampoFiltro(dto.getCampoFiltro());
+        detalle.setTipoDato(dto.getTipoDato());
+        detalle.setValorFiltro(dto.getValorFiltro());
+        
+        return detalleFiltroMapper.toResponseDTO(detalleFiltroDAO.save(detalle));
     }
 }

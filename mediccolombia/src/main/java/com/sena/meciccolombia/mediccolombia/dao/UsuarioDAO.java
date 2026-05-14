@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface UsuarioDAO extends JpaRepository<Usuario, Long> {
 
     Optional<Usuario> findByCorreo(String correo);
+
+    boolean existsByCorreo(String correo);
 }
