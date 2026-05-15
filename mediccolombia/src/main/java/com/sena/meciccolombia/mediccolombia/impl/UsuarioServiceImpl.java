@@ -6,15 +6,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sena.meciccolombia.mediccolombia.component.EstadoUsuarioMapper;
 import com.sena.meciccolombia.mediccolombia.component.UsuarioMapper;
+import com.sena.meciccolombia.mediccolombia.dao.EstadoUsuarioDAO;
 import com.sena.meciccolombia.mediccolombia.dao.UsuarioDAO;
 import com.sena.meciccolombia.mediccolombia.domain.Usuario;
 import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
 import com.sena.meciccolombia.mediccolombia.service.UsuarioService;
-import com.sena.meciccolombia.mediccolombia.web.dto.UsuarioResponseDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.UsuarioCambiarContrasenaDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.UsuarioCreateRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.UsuarioUpdateRequest;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.EstadoUsuarioResponseDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.UsuarioDetalleResponseDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.UsuarioResponseDTO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +27,9 @@ import lombok.RequiredArgsConstructor;
 public class UsuarioServiceImpl implements UsuarioService{
 
     private final UsuarioDAO usuarioDAO;
+    private final EstadoUsuarioDAO estadoUsuarioDAO;
     private final UsuarioMapper usuarioMapper;
+    private final EstadoUsuarioMapper estadoUsuarioMapper;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -48,7 +54,7 @@ public class UsuarioServiceImpl implements UsuarioService{
         if(id  == null) throw new IllegalArgumentException("El ID no puede ser nulo");
 
         Usuario usuario = usuarioDAO.findById(id)
-                                    .orElseThrow(() -> new ResourceNotFoundException("El usuario con el ID:"+ id + " no fue encontrado o no existe"));
+                                    .orElseThrow(() -> new ResourceNotFoundException("El Usuario con el ID:"+ id + " no fue encontrado o no existe"));
         if(!usuario.getCorreo().equalsIgnoreCase(dto.getCorreo()) && usuarioDAO.existsByCorreo(dto.getCorreo())){
             throw new ResourceNotFoundException("Ya existe un usuario con ese correo");
         }
@@ -64,7 +70,7 @@ public class UsuarioServiceImpl implements UsuarioService{
     @Transactional
     public void eliminar(Long id) {
         if(id == null)  throw new IllegalArgumentException("El ID no puede ser nulo");
-        if(!usuarioDAO.existsById(id)) throw new ResourceNotFoundException("Usuario con ID" + id + " no encontrado");
+        if(!usuarioDAO.existsById(id)) throw new ResourceNotFoundException("Usuario con ID" + id + " no fue encontrado");
         usuarioDAO.deleteById(id);
     }
 
@@ -91,7 +97,7 @@ public class UsuarioServiceImpl implements UsuarioService{
         if(correo == null) throw new IllegalArgumentException("El correo no puede ser nulo");
         return usuarioDAO.findByCorreo(correo)
                         .map(usuarioMapper::toResponseDTO)
-                        .orElseThrow(() -> new ResourceNotFoundException("Usuario con correo: " +correo+ " no encontrado"));
+                        .orElseThrow(() -> new ResourceNotFoundException("Usuario con correo: " +correo+ " no fue encontrado"));
     }
 
     @Override
@@ -107,6 +113,22 @@ public class UsuarioServiceImpl implements UsuarioService{
 
         usuario.setContrasena(passwordEncoder.encode(dto.getNuevaContrasena()));
         usuarioDAO.save(usuario);
+    }
+
+
+    @Override
+    public UsuarioDetalleResponseDTO obtenerDetalle(Long id) {
+       if(id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
+
+       Usuario usuario = usuarioDAO.findById(id)    
+                                .orElseThrow(() -> new ResourceNotFoundException("El usuario con el ID:" + id + " no encontrado"));
+        List<EstadoUsuarioResponseDTO> estados = estadoUsuarioDAO.findByUsuarioId(id)
+                                .stream()
+                                .map(estadoUsuarioMapper::toResponseDTO)
+                                .toList();
+
+        return usuarioMapper.toDetalleDTO(usuario, estados);
+      
     }
     
 }

@@ -14,31 +14,35 @@ import com.sena.meciccolombia.mediccolombia.web.dto.response.EstadoUsuarioRespon
 @RequiredArgsConstructor
 public class EstadoUsuarioController {
 
-    private final EstadoUsuarioService estado_usuarioService;
+    private final EstadoUsuarioService estadoUsuarioService;
 
     @PostMapping
     public ResponseEntity<EstadoUsuarioResponseDTO> crear(@RequestBody EstadoUsuarioRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(estado_usuarioService.crear(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(estadoUsuarioService.crear(dto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<EstadoUsuarioResponseDTO> actualizar(@PathVariable Long id, @RequestBody EstadoUsuarioRequestDTO dto) {
-        return ResponseEntity.ok(estado_usuarioService.actualizar(id, dto));
+        return ResponseEntity.ok(estadoUsuarioService.actualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        estado_usuarioService.eliminar(id);
+        estadoUsuarioService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EstadoUsuarioResponseDTO> obtenerPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(estado_usuarioService.obtenerPorId(id));
+        return ResponseEntity.ok(estadoUsuarioService.obtenerPorId(id));
     }
 
     @GetMapping
     public ResponseEntity<List<EstadoUsuarioResponseDTO>> listar() {
-        return ResponseEntity.ok(estado_usuarioService.listar());
+        return ResponseEntity.ok(estadoUsuarioService.listar());
+    }
+    @GetMapping("/usuario/{idUsuario}")
+    public ResponseEntity<List<EstadoUsuarioResponseDTO>> listarPorUsuario(@PathVariable Long idUsuario) {
+        return ResponseEntity.ok(estadoUsuarioService.listarPorUsuario(idUsuario));
     }
 }

@@ -22,7 +22,11 @@ public class TipoEstado implements Serializable{
     @Column(name ="id_tipo_estado")
     private Long id;
 
+    @Column(name ="nombre_tipo")
     private String nombreTipo;
+
+    @Column(name ="descripcion")
+    private String descripcion;
 
     @OneToMany(mappedBy = "tipoEstado", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude

@@ -14,5 +14,6 @@ public class EstadoUsuarioResponseDTO {
     private String observacion;
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;
+    private String nombreUsuario;
     private String tipoEstado;
 }

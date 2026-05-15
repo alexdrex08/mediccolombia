@@ -1,6 +1,7 @@
 package com.sena.meciccolombia.mediccolombia.domain;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,9 +29,14 @@ public class EstadoUsuario implements Serializable{
     @Column(name ="id_estado_usuario")
     private Long id;
 
+    @Column(name ="observacion")
     private String observacion;
-    private java.time.LocalDateTime fechaInicio;
-    private java.time.LocalDateTime fechaFin;
+
+    @Column(name ="fecha_inicio")
+    private LocalDateTime fechaInicio;
+
+    @Column(name ="fecha_fin")
+    private LocalDateTime fechaFin;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")

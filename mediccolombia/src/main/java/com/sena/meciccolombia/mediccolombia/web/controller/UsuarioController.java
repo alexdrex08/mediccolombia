@@ -4,10 +4,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sena.meciccolombia.mediccolombia.service.UsuarioService;
-import com.sena.meciccolombia.mediccolombia.web.dto.UsuarioResponseDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.UsuarioCambiarContrasenaDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.UsuarioCreateRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.UsuarioUpdateRequest;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.UsuarioDetalleResponseDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.UsuarioResponseDTO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -66,9 +67,10 @@ public class UsuarioController {
         usuarioService.cambiarContrasena(id, dto);
         return ResponseEntity.noContent().build();
     }
-    
-    
-    
-    
+     @GetMapping("/{id}/detalle")
+    public ResponseEntity<UsuarioDetalleResponseDTO> obtenerDetalle(@PathVariable Long id) {
+        return ResponseEntity.ok(usuarioService.obtenerDetalle(id));
+    }
+
     
 }

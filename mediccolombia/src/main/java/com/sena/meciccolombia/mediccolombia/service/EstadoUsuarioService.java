@@ -11,4 +11,5 @@ public interface EstadoUsuarioService {
     void eliminar(Long id);
     EstadoUsuarioResponseDTO obtenerPorId(Long id);
     List<EstadoUsuarioResponseDTO> listar();
+    List <EstadoUsuarioResponseDTO> listarPorUsuario(Long idUsuario);
 }

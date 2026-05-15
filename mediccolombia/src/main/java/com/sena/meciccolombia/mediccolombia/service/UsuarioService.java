@@ -2,10 +2,11 @@ package com.sena.meciccolombia.mediccolombia.service;
 
 import java.util.List;
 
-import com.sena.meciccolombia.mediccolombia.web.dto.UsuarioResponseDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.UsuarioCambiarContrasenaDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.UsuarioCreateRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.UsuarioUpdateRequest;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.UsuarioDetalleResponseDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.UsuarioResponseDTO;
 
 public interface UsuarioService {
 
@@ -16,6 +17,7 @@ public interface UsuarioService {
     List<UsuarioResponseDTO> listar();
     UsuarioResponseDTO buscarPorCorreo(String correo);
     void cambiarContrasena(Long id, UsuarioCambiarContrasenaDTO dto);
+    UsuarioDetalleResponseDTO obtenerDetalle(Long id);
 
 
     
