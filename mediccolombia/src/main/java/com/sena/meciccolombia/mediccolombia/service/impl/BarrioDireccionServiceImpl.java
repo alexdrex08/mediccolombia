@@ -1,4 +1,4 @@
-package com.sena.meciccolombia.mediccolombia.impl;
+package com.sena.meciccolombia.mediccolombia.service.impl;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import com.sena.meciccolombia.mediccolombia.component.BarrioDireccionMapper;
 import com.sena.meciccolombia.mediccolombia.dao.BarrioDireccionDAO;
 import com.sena.meciccolombia.mediccolombia.domain.BarrioDireccion;
+import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
 import com.sena.meciccolombia.mediccolombia.service.BarrioDireccionService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.BarrioDireccionRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.BarrioDireccionResponseDTO;
@@ -47,7 +48,7 @@ public class BarrioDireccionServiceImpl implements BarrioDireccionService {
     @Transactional
     public void eliminar(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        if (!barrioDireccionDAO.existsById(id)) throw new RuntimeException("BarrioDireccion con ID " + id + " no encontrado");
+        if (!barrioDireccionDAO.existsById(id)) throw new ResourceNotFoundException("BarrioDireccion con ID " + id + " no encontrado");
         barrioDireccionDAO.deleteById(id);
     }
 

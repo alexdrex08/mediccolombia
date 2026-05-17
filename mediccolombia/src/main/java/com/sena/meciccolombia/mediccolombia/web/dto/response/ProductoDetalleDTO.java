@@ -1,4 +1,4 @@
-package com.sena.meciccolombia.mediccolombia.web.dto;
+package com.sena.meciccolombia.mediccolombia.web.dto.response;
 import lombok.*;
 
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package com.sena.meciccolombia.mediccolombia.impl;
+package com.sena.meciccolombia.mediccolombia.service.impl;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import com.sena.meciccolombia.mediccolombia.component.TipoEstadoMapper;
 import com.sena.meciccolombia.mediccolombia.dao.TipoEstadoDAO;
 import com.sena.meciccolombia.mediccolombia.domain.TipoEstado;
+import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
 import com.sena.meciccolombia.mediccolombia.service.TipoEstadoService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.TipoEstadoRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.TipoEstadoResponseDTO;
@@ -15,22 +16,22 @@ import com.sena.meciccolombia.mediccolombia.web.dto.response.TipoEstadoResponseD
 @RequiredArgsConstructor
 public class TipoEstadoServiceImpl implements TipoEstadoService {
 
-    private final TipoEstadoDAO tipo_estadoDAO;
-    private final TipoEstadoMapper tipo_estadoMapper;
+    private final TipoEstadoDAO tipoEstadoDAO;
+    private final TipoEstadoMapper tipoEstadoMapper;
 
     @Override
     @Transactional
     public TipoEstadoResponseDTO crear(TipoEstadoRequestDTO dto) {
         if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
-        TipoEstado entity = tipo_estadoMapper.toEntity(dto);
-        return tipo_estadoMapper.toResponseDTO(tipo_estadoDAO.save(entity));
+        TipoEstado entity = tipoEstadoMapper.toEntity(dto);
+        return tipoEstadoMapper.toResponseDTO(tipoEstadoDAO.save(entity));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<TipoEstadoResponseDTO> listar() {
-        return tipo_estadoDAO.findAll().stream()
-                .map(tipo_estadoMapper::toResponseDTO)
+        return tipoEstadoDAO.findAll().stream()
+                .map(tipoEstadoMapper::toResponseDTO)
                 .toList();
     }
 
@@ -38,8 +39,8 @@ public class TipoEstadoServiceImpl implements TipoEstadoService {
     @Transactional(readOnly = true)
     public TipoEstadoResponseDTO obtenerPorId(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        return tipo_estadoDAO.findById(id)
-                .map(tipo_estadoMapper::toResponseDTO)
+        return tipoEstadoDAO.findById(id)
+                .map(tipoEstadoMapper::toResponseDTO)
                 .orElseThrow(() -> new RuntimeException("TipoEstado con ID " + id + " no encontrado"));
     }
 
@@ -47,8 +48,8 @@ public class TipoEstadoServiceImpl implements TipoEstadoService {
     @Transactional
     public void eliminar(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        if (!tipo_estadoDAO.existsById(id)) throw new RuntimeException("TipoEstado con ID " + id + " no encontrado");
-        tipo_estadoDAO.deleteById(id);
+        if (!tipoEstadoDAO.existsById(id)) throw new ResourceNotFoundException("TipoEstado con ID " + id + " no encontrado");
+        tipoEstadoDAO.deleteById(id);
     }
 
     @Override
@@ -56,9 +57,9 @@ public class TipoEstadoServiceImpl implements TipoEstadoService {
     public TipoEstadoResponseDTO actualizar(Long id, TipoEstadoRequestDTO dto) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
         if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
-        TipoEstado entity = tipo_estadoDAO.findById(id)
+        TipoEstado entity = tipoEstadoDAO.findById(id)
                 .orElseThrow(() -> new RuntimeException("TipoEstado con ID " + id + " no encontrado"));
         entity.setNombreTipo(dto.getNombreTipo());
-        return tipo_estadoMapper.toResponseDTO(tipo_estadoDAO.save(entity));
+        return tipoEstadoMapper.toResponseDTO(tipoEstadoDAO.save(entity));
     }
 }

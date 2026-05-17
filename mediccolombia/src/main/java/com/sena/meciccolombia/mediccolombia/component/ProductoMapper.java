@@ -1,15 +1,18 @@
 package com.sena.meciccolombia.mediccolombia.component;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Component;
 
 import com.sena.meciccolombia.mediccolombia.domain.Categoria;
 import com.sena.meciccolombia.mediccolombia.domain.Producto;
 import com.sena.meciccolombia.mediccolombia.domain.Usuario;
-import com.sena.meciccolombia.mediccolombia.web.dto.ProductoCreateRequestDto;
-import com.sena.meciccolombia.mediccolombia.web.dto.ProductoDetalleDTO;
-import com.sena.meciccolombia.mediccolombia.web.dto.ProductoResumenDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.request.ProductoCreateRequestDto;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.MovimientoProdResponseDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoDetalleDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoHistorialDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoResumenDTO;
 
 import lombok.Builder;
 
@@ -44,6 +47,19 @@ public class ProductoMapper {
                 .categoria(producto.getCategoria().getNombre())
                 .stock(producto.getStock())
                 .estadoStock(calcularEstadoStock(producto))
+                .build();                
+    }
+
+     public ProductoHistorialDTO toDetalleHistoriaDTO(Producto producto, List<MovimientoProdResponseDTO> movimientos){
+        if (producto == null){
+            return null;
+        }
+        return ProductoHistorialDTO.builder()
+                .idProducto(producto.getId())
+                .nombreProducto(producto.getNombreProducto())
+                .stock(producto.getStock())
+                .fechaCreacion(producto.getFechaIngreso())
+                .movimientos(movimientos)
                 .build();                
     }
 

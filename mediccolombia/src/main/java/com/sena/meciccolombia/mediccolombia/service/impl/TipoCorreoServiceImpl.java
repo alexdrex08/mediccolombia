@@ -1,4 +1,4 @@
-package com.sena.meciccolombia.mediccolombia.impl;
+package com.sena.meciccolombia.mediccolombia.service.impl;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import com.sena.meciccolombia.mediccolombia.component.TipoCorreoMapper;
 import com.sena.meciccolombia.mediccolombia.dao.TipoCorreoDAO;
 import com.sena.meciccolombia.mediccolombia.domain.TipoCorreo;
+import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
 import com.sena.meciccolombia.mediccolombia.service.TipoCorreoService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.TipoCorreoRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.TipoCorreoResponseDTO;
@@ -15,22 +16,22 @@ import com.sena.meciccolombia.mediccolombia.web.dto.response.TipoCorreoResponseD
 @RequiredArgsConstructor
 public class TipoCorreoServiceImpl implements TipoCorreoService {
 
-    private final TipoCorreoDAO tipo_correoDAO;
-    private final TipoCorreoMapper tipo_correoMapper;
+    private final TipoCorreoDAO tipoCorreoDAO;
+    private final TipoCorreoMapper tipoCorreoMapper;
 
     @Override
     @Transactional
     public TipoCorreoResponseDTO crear(TipoCorreoRequestDTO dto) {
         if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
-        TipoCorreo entity = tipo_correoMapper.toEntity(dto);
-        return tipo_correoMapper.toResponseDTO(tipo_correoDAO.save(entity));
+        TipoCorreo entity = tipoCorreoMapper.toEntity(dto);
+        return tipoCorreoMapper.toResponseDTO(tipoCorreoDAO.save(entity));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<TipoCorreoResponseDTO> listar() {
-        return tipo_correoDAO.findAll().stream()
-                .map(tipo_correoMapper::toResponseDTO)
+        return tipoCorreoDAO.findAll().stream()
+                .map(tipoCorreoMapper::toResponseDTO)
                 .toList();
     }
 
@@ -38,8 +39,8 @@ public class TipoCorreoServiceImpl implements TipoCorreoService {
     @Transactional(readOnly = true)
     public TipoCorreoResponseDTO obtenerPorId(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        return tipo_correoDAO.findById(id)
-                .map(tipo_correoMapper::toResponseDTO)
+        return tipoCorreoDAO.findById(id)
+                .map(tipoCorreoMapper::toResponseDTO)
                 .orElseThrow(() -> new RuntimeException("TipoCorreo con ID " + id + " no encontrado"));
     }
 
@@ -47,8 +48,8 @@ public class TipoCorreoServiceImpl implements TipoCorreoService {
     @Transactional
     public void eliminar(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        if (!tipo_correoDAO.existsById(id)) throw new RuntimeException("TipoCorreo con ID " + id + " no encontrado");
-        tipo_correoDAO.deleteById(id);
+        if (!tipoCorreoDAO.existsById(id)) throw new ResourceNotFoundException("TipoCorreo con ID " + id + " no encontrado");
+        tipoCorreoDAO.deleteById(id);
     }
 
     @Override
@@ -56,9 +57,9 @@ public class TipoCorreoServiceImpl implements TipoCorreoService {
     public TipoCorreoResponseDTO actualizar(Long id, TipoCorreoRequestDTO dto) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
         if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
-        TipoCorreo entity = tipo_correoDAO.findById(id)
+        TipoCorreo entity = tipoCorreoDAO.findById(id)
                 .orElseThrow(() -> new RuntimeException("TipoCorreo con ID " + id + " no encontrado"));
         entity.setNombreTipo(dto.getNombreTipo());
-        return tipo_correoMapper.toResponseDTO(tipo_correoDAO.save(entity));
+        return tipoCorreoMapper.toResponseDTO(tipoCorreoDAO.save(entity));
     }
 }

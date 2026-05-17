@@ -1,9 +1,10 @@
 package com.sena.meciccolombia.mediccolombia.web.controller;
 
-import com.sena.meciccolombia.mediccolombia.web.dto.ProductoCreateRequestDto;
-import com.sena.meciccolombia.mediccolombia.web.dto.ProductoUpdateRequestDTO;
-import com.sena.meciccolombia.mediccolombia.web.dto.ProductoDetalleDTO;
-import com.sena.meciccolombia.mediccolombia.web.dto.ProductoResumenDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.request.ProductoCreateRequestDto;
+import com.sena.meciccolombia.mediccolombia.web.dto.request.ProductoUpdateRequestDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoDetalleDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoHistorialDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoResumenDTO;
 import com.sena.meciccolombia.mediccolombia.service.ProductoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,10 @@ public class ProductoController {
     public ResponseEntity<ProductoDetalleDTO> obtenerPorId(@PathVariable Long id) {
         ProductoDetalleDTO producto = productoService.obtenerPorId(id);
         return ResponseEntity.ok(producto);
+    }
+     @GetMapping("/{id}/historial")
+    public ResponseEntity<ProductoHistorialDTO> obtenerHistorial(@PathVariable Long id) {
+        return ResponseEntity.ok(productoService.productoHistorial(id));
     }
 
     @GetMapping

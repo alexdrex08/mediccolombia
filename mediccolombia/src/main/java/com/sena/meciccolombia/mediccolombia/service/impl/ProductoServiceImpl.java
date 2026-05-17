@@ -1,15 +1,19 @@
-package com.sena.meciccolombia.mediccolombia.impl;
+package com.sena.meciccolombia.mediccolombia.service.impl;
 
 import com.sena.meciccolombia.mediccolombia.dao.CategoriaDAO;
+import com.sena.meciccolombia.mediccolombia.dao.MovimientoProdDAO;
 import com.sena.meciccolombia.mediccolombia.dao.ProductoDAO;
 import com.sena.meciccolombia.mediccolombia.dao.UsuarioDAO;
 import com.sena.meciccolombia.mediccolombia.domain.Categoria;
 import com.sena.meciccolombia.mediccolombia.domain.Producto;
 import com.sena.meciccolombia.mediccolombia.domain.Usuario;
-import com.sena.meciccolombia.mediccolombia.web.dto.ProductoCreateRequestDto;
-import com.sena.meciccolombia.mediccolombia.web.dto.ProductoUpdateRequestDTO;
-import com.sena.meciccolombia.mediccolombia.web.dto.ProductoDetalleDTO;
-import com.sena.meciccolombia.mediccolombia.web.dto.ProductoResumenDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.request.ProductoCreateRequestDto;
+import com.sena.meciccolombia.mediccolombia.web.dto.request.ProductoUpdateRequestDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.MovimientoProdResponseDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoDetalleDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoHistorialDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoResumenDTO;
+import com.sena.meciccolombia.mediccolombia.component.MovimientoProdMapper;
 import com.sena.meciccolombia.mediccolombia.component.ProductoMapper;
 import com.sena.meciccolombia.mediccolombia.service.ProductoService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +28,10 @@ public class ProductoServiceImpl implements ProductoService {
 
     private final ProductoDAO productoDAO;
     private final UsuarioDAO usuarioDAO;
+    private final MovimientoProdDAO movimientoProdDAO;
     private final CategoriaDAO categoriaDAO;
     private final ProductoMapper productoMapper;
+    private final MovimientoProdMapper movimientoProdMapper;
 
 
     @Override
@@ -45,7 +50,7 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public ProductoDetalleDTO actualizarProducto(Long id, ProductoUpdateRequestDTO dto) {
         Producto producto = productoDAO.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado o no existe"));
 
         Categoria categoria = categoriaDAO.findById(dto.getIdCategoria())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
@@ -65,7 +70,7 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public void eliminarProducto(Long id) {
         Producto producto = productoDAO.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado o no existe"));
         productoDAO.delete(producto);
     }
 
@@ -76,12 +81,24 @@ public class ProductoServiceImpl implements ProductoService {
         return productoMapper.toDetalleDTO(producto);
     }
 
+     @Override
+    public ProductoHistorialDTO productoHistorial(Long idProducto) {
+        Producto producto = productoDAO.findById(idProducto)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        List<MovimientoProdResponseDTO> movimientos = movimientoProdDAO.findByProductoId(idProducto)
+                                                        .stream()
+                                                        .map(movimientoProdMapper::toResponseDTO)
+                                                        .toList();
+        return productoMapper.toDetalleHistoriaDTO(producto, movimientos);
+        
+    }
+
     @Override
     public List<ProductoResumenDTO> listarProductos() {
         return productoDAO.findAll()
                 .stream()
                 .map(productoMapper::toResumenDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -89,7 +106,7 @@ public class ProductoServiceImpl implements ProductoService {
         return productoDAO.findByNombreProductoContainsIgnoreCase(nombre)
                 .stream()
                 .map(productoMapper::toResumenDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -97,7 +114,7 @@ public class ProductoServiceImpl implements ProductoService {
         return productoDAO.findBycategoriaId(idCategoria)
                 .stream()
                 .map(productoMapper::toResumenDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -105,7 +122,7 @@ public class ProductoServiceImpl implements ProductoService {
         return productoDAO.findByStockLessThanEqualAndStockMinimoGreaterThan(0, 0)
                 .stream()
                 .map(productoMapper::toResumenDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -115,6 +132,6 @@ public class ProductoServiceImpl implements ProductoService {
         return productoDAO.findByFechaExpiracionBetween(inicio, fin)
                 .stream()
                 .map(productoMapper::toResumenDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

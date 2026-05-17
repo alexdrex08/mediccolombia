@@ -1,4 +1,4 @@
-package com.sena.meciccolombia.mediccolombia.impl;
+package com.sena.meciccolombia.mediccolombia.service.impl;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import com.sena.meciccolombia.mediccolombia.component.EstadoPedidoMapper;
 import com.sena.meciccolombia.mediccolombia.dao.EstadoPedidoDAO;
 import com.sena.meciccolombia.mediccolombia.domain.EstadoPedido;
+import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
 import com.sena.meciccolombia.mediccolombia.service.EstadoPedidoService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.EstadoPedidoRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.EstadoPedidoResponseDTO;
@@ -47,7 +48,7 @@ public class EstadoPedidoServiceImpl implements EstadoPedidoService {
     @Transactional
     public void eliminar(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        if (!estadoPedidoDAO.existsById(id)) throw new RuntimeException("EstadoPedido con ID " + id + " no encontrado");
+        if (!estadoPedidoDAO.existsById(id)) throw new ResourceNotFoundException("EstadoPedido con ID " + id + " no encontrado");
         estadoPedidoDAO.deleteById(id);
     }
 

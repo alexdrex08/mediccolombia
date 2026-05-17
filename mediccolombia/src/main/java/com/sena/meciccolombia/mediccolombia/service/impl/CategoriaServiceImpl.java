@@ -1,4 +1,4 @@
-package com.sena.meciccolombia.mediccolombia.impl;
+package com.sena.meciccolombia.mediccolombia.service.impl;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.sena.meciccolombia.mediccolombia.component.CategoriaMapper;
 import com.sena.meciccolombia.mediccolombia.dao.CategoriaDAO;
 import com.sena.meciccolombia.mediccolombia.domain.Categoria;
+import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
 import com.sena.meciccolombia.mediccolombia.service.CategoriaService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.CategoriaCreateRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.CategoriaDetalleDTO;
@@ -48,7 +49,7 @@ public class CategoriaServiceImpl implements CategoriaService {
             throw new IllegalArgumentException("El ID de categoría no puede ser nulo");
         }
         if(!categoriaDAO.existsById(id)){
-            throw new RuntimeException("Categoría con ID " + id + " no encontrada");
+            throw new ResourceNotFoundException("Categoría con ID " + id + " no encontrada");
         }
         categoriaDAO.deleteById(id);
     }

@@ -1,4 +1,4 @@
-package com.sena.meciccolombia.mediccolombia.impl;
+package com.sena.meciccolombia.mediccolombia.service.impl;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -11,6 +11,7 @@ import com.sena.meciccolombia.mediccolombia.dao.DireccionDAO;
 import com.sena.meciccolombia.mediccolombia.dao.ProveedorDAO;
 import com.sena.meciccolombia.mediccolombia.dao.TipoDireccionDAO;
 import com.sena.meciccolombia.mediccolombia.domain.*;
+import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
 import com.sena.meciccolombia.mediccolombia.service.DireccionService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.DireccionRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.DireccionUpdateRequestDTO;
@@ -83,7 +84,7 @@ public class DireccionServiceImpl implements DireccionService {
     @Transactional
     public void eliminar(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        if (!direccionDAO.existsById(id)) throw new RuntimeException("Direccion con ID " + id + " no encontrado");
+        if (!direccionDAO.existsById(id)) throw new ResourceNotFoundException("Direccion con ID " + id + " no encontrado");
         direccionDAO.deleteById(id);
     }
 

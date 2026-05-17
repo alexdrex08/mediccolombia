@@ -10,7 +10,9 @@ import com.sena.meciccolombia.mediccolombia.domain.MovimientoProd;
 @Repository
 public interface MovimientoProdDAO extends JpaRepository<MovimientoProd, Long>{
 
-    List<MovimientoProd> findByProductoId(Long idProducto);
+    List<MovimientoProd> findByProductoId(Long productoId);
+    List<MovimientoProd> findByUsuarioId(Long usuarioId);
+    List<MovimientoProd> findByTipoMovimientoId(Long tipoMovimientoId);
 
     
 }

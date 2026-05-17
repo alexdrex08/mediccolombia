@@ -1,4 +1,4 @@
-package com.sena.meciccolombia.mediccolombia.impl;
+package com.sena.meciccolombia.mediccolombia.service.impl;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import com.sena.meciccolombia.mediccolombia.component.TipoProyeccionMapper;
 import com.sena.meciccolombia.mediccolombia.dao.TipoProyeccionDAO;
 import com.sena.meciccolombia.mediccolombia.domain.TipoProyeccion;
+import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
 import com.sena.meciccolombia.mediccolombia.service.TipoProyeccionService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.TipoProyeccionRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.TipoProyeccionResponseDTO;
@@ -15,22 +16,22 @@ import com.sena.meciccolombia.mediccolombia.web.dto.response.TipoProyeccionRespo
 @RequiredArgsConstructor
 public class TipoProyeccionServiceImpl implements TipoProyeccionService {
 
-    private final TipoProyeccionDAO tipo_proyeccionDAO;
-    private final TipoProyeccionMapper tipo_proyeccionMapper;
+    private final TipoProyeccionDAO tipoProyeccionDAO;
+    private final TipoProyeccionMapper tipoProyeccionMapper;
 
     @Override
     @Transactional
     public TipoProyeccionResponseDTO crear(TipoProyeccionRequestDTO dto) {
         if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
-        TipoProyeccion entity = tipo_proyeccionMapper.toEntity(dto);
-        return tipo_proyeccionMapper.toResponseDTO(tipo_proyeccionDAO.save(entity));
+        TipoProyeccion entity = tipoProyeccionMapper.toEntity(dto);
+        return tipoProyeccionMapper.toResponseDTO(tipoProyeccionDAO.save(entity));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<TipoProyeccionResponseDTO> listar() {
-        return tipo_proyeccionDAO.findAll().stream()
-                .map(tipo_proyeccionMapper::toResponseDTO)
+        return tipoProyeccionDAO.findAll().stream()
+                .map(tipoProyeccionMapper::toResponseDTO)
                 .toList();
     }
 
@@ -38,8 +39,8 @@ public class TipoProyeccionServiceImpl implements TipoProyeccionService {
     @Transactional(readOnly = true)
     public TipoProyeccionResponseDTO obtenerPorId(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        return tipo_proyeccionDAO.findById(id)
-                .map(tipo_proyeccionMapper::toResponseDTO)
+        return tipoProyeccionDAO.findById(id)
+                .map(tipoProyeccionMapper::toResponseDTO)
                 .orElseThrow(() -> new RuntimeException("TipoProyeccion con ID " + id + " no encontrado"));
     }
 
@@ -47,8 +48,8 @@ public class TipoProyeccionServiceImpl implements TipoProyeccionService {
     @Transactional
     public void eliminar(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        if (!tipo_proyeccionDAO.existsById(id)) throw new RuntimeException("TipoProyeccion con ID " + id + " no encontrado");
-        tipo_proyeccionDAO.deleteById(id);
+        if (!tipoProyeccionDAO.existsById(id)) throw new ResourceNotFoundException("TipoProyeccion con ID " + id + " no encontrado");
+        tipoProyeccionDAO.deleteById(id);
     }
 
     @Override
@@ -56,9 +57,9 @@ public class TipoProyeccionServiceImpl implements TipoProyeccionService {
     public TipoProyeccionResponseDTO actualizar(Long id, TipoProyeccionRequestDTO dto) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
         if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
-        TipoProyeccion entity = tipo_proyeccionDAO.findById(id)
+        TipoProyeccion entity = tipoProyeccionDAO.findById(id)
                 .orElseThrow(() -> new RuntimeException("TipoProyeccion con ID " + id + " no encontrado"));
         entity.setNombreProyeccion(dto.getNombreProyeccion());
-        return tipo_proyeccionMapper.toResponseDTO(tipo_proyeccionDAO.save(entity));
+        return tipoProyeccionMapper.toResponseDTO(tipoProyeccionDAO.save(entity));
     }
 }

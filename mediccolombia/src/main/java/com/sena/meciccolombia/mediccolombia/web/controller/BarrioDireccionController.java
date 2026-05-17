@@ -14,31 +14,31 @@ import com.sena.meciccolombia.mediccolombia.web.dto.response.BarrioDireccionResp
 @RequiredArgsConstructor
 public class BarrioDireccionController {
 
-    private final BarrioDireccionService barrio_direccionService;
+    private final BarrioDireccionService barrioDireccionService;
 
     @PostMapping
     public ResponseEntity<BarrioDireccionResponseDTO> crear(@RequestBody BarrioDireccionRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(barrio_direccionService.crear(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(barrioDireccionService.crear(dto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<BarrioDireccionResponseDTO> actualizar(@PathVariable Long id, @RequestBody BarrioDireccionRequestDTO dto) {
-        return ResponseEntity.ok(barrio_direccionService.actualizar(id, dto));
+        return ResponseEntity.ok(barrioDireccionService.actualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        barrio_direccionService.eliminar(id);
+        barrioDireccionService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BarrioDireccionResponseDTO> obtenerPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(barrio_direccionService.obtenerPorId(id));
+        return ResponseEntity.ok(barrioDireccionService.obtenerPorId(id));
     }
 
     @GetMapping
     public ResponseEntity<List<BarrioDireccionResponseDTO>> listar() {
-        return ResponseEntity.ok(barrio_direccionService.listar());
+        return ResponseEntity.ok(barrioDireccionService.listar());
     }
 }

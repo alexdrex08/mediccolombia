@@ -1,4 +1,4 @@
-package com.sena.meciccolombia.mediccolombia.impl;
+package com.sena.meciccolombia.mediccolombia.service.impl;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import com.sena.meciccolombia.mediccolombia.component.TipoMovimientoMapper;
 import com.sena.meciccolombia.mediccolombia.dao.TipoMovimientoDAO;
 import com.sena.meciccolombia.mediccolombia.domain.TipoMovimiento;
+import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
 import com.sena.meciccolombia.mediccolombia.service.TipoMovimientoService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.TipoMovimientoRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.TipoMovimientoResponseDTO;
@@ -47,7 +48,7 @@ public class TipoMovimientoServiceImpl implements TipoMovimientoService {
     @Transactional
     public void eliminar(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        if (!tipoMovimientoDAO.existsById(id)) throw new RuntimeException("TipoMovimiento con ID " + id + " no encontrado");
+        if (!tipoMovimientoDAO.existsById(id)) throw new ResourceNotFoundException("TipoMovimiento con ID " + id + " no encontrado");
         tipoMovimientoDAO.deleteById(id);
     }
 

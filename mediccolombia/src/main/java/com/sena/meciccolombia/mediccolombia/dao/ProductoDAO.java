@@ -19,5 +19,6 @@ public interface ProductoDAO extends JpaRepository<Producto, Long>{
     List<Producto> findByStockLessThanEqualAndStockMinimoGreaterThan(Integer stock, Integer stockMinimo);
 
     List<Producto> findByFechaExpiracionBetween(LocalDateTime inicio, LocalDateTime fin);
+    List<Producto> findByFechaExpiracionBeforeAndStockGreaterThan(LocalDateTime fecha, Integer stock);
     
 }

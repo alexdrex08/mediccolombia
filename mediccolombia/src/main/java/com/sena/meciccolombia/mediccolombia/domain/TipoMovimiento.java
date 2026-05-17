@@ -22,8 +22,13 @@ public class TipoMovimiento implements Serializable{
     @Column(name="id_tipo_movimiento")
     private Long id;
 
+    @Column(name="nombre_movimiento")
     private String nombreMovimiento;
+    @Column(name="descripcion")
     private String descripcion;
+
+    @Column(name="signo")
+    private int signo;
 
     @OneToMany(mappedBy = "tipoMovimiento", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude

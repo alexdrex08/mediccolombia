@@ -1,4 +1,4 @@
-package com.sena.meciccolombia.mediccolombia.impl;
+package com.sena.meciccolombia.mediccolombia.service.impl;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -10,6 +10,7 @@ import com.sena.meciccolombia.mediccolombia.dao.CorreoDAO;
 import com.sena.meciccolombia.mediccolombia.dao.ProveedorDAO;
 import com.sena.meciccolombia.mediccolombia.dao.TipoCorreoDAO;
 import com.sena.meciccolombia.mediccolombia.domain.*;
+import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
 import com.sena.meciccolombia.mediccolombia.service.CorreoService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.CorreoRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.CorreoUpdateRequestDTO;
@@ -77,7 +78,7 @@ public class CorreoServiceImpl implements CorreoService {
     @Transactional
     public void eliminar(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        if (!correoDAO.existsById(id)) throw new RuntimeException("Correo con ID " + id + msg);
+        if (!correoDAO.existsById(id)) throw new ResourceNotFoundException("Correo con ID " + id + msg);
         correoDAO.deleteById(id);
     }
 

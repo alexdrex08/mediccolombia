@@ -3,10 +3,11 @@ package com.sena.meciccolombia.mediccolombia.service;
 
 import java.util.List;
 
-import com.sena.meciccolombia.mediccolombia.web.dto.ProductoCreateRequestDto;
-import com.sena.meciccolombia.mediccolombia.web.dto.ProductoDetalleDTO;
-import com.sena.meciccolombia.mediccolombia.web.dto.ProductoResumenDTO;
-import com.sena.meciccolombia.mediccolombia.web.dto.ProductoUpdateRequestDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.request.ProductoCreateRequestDto;
+import com.sena.meciccolombia.mediccolombia.web.dto.request.ProductoUpdateRequestDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoDetalleDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoHistorialDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoResumenDTO;
 
 public interface ProductoService {
 
@@ -28,4 +29,6 @@ public interface ProductoService {
     List<ProductoResumenDTO> productosConStockBajo();
 
     List<ProductoResumenDTO> productosProximosAVencer(int dias);
+
+    ProductoHistorialDTO productoHistorial(Long idProducto);
 }

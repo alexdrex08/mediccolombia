@@ -1,4 +1,4 @@
-package com.sena.meciccolombia.mediccolombia.impl;
+package com.sena.meciccolombia.mediccolombia.service.impl;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -10,6 +10,7 @@ import com.sena.meciccolombia.mediccolombia.dao.ProveedorDAO;
 import com.sena.meciccolombia.mediccolombia.dao.TelefonoDAO;
 import com.sena.meciccolombia.mediccolombia.dao.TipoTelefonoDAO;
 import com.sena.meciccolombia.mediccolombia.domain.*;
+import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
 import com.sena.meciccolombia.mediccolombia.service.TelefonoService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.TelefonoRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.TelefonoUpdateRequestDTO;
@@ -78,7 +79,7 @@ public class TelefonoServiceImpl implements TelefonoService {
     @Transactional
     public void eliminar(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        if (!telefonoDAO.existsById(id)) throw new RuntimeException("Telefono con ID " + id + " no encontrado");
+        if (!telefonoDAO.existsById(id)) throw new ResourceNotFoundException("Telefono con ID " + id + " no encontrado");
         telefonoDAO.deleteById(id);
     }
 

@@ -1,4 +1,4 @@
-package com.sena.meciccolombia.mediccolombia.impl;
+package com.sena.meciccolombia.mediccolombia.service.impl;
 
 import com.sena.meciccolombia.mediccolombia.component.CorreoMapper;
 import com.sena.meciccolombia.mediccolombia.component.DireccionMapper;

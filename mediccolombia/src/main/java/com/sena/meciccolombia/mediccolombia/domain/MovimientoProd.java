@@ -6,6 +6,8 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.CreatedDate;
+
 @Entity
 @Table(name = "MovimientoProd")
 @Getter
@@ -22,6 +24,8 @@ public class MovimientoProd implements Serializable {
     @Column(name ="id_movimiento_inv")
     private Long id;
 
+    @CreatedDate
+    @Column(name = "fecha_movimiento")
     private LocalDateTime fechaMovimiento;
 
     @Column(name ="cantidad_desplazada")

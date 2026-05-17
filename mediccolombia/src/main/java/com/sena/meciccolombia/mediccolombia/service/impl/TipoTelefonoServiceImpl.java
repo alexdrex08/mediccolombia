@@ -1,4 +1,4 @@
-package com.sena.meciccolombia.mediccolombia.impl;
+package com.sena.meciccolombia.mediccolombia.service.impl;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import com.sena.meciccolombia.mediccolombia.component.TipoTelefonoMapper;
 import com.sena.meciccolombia.mediccolombia.dao.TipoTelefonoDAO;
 import com.sena.meciccolombia.mediccolombia.domain.TipoTelefono;
+import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
 import com.sena.meciccolombia.mediccolombia.service.TipoTelefonoService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.TipoTelefonoRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.TipoTelefonoResponseDTO;
@@ -15,22 +16,22 @@ import com.sena.meciccolombia.mediccolombia.web.dto.response.TipoTelefonoRespons
 @RequiredArgsConstructor
 public class TipoTelefonoServiceImpl implements TipoTelefonoService {
 
-    private final TipoTelefonoDAO tipo_telefonoDAO;
-    private final TipoTelefonoMapper tipo_telefonoMapper;
+    private final TipoTelefonoDAO tipoTelefonoDAO;
+    private final TipoTelefonoMapper tipoTelefonoMapper;
 
     @Override
     @Transactional
     public TipoTelefonoResponseDTO crear(TipoTelefonoRequestDTO dto) {
         if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
-        TipoTelefono entity = tipo_telefonoMapper.toEntity(dto);
-        return tipo_telefonoMapper.toResponseDTO(tipo_telefonoDAO.save(entity));
+        TipoTelefono entity = tipoTelefonoMapper.toEntity(dto);
+        return tipoTelefonoMapper.toResponseDTO(tipoTelefonoDAO.save(entity));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<TipoTelefonoResponseDTO> listar() {
-        return tipo_telefonoDAO.findAll().stream()
-                .map(tipo_telefonoMapper::toResponseDTO)
+        return tipoTelefonoDAO.findAll().stream()
+                .map(tipoTelefonoMapper::toResponseDTO)
                 .toList();
     }
 
@@ -38,8 +39,8 @@ public class TipoTelefonoServiceImpl implements TipoTelefonoService {
     @Transactional(readOnly = true)
     public TipoTelefonoResponseDTO obtenerPorId(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        return tipo_telefonoDAO.findById(id)
-                .map(tipo_telefonoMapper::toResponseDTO)
+        return tipoTelefonoDAO.findById(id)
+                .map(tipoTelefonoMapper::toResponseDTO)
                 .orElseThrow(() -> new RuntimeException("TipoTelefono con ID " + id + " no encontrado"));
     }
 
@@ -47,8 +48,8 @@ public class TipoTelefonoServiceImpl implements TipoTelefonoService {
     @Transactional
     public void eliminar(Long id) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        if (!tipo_telefonoDAO.existsById(id)) throw new RuntimeException("TipoTelefono con ID " + id + " no encontrado");
-        tipo_telefonoDAO.deleteById(id);
+        if (!tipoTelefonoDAO.existsById(id)) throw new ResourceNotFoundException("TipoTelefono con ID " + id + " no encontrado");
+        tipoTelefonoDAO.deleteById(id);
     }
 
     @Override
@@ -56,9 +57,9 @@ public class TipoTelefonoServiceImpl implements TipoTelefonoService {
     public TipoTelefonoResponseDTO actualizar(Long id, TipoTelefonoRequestDTO dto) {
         if (id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
         if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
-        TipoTelefono entity = tipo_telefonoDAO.findById(id)
+        TipoTelefono entity = tipoTelefonoDAO.findById(id)
                 .orElseThrow(() -> new RuntimeException("TipoTelefono con ID " + id + " no encontrado"));
         entity.setNombreTipo(dto.getNombreTipo());
-        return tipo_telefonoMapper.toResponseDTO(tipo_telefonoDAO.save(entity));
+        return tipoTelefonoMapper.toResponseDTO(tipoTelefonoDAO.save(entity));
     }
 }

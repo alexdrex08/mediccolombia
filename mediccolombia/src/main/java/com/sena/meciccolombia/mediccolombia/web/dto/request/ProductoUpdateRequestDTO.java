@@ -1,4 +1,4 @@
-package com.sena.meciccolombia.mediccolombia.web.dto;
+package com.sena.meciccolombia.mediccolombia.web.dto.request;
 
 import lombok.*;
 
