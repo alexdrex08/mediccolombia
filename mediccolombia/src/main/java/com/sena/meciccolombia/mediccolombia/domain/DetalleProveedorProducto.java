@@ -20,6 +20,7 @@ public class DetalleProveedorProducto implements Serializable{
     @EmbeddedId
     private DetalleId id;
 
+    @Column(name ="precio_unitario")
     private BigDecimal precioUnitario;
 
     @ManyToOne

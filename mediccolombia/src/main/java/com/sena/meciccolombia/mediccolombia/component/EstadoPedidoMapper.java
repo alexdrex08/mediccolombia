@@ -5,7 +5,10 @@ import com.sena.meciccolombia.mediccolombia.domain.EstadoPedido;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.EstadoPedidoRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.EstadoPedidoResponseDTO;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class EstadoPedidoMapper {
 
     public EstadoPedido toEntity(EstadoPedidoRequestDTO dto) {
