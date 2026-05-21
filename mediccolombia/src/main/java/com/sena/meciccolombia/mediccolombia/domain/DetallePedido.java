@@ -23,10 +23,13 @@ public class DetallePedido implements Serializable{
     @Column(name ="id_detalle_pedido")
     private Long id;
 
+    @Column(name ="cantidad")
     private Integer cantidad;
 
+    @Column(name ="precio_unitario")
     private BigDecimal precioUnitario;
 
+    @Column(name ="subtotal")
     private BigDecimal subtotal;
 
     @ManyToOne

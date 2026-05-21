@@ -13,6 +13,7 @@ public interface MovimientoProdDAO extends JpaRepository<MovimientoProd, Long>{
     List<MovimientoProd> findByProductoId(Long productoId);
     List<MovimientoProd> findByUsuarioId(Long usuarioId);
     List<MovimientoProd> findByTipoMovimientoId(Long tipoMovimientoId);
+    boolean existsByPickerChecker(String pickerChecker);
 
     
 }

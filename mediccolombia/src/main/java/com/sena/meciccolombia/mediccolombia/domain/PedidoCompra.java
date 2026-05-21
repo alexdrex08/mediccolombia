@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.annotation.CreatedDate;
+
 @Entity
 @Table(name = "PedidoCompra")
 @Getter
@@ -24,10 +26,14 @@ public class PedidoCompra implements Serializable{
     @Column(name ="id_pedido")
     private Long id;
 
+    @CreatedDate
+    @Column(name ="fecha_pedido")
     private LocalDateTime fechaPedido;
 
+    @Column(name ="total_pedido")
     private BigDecimal totalPedido;
 
+    @Column(name ="observacion")
     private String observacion;
 
     @ManyToOne
