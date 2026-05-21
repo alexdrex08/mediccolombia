@@ -22,7 +22,9 @@ public class DetalleVenta implements Serializable{
     @Column(name ="id_detalle_venta")
     private Long id;
 
+    @Column(name ="cantidad")
     private Integer cantidad;
+    @Column(name ="precio_unitario")
     private BigDecimal precioUnitario;
 
     @ManyToOne

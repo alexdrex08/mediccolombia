@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.annotation.CreatedDate;
+
 @Entity
 @Table(name = "VentaRegistro")
 @Getter
@@ -25,7 +27,11 @@ public class VentaRegistro implements Serializable{
     @Column(name ="id_venta")
     private Long id;
 
+    @Column(name ="fecha_venta")
+    @CreatedDate
     private LocalDateTime fechaVenta;
+
+    @Column(name ="total_venta")
     private BigDecimal totalVenta;
 
     @ManyToOne
@@ -37,6 +43,8 @@ public class VentaRegistro implements Serializable{
     private Usuario usuario;
 
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<DetalleVenta> detalles;
 
 }
