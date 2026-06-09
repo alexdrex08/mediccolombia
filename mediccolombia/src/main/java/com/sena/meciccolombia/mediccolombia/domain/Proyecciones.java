@@ -6,6 +6,8 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.CreatedDate;
+
 @Entity
 @Table(name = "Proyecciones")
 @Getter
@@ -22,16 +24,26 @@ public class Proyecciones implements Serializable{
     @Column(name ="id_proyecciones")
     private Long id;
 
+    @Column(name ="resultado_proyeccion")
     private String resultadoProyeccion;
 
+    @Column(name ="referencia_tipo")
     private String referenciaTipo;
 
+    @Column(name ="pedidos_estimados")
     private Integer pedidosEstimados;
+
+    @CreatedDate
+    @Column(name ="fecha_generacion", nullable = false, updatable = false)
     private LocalDateTime fechaGeneracion;
+
+    @Column(name ="fecha_inicio")
     private LocalDateTime fechaInicio;
+    @Column(name ="fecha_fin")
     private LocalDateTime fechaFin;
 
-    private String unidad_medida;
+    @Column(name ="unidad_medida")
+    private String unidadMedida;
 
     @ManyToOne
     @JoinColumn(name ="metodo_proyeccion_id")

@@ -24,7 +24,10 @@ public class AlertaInv implements Serializable {
     @Column(name="id_alerta")
     private Long id;
 
+    @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
+
+    @Column(name = "tipo_alerta")
     private String tipoAlerta;
 
     @Column(name ="descripcion_alerta", length = 1000)

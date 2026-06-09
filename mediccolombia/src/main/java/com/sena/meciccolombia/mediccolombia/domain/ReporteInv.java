@@ -20,16 +20,20 @@ public class ReporteInv implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name ="id")
     private Long id;
 
+    @Column(name ="fecha_generacion")
     private LocalDateTime fechaGeneracion;
 
+    @Column(name ="tipo_resultado")
     private String tipoResultado;
 
     @Column(name ="url_resultado")
     private String resultado;
 
-    private String tipo_reporte;
+    @Column(name ="tipo_reporte")
+    private String tipoReporte;
 
     @ManyToOne
     @JoinColumn(name = "filtro_busqueda_id")

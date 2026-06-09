@@ -22,6 +22,7 @@ public class MetodoProyeccion implements Serializable{
     @Column(name ="id_metodo_proyeccion")
     private Long id;
 
+    @Column(name ="nombre_metodo")
     private String nombreMetodo;
 
     @OneToMany(mappedBy ="metodoProyeccion", cascade = CascadeType.ALL, orphanRemoval = true)
