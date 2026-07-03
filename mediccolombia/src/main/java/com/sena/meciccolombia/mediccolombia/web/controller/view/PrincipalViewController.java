@@ -1,0 +1,34 @@
+package com.sena.meciccolombia.mediccolombia.web.controller.view;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import com.sena.meciccolombia.mediccolombia.service.AlertaInvService;
+import com.sena.meciccolombia.mediccolombia.service.ProductoService;
+import com.sena.meciccolombia.mediccolombia.service.ProveedorService;
+import com.sena.meciccolombia.mediccolombia.service.ReporteInvService;
+
+import lombok.RequiredArgsConstructor;
+
+@Controller
+@RequiredArgsConstructor
+public class PrincipalViewController {
+
+    private final ProductoService productoService;
+    private final ProveedorService proveedorService;
+    private final AlertaInvService alertaInvService;
+    private final ReporteInvService reporteInvService;
+
+    @GetMapping("/principal")
+    public String principal(Model modelo) {
+
+        modelo.addAttribute("vistaActiva", "principal");
+        modelo.addAttribute("totalProductos", productoService.listarProductos().size());
+        modelo.addAttribute("totalProveedores", proveedorService.listar().size());
+        modelo.addAttribute("totalAlertas", alertaInvService.listar().size());
+        modelo.addAttribute("totalReportes", reporteInvService.listar().size());
+
+        return "principal/principal";
+    }
+}

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Crear Producto - Asuras Col')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5" id="producto-container">
+
+                <!-- ENCABEZADO -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold text-dark mb-0">
+                            <i class="fa-solid fa-circle-plus me-2 text-primary"></i>Nuevo Producto
+                        </h2>
+                        <p class="text-muted small mt-1 mb-0">
+                            Registrado por:
+                            <strong th:text="${nombreUsuario}"></strong>
+                        </p>
+                    </div>
+                    <a th:href="@{/productos}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Volver al inventario
+                    </a>
+                </div>
+
+                <!-- MENSAJES FLASH -->
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="fa-solid fa-circle-check me-2"></i>
+                    <span th:text="${mensaje}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- FORMULARIO PRINCIPAL -->
+                <form th:action="@{/productos/nuevo}" method="post" id="formProducto" novalidate>
+
+                    <!-- SECCIÓN: IDENTIFICACIÓN -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h6 class="fw-bold mb-0 text-primary">
+                                <i class="fa-solid fa-tag me-2"></i>Identificación del Producto
+                            </h6>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-4">
+
+                                <div class="col-md-6">
+                                    <label for="nombreProducto" class="form-label fw-semibold">
+                                        Nombre del producto <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="nombreProducto"
+                                        name="nombreProducto" placeholder="Ej: Amoxicilina 500mg"
+                                        required maxlength="100">
+                                    <div class="form-text">Nombre comercial o farmacéutico completo.</div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="lote" class="form-label fw-semibold">
+                                        Número de lote <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="lote"
+                                        name="lote" placeholder="Ej: L-2024-001"
+                                        required maxlength="50">
+                                    <div class="form-text">Código de trazabilidad del lote.</div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="idCategoria" class="form-label fw-semibold">
+                                        Categoría <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" id="idCategoria" name="idCategoria" required>
+                                        <option value="">Selecciona una categoría...</option>
+                                        <option th:each="cat : ${categorias}"
+                                                th:value="${cat.idCategoria}"
+                                                th:text="${cat.nombreCategoria}"></option>
+                                    </select>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN: CONTROL DE STOCK -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h6 class="fw-bold mb-0 text-primary">
+                                <i class="fa-solid fa-cubes me-2"></i>Control de Stock
+                            </h6>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-4">
+
+                                <div class="col-md-4">
+                                    <label for="stock" class="form-label fw-semibold">
+                                        Stock inicial <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="fa-solid fa-boxes-stacked text-primary"></i>
+                                        </span>
+                                        <input type="number" class="form-control" id="stock"
+                                            name="stock" placeholder="0" required min="0" step="1">
+                                    </div>
+                                    <div class="form-text">Unidades disponibles al ingresar.</div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="stockMinimo" class="form-label fw-semibold">
+                                        Stock mínimo <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="fa-solid fa-triangle-exclamation text-warning"></i>
+                                        </span>
+                                        <input type="number" class="form-control" id="stockMinimo"
+                                            name="stockMinimo" placeholder="0" required min="0" step="1">
+                                    </div>
+                                    <div class="form-text">Umbral para generar alerta de stock bajo.</div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="stockMaximo" class="form-label fw-semibold">
+                                        Stock máximo <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="fa-solid fa-arrow-up text-success"></i>
+                                        </span>
+                                        <input type="number" class="form-control" id="stockMaximo"
+                                            name="stockMaximo" placeholder="0" required min="1" step="1">
+                                    </div>
+                                    <div class="form-text">Capacidad máxima permitida.</div>
+                                </div>
+
+                                <!-- Indicador visual de rangos -->
+                                <div class="col-12" id="indicadorStock" style="display:none;">
+                                    <div class="alert alert-info py-2 mb-0 small">
+                                        <i class="fa-solid fa-circle-info me-1"></i>
+                                        Rango de stock configurado: <strong id="textoRango"></strong>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN: VENCIMIENTO -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h6 class="fw-bold mb-0 text-primary">
+                                <i class="fa-solid fa-calendar-xmark me-2"></i>Fecha de Vencimiento
+                            </h6>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-4 align-items-end">
+
+                                <div class="col-md-4">
+                                    <label for="fechaExpiracion" class="form-label fw-semibold">
+                                        Fecha de expiración <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="datetime-local" class="form-control"
+                                        id="fechaExpiracion" name="fechaExpiracion" required>
+                                    <div class="form-text">Debe ser una fecha futura.</div>
+                                    <div id="feedbackFecha" class="invalid-feedback">
+                                        La fecha de expiración debe ser futura.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div id="diasRestantes" class="card border-0 bg-light p-3" style="display:none;">
+                                        <div class="small text-muted mb-1">Días hasta el vencimiento</div>
+                                        <div class="fw-bold fs-5" id="textoDiasRestantes"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOTONES -->
+                    <div class="d-flex justify-content-end gap-2 mt-2">
+                        <a th:href="@{/productos}" class="btn btn-outline-secondary">
+                            <i class="fa-solid fa-xmark me-1"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4" id="btnGuardar">
+                            <i class="fa-solid fa-floppy-disk me-1"></i>Guardar producto
+                        </button>
+                    </div>
+
+                </form>
+
+            </main>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+    <script>
+        (function () {
+            const stockInput   = document.getElementById('stock');
+            const minimoInput  = document.getElementById('stockMinimo');
+            const maximoInput  = document.getElementById('stockMaximo');
+            const fechaInput   = document.getElementById('fechaExpiracion');
+            const indicador    = document.getElementById('indicadorStock');
+            const textoRango   = document.getElementById('textoRango');
+            const diasCard     = document.getElementById('diasRestantes');
+            const textoDias    = document.getElementById('textoDiasRestantes');
+
+            // ── Indicador de rango de stock ──────────────────────────────
+            function actualizarRango() {
+                const min = parseInt(minimoInput.value);
+                const max = parseInt(maximoInput.value);
+                if (!isNaN(min) && !isNaN(max) && max > 0) {
+                    indicador.style.display = '';
+                    textoRango.textContent = min + ' (mínimo) → ' + max + ' (máximo)';
+
+                    const valido = min < max;
+                    minimoInput.classList.toggle('is-invalid', !valido);
+                    maximoInput.classList.toggle('is-invalid', !valido);
+                    minimoInput.classList.toggle('is-valid', valido);
+                    maximoInput.classList.toggle('is-valid', valido);
+                } else {
+                    indicador.style.display = 'none';
+                }
+            }
+            minimoInput.addEventListener('input', actualizarRango);
+            maximoInput.addEventListener('input', actualizarRango);
+
+            // ── Contador de días hasta vencimiento ───────────────────────
+            fechaInput.addEventListener('change', function () {
+                const seleccionada = new Date(this.value);
+                const ahora = new Date();
+
+                if (seleccionada > ahora) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                    const dias = Math.ceil((seleccionada - ahora) / (1000 * 60 * 60 * 24));
+                    diasCard.style.display = '';
+                    textoDias.textContent = dias + ' día(s)';
+                    textoDias.className = 'fw-bold fs-5 ' + (dias <= 30 ? 'text-warning' : 'text-success');
+                } else {
+                    this.classList.add('is-invalid');
+                    this.classList.remove('is-valid');
+                    diasCard.style.display = 'none';
+                }
+            });
+
+            // ── Validación final antes de enviar ─────────────────────────
+            document.getElementById('formProducto').addEventListener('submit', function (e) {
+                let valido = true;
+
+                // Campos required vacíos
+                this.querySelectorAll('[required]').forEach(campo => {
+                    if (!campo.value.trim()) {
+                        campo.classList.add('is-invalid');
+                        valido = false;
+                    }
+                });
+
+                // Stock min < max
+                const min = parseInt(minimoInput.value) || 0;
+                const max = parseInt(maximoInput.value) || 0;
+                if (min >= max) {
+                    minimoInput.classList.add('is-invalid');
+                    maximoInput.classList.add('is-invalid');
+                    valido = false;
+                }
+
+                // Fecha futura
+                if (fechaInput.value && new Date(fechaInput.value) <= new Date()) {
+                    fechaInput.classList.add('is-invalid');
+                    valido = false;
+                }
+
+                if (!valido) {
+                    e.preventDefault();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+        })();
+    </script>
+</body>
+
+</html>

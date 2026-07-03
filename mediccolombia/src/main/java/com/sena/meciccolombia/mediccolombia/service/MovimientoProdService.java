@@ -13,5 +13,6 @@ public interface MovimientoProdService {
     List<MovimientoProdResponseDTO> listarPorProducto(Long idProducto);
     List<MovimientoProdResponseDTO> listarPorUsuario(Long idUsuario);
     List<MovimientoProdResponseDTO> listarPorTipoMovimiento(Long idTipoMovimiento);
+    List<MovimientoProdResponseDTO> listarPorSigno(int signo);
 
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.sena.meciccolombia.mediccolombia.component.AlertaInvMapper;
 import com.sena.meciccolombia.mediccolombia.dao.AlertaInvDAO;
 import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
+import com.sena.meciccolombia.mediccolombia.service.AlertaInvService;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.AlertaInvResponseDTO;
 
 import lombok.RequiredArgsConstructor;

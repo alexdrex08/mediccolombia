@@ -1,0 +1,56 @@
+<footer th:fragment="footer" class="bg-dark pt-5 border-top text-white"
+        style="border-top-color: #686767 !important;">
+    <div class="container">
+        <div class="row pb-4">
+
+            <!-- CONTACTO RÁPIDO CLIENTE-DESARROLLADOR -->
+            <div class="col-12 col-md-4 mb-4 mb-md-0">
+                <h5 class="fw-bold mb-3">Contacto Rápido</h5>
+                <p class="text-white-50 small">
+                    Suscríbete para recibir notificaciones o envíanos un mensaje corto.
+                </p>
+                <form th:action="@{/contacto}" method="post" class="d-grid gap-2">
+                    <input type="email" name="correo" id="correo" class="form-control" placeholder="Tu correo">
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                </form>
+            </div>
+
+            <!-- INFORMACIÓN PERSONAL Y LABORAL -->
+            <div class="col-12 col-md-4 mb-4 mb-md-0">
+                <h5 class="fw-bold mb-3">Sobre Nosotros</h5>
+                <p class="text-white-50">
+                    Somos una empresa dedicada a ofrecer soluciones digitales. Nuestro compromiso es la
+                    innovación y la calidad en el servicio.
+                </p>
+                <a th:href="@{/nosotros}" class="text-decoration-none d-block mt-3">Leer más...</a>
+            </div>
+
+            <!-- RECURSOS Y POLÍTICAS -->
+            <div class="col-12 col-md-4 mb-4 mb-md-0">
+                <h5 class="fw-bold mb-3">Recursos</h5>
+                <ul class="list-unstyled">
+                    <li><a th:href="@{/faq}" class="text-decoration-none text-white-50">Preguntas Frecuentes</a></li>
+                    <li><a th:href="@{/privacidad}" class="text-decoration-none text-white-50">Política de Privacidad</a></li>
+                    <li><a th:href="@{/terminos}" class="text-decoration-none text-white-50">Términos de Servicio</a></li>
+                </ul>
+
+                <!-- REDES SOCIALES -->
+                <div class="mt-4">
+                    <h6 class="fw-bold">Síguenos:</h6>
+                    <span class="fs-5 me-3"><i class="fa-brands fa-linkedin"></i></span>
+                    <span class="fs-5 me-3"><i class="fa-brands fa-instagram"></i></span>
+                    <span class="fs-5 me-3"><i class="fa-brands fa-square-facebook"></i></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- DERECHOS RESERVADOS -->
+        <div class="row pt-3 border-top">
+            <div class="col-12 text-center text-md-start">
+                <p class="text-white-50 small mb-0">
+                    &copy; 2026 Asuras Col para MedicColombia. Todos los derechos reservados.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>

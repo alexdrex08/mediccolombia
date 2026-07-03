@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Inicio - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header ::  header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+        <div class="page-content-wrapper">
+            <main class="container-fluid py-5 px-4" id="inicio-container">
+
+                <!-- SALUDO INICIAL AL USUARIO -->
+                <section class="text-center mb-5">
+                    <h1 class="fw-bold display-5 text-primary mb-3">¡Bienvenido a <span class="text-dark">Asuras
+                            Col</span>!
+                    </h1>
+                    <p class="lead text-muted">
+                        Tu aliado digital para el control, gestión y seguimiento de inventarios médicos.
+                        Gestiona productos, proveedores y reportes desde un mismo entorno moderno y seguro.
+                    </p>
+                </section>
+
+                <!-- INTRODUCCION Y BIENVENIDA AL SITIO -->
+                <section class="row justify-content-center mb-5">
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm bg-light p-4">
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-heart-pulse fa-3x text-danger mb-3"></i>
+                                <h4 class="fw-bold mb-3">Gestión inteligente de medicamentos</h4>
+                                <p class="text-muted">
+                                    En <strong>Asuras Col</strong> buscamos simplificar tus procesos.
+                                    Aquí podrás registrar productos, supervisar entradas y salidas, generar alertas, y
+                                    crear reportes automáticos sin complicaciones.
+                                </p>
+                                <a th:href="@{/dashboard}" class="btn btn-primary mt-3">
+                                    <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> Ir al Dashboard
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ACCESOS RÁPIDOS A MÓDULOS MAS IMPORTANTES DEL APLICATIVO -->
+                <section class="row text-center g-4 mb-5">
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100 hover-card">
+                            <div class="card-body">
+                                <i class="fa-solid fa-boxes-stacked fa-2x text-primary mb-3"></i>
+                                <h5 class="fw-bold">Inventario</h5>
+                                <p class="text-muted small mb-1">Registra y controla todos tus productos médicos.</p>
+                                <p class="fw-bold text-primary mb-3">
+                                    <span th:text="${totalProductos}"></span> producto(s) registrado(s)
+                                </p>
+                                <a th:href="@{/productos}" class="btn btn-outline-primary btn-sm">Entrar</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100 hover-card">
+                            <div class="card-body">
+                                <i class="fa-solid fa-truck fa-2x text-info mb-3"></i>
+                                <h5 class="fw-bold">Proveedores</h5>
+                                <p class="text-muted small mb-1">Consulta y gestiona tus distribuidores activos.</p>
+                                <p class="fw-bold text-info mb-3">
+                                    <span th:text="${totalProveedores}"></span> proveedor(es) registrado(s)
+                                </p>
+                                <a th:href="@{/proveedores}" class="btn btn-outline-info btn-sm text-dark">Ver
+                                    más</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100 hover-card">
+                            <div class="card-body">
+                                <i class="fa-solid fa-bell fa-2x text-warning mb-3"></i>
+                                <h5 class="fw-bold">Alertas</h5>
+                                <p class="text-muted small mb-1">Supervisa productos por vencer o con bajo stock.</p>
+                                <p class="fw-bold text-warning mb-3">
+                                    <span th:text="${totalAlertas}"></span> alerta(s) activa(s)
+                                </p>
+                                <a th:href="@{/alertas}" class="btn btn-outline-warning btn-sm">Ver alertas</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100 hover-card">
+                            <div class="card-body">
+                                <i class="fa-solid fa-chart-line fa-2x text-success mb-3"></i>
+                                <h5 class="fw-bold">Reportes</h5>
+                                <p class="text-muted small mb-1">Visualiza estadísticas generales del inventario.</p>
+                                <p class="fw-bold text-success mb-3">
+                                    <span th:text="${totalReportes}"></span> reporte(s) generado(s)
+                                </p>
+                                <a th:href="@{/reportes}" class="btn btn-outline-success btn-sm">Ver reportes</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- BLOQUE DE INFORMACIÓN Y MISIÓN DE LA APLICACION -->
+                <section class="row align-items-center my-5">
+                    <div class="col-md-6 mb-4 mb-md-0">
+                        <img th:src="@{/img/ref.jpeg}" alt="Vista previa del sistema"
+                            class="img-fluid rounded shadow-sm">
+                    </div>
+                    <div class="col-md-6">
+                        <h3 class="fw-bold mb-3"><i class="fa-solid fa-circle-info me-2 text-primary"></i>Sobre Asuras
+                            Col
+                        </h3>
+                        <p class="text-muted mb-4">
+                            Este sistema fue diseñado para brindar control total del inventario de medicamentos y
+                            dispositivos médicos.
+                            Su interfaz combina simplicidad y precisión, pensada para mejorar los flujos de trabajo y la
+                            trazabilidad de los procesos.
+                        </p>
+                        <ul class="list-unstyled text-muted small">
+                            <li>✔ Registro rápido de productos</li>
+                            <li>✔ Alertas automáticas de vencimiento</li>
+                            <li>✔ Reportes y análisis exportables</li>
+                            <li>✔ Gestión integral de proveedores</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- BLOQUE FINAL DEL CONTENIDO PRINCIPAL -->
+                <section class="text-center bg-dark text-white rounded py-5 mt-5 shadow-sm">
+                    <h2 class="fw-bold mb-3">“Control y confianza en cada registro”</h2>
+                    <p class="text-white-50 mb-4">
+                        Mantén tu inventario bajo control y optimiza la administración de tus recursos médicos.
+                    </p>
+                    <a th:href="@{/dashboard}" class="btn btn-outline-light btn-lg">
+                        <i class="fa-solid fa-rocket me-2"></i>Comenzar ahora
+                    </a>
+                </section>
+
+            </main>
+        </div>
+    </div>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+</body>
+
+</html>

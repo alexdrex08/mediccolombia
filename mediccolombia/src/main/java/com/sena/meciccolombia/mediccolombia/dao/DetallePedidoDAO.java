@@ -8,7 +8,10 @@ import org.springframework.stereotype.Repository;
 import com.sena.meciccolombia.mediccolombia.domain.DetallePedido;
 
 @Repository
-public interface DetallePedidoDAO extends JpaRepository<DetallePedido, Long>{
- 
+public interface DetallePedidoDAO extends JpaRepository<DetallePedido, Long> {
+
     List<DetallePedido> findByPedidoId(Long pedidoId);
+
+    // Al final, antes del cierre de la interfaz:
+    List<DetallePedido> findByProductoId(Long productoId);
 }

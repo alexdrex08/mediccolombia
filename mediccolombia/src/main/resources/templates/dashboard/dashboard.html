@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Dashboard - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header ::  header}"></header>
+    <div class="d-flex" id="wrapper">
+
+        <!-- SIDEBAR -->
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5" id="inicio-container">
+
+                <!-- TITULO -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="fw-bold text-dark mb-0"><i class="fa-solid fa-chart-line me-2 text-primary"></i>Dashboard
+                        General</h2>
+                    <span class="text-muted small">
+                        Actualizado: <span th:text="${#temporals.format(fechaActualizacion, 'dd/MM/yyyy HH:mm')}"></span>
+                    </span>
+                </div>
+
+                <!-- MÉTRICAS RÁPIDAS -->
+                <div class="row g-4 mb-5">
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm p-3">
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-pills fa-2x text-primary mb-2"></i>
+                                <h5 class="fw-bold mb-1">Productos Totales</h5>
+                                <h2 class="fw-bolder text-dark" th:text="${totalProductos}"></h2>
+                                <p class="small text-muted">Registrados en el sistema</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm p-3">
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-triangle-exclamation fa-2x text-warning mb-2"></i>
+                                <h5 class="fw-bold mb-1">Stock Bajo</h5>
+                                <h2 class="fw-bolder text-dark" th:text="${productosStockBajo}"></h2>
+                                <p class="small text-muted">Productos críticos</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm p-3">
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-clock-rotate-left fa-2x text-danger mb-2"></i>
+                                <h5 class="fw-bold mb-1">Vencidos</h5>
+                                <h2 class="fw-bolder text-dark" th:text="${productosVencidos}"></h2>
+                                <p class="small text-muted">Revisión urgente</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm p-3">
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-truck-field fa-2x text-success mb-2"></i>
+                                <h5 class="fw-bold mb-1">Proveedores Activos</h5>
+                                <h2 class="fw-bolder text-dark" th:text="${totalProveedores}"></h2>
+                                <p class="small text-muted">En operaciones</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRÁFICOS -->
+                <div class="row g-4 mb-5">
+                    <div class="col-lg-6">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-white fw-bold"><i
+                                    class="fa-solid fa-chart-pie me-2 text-primary"></i>Distribución de Stock</div>
+                            <div class="card-body text-center">
+                                <img th:src="@{/img/inventory_status.jpg}" alt="Gráfico de stock"
+                                    class="img-fluid rounded">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-white fw-bold"><i
+                                    class="fa-solid fa-chart-line me-2 text-success"></i>Movimientos del Mes</div>
+                            <div class="card-body text-center">
+                                <img th:src="@{/img/inventory_dashboard_it_transformation_at_workplace_ppt_themes_slide01.jpg}"
+                                    alt="Gráfico movimientos" class="img-fluid rounded">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABLA DE MOVIMIENTOS RECIENTES -->
+                <div class="card shadow-sm border-0 mb-5 dash-table">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa-solid fa-clock me-2 text-secondary"></i>Últimos Movimientos de Inventario
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Responsable</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(ultimosMovimientos)}">
+                                    <td colspan="5" class="text-center text-muted py-4">
+                                        Aún no se han registrado movimientos de inventario.
+                                    </td>
+                                </tr>
+                                <tr th:each="item : ${ultimosMovimientos}">
+                                    <td th:text="${#temporals.format(item.movimiento.fechaMovimiento, 'dd/MM/yyyy HH:mm')}"></td>
+                                    <td>
+                                        <span class="badge"
+                                            th:classappend="${item.entrada} ? 'bg-success' : 'bg-danger'"
+                                            th:text="${item.movimiento.tipoMovimiento}"></span>
+                                    </td>
+                                    <td th:text="${item.movimiento.nombreProducto}"></td>
+                                    <td th:text="${item.movimiento.cantidad}"></td>
+                                    <td th:text="${item.movimiento.nombreUsuario}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- BLOQUE FINAL DE ANÁLISIS -->
+                <div th:class="'alert alert-' + ${recomendacionEstilo} + ' shadow-sm mb-4'">
+                    <i class="fa-solid fa-lightbulb me-2"></i>
+                    <strong>Recomendación:</strong> <span th:text="${recomendacion}"></span>
+                </div>
+            </main>
+        </div>
+    </div>
+    <!-- FOOTER DE LA PAGINA, CIERRE Y FINAL -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

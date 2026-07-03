@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Detalle Entrada - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5">
+
+                <!-- =============================================
+                     ENCABEZADO
+                     ============================================= -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-0">
+                            <i class="fa-solid fa-arrow-up text-primary fs-1 me-3"></i>Detalle de Entrada
+                        </h2>
+                        <p class="text-muted">Registro detallado del ingreso de producto al inventario</p>
+                    </div>
+                    <a th:href="@{/movimientos/entradas}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fa-solid fa-arrow-left me-2"></i> Volver a entradas
+                    </a>
+                </div>
+
+                <div class="row g-4 mb-4">
+
+                    <div class="col-md-3">
+                        <div class="card p-3 shadow-sm border-0 h-100">
+                            <h6 class="fw-bold text-muted small text-uppercase">ID Movimiento</h6>
+                            <p class="fs-4 fw-bold text-primary mb-0">
+                                #<span th:text="${movimiento.id}"></span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card p-3 shadow-sm border-0 h-100">
+                            <h6 class="fw-bold text-muted small text-uppercase">Fecha de registro</h6>
+                            <p class="fs-6 fw-bold mb-0"
+                                th:text="${#temporals.format(movimiento.fechaMovimiento, 'dd/MM/yyyy')}"></p>
+                            <p class="text-muted small mb-0"
+                                th:text="${#temporals.format(movimiento.fechaMovimiento, 'HH:mm')} + ' hrs'"></p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card p-3 shadow-sm border-0 h-100">
+                            <h6 class="fw-bold text-muted small text-uppercase">Registrado por</h6>
+                            <p class="fw-bold mb-0" th:text="${movimiento.nombreUsuario}"></p>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <div class="card p-3 shadow-sm border-0 h-100">
+                            <h6 class="fw-bold text-muted small text-uppercase">Tipo de entrada</h6>
+                            <span class="badge bg-primary px-3 py-2 fs-6" th:text="${movimiento.tipoMovimiento}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4 border-0 shadow-sm">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa-solid fa-boxes-stacked me-2 text-secondary"></i> Producto ingresado
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th class="text-center">Cantidad ingresada</th>
+                                        <th class="text-center">Stock resultante</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-bold" th:text="${movimiento.nombreProducto}"></td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success fs-6"
+                                                th:text="'+ ' + ${movimiento.cantidad} + ' ud'"></span>
+                                        </td>
+
+                                        <td class="text-center">
+                                            <span class="fw-bold"
+                                                th:text="${movimiento.stockResultante} + ' ud'"></span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4 border-0 shadow-sm">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa-solid fa-truck me-2 text-secondary"></i> Pedido de origen
+                    </div>
+                    <div class="card-body">
+
+                        <div id="infoPedido" th:attr="data-picker=${movimiento.pickerChecker}">
+
+
+                            <div id="pedidoCargando" class="text-muted">
+                                <i class="fa-solid fa-spinner fa-spin me-2"></i>Cargando información del pedido...
+                            </div>
+
+                            <!-- Contenido que aparece cuando el AJAX responde -->
+                            <div id="pedidoContenido" class="row g-4" style="display:none;">
+                                <div class="col-md-3">
+                                    <p class="fw-bold mb-1 text-muted small text-uppercase">ID Pedido</p>
+                                    <p class="fw-bold mb-0" id="pedidoId">—</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="fw-bold mb-1 text-muted small text-uppercase">Proveedor</p>
+                                    <p class="fw-bold mb-0" id="pedidoProveedor">—</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="fw-bold mb-1 text-muted small text-uppercase">Estado del pedido</p>
+                                    <span class="badge bg-success px-2 py-1" id="pedidoEstado">—</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="fw-bold mb-1 text-muted small text-uppercase">Total del pedido</p>
+                                    <p class="fw-bold mb-0" id="pedidoTotal">—</p>
+                                </div>
+                            </div>
+
+                            <div id="pedidoNoDisponible" style="display:none;">
+                                <span class="text-muted fst-italic">
+                                    <i class="fa-solid fa-circle-info me-1"></i>
+                                    Este movimiento no proviene de un pedido de compra registrado.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4 border-0 shadow-sm">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa-solid fa-tag me-2 text-secondary"></i> Información del movimiento
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <p class="fw-bold mb-1 text-muted small text-uppercase">Motivo / Descripción</p>
+                                <!-- campo "movimiento" = motivo_repor en la entidad -->
+                                <p class="mb-0" th:text="${movimiento.movimiento} ?: 'Sin descripción registrada'"></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="fw-bold mb-1 text-muted small text-uppercase">Picker Checker</p>
+                                <code class="text-primary" th:text="${movimiento.pickerChecker} ?: 'No aplica'"></code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =============================================
+                     OTROS MOVIMIENTOS DEL MISMO PRODUCTO — AJAX
+                     ============================================= -->
+                <div class="card border-0 shadow-sm mb-5">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa-solid fa-clock-rotate-left me-2 text-secondary"></i> Contexto del producto
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <i class="fa-solid fa-box me-2 text-primary"></i>
+                                Producto: <strong th:text="${movimiento.nombreProducto}"></strong>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa-solid fa-layer-group me-2 text-success"></i>
+                                Stock luego de este ingreso:
+                                <strong th:text="${movimiento.stockResultante} + ' unidades'"></strong>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa-solid fa-calendar me-2 text-muted"></i>
+                                Registrada el
+                                <strong
+                                    th:text="${#temporals.format(movimiento.fechaMovimiento, 'dd/MM/yyyy')}"></strong>
+                                a las
+                                <strong
+                                    th:text="${#temporals.format(movimiento.fechaMovimiento, 'HH:mm')} + ' hrs'"></strong>
+                            </li>
+                        </ul>
+                        <div class="mt-3">
+                            <a th:href="@{/productos}" class="btn btn-sm btn-outline-primary">
+                                <i class="fa-solid fa-arrow-right me-1"></i>
+                                Ver producto en inventario
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+
+    <script>
+        // =============================================
+        // AJAX — Cargar información del pedido origen
+        // =============================================
+        (async function cargarPedidoOrigen() {
+            const infoPedido = document.getElementById('infoPedido');
+            const picker = infoPedido.dataset.picker;
+
+            // Si no hay pickerChecker o no tiene formato PRES, mostramos mensaje
+            if (!picker || !picker.startsWith('PRES')) {
+                document.getElementById('pedidoCargando').style.display = 'none';
+                document.getElementById('pedidoNoDisponible').style.display = 'block';
+                return;
+            }
+            const match = picker.match(/^PRES(\d+)P/);
+            if (!match) {
+                document.getElementById('pedidoCargando').style.display = 'none';
+                document.getElementById('pedidoNoDisponible').style.display = 'block';
+                return;
+            }
+
+            const idPedido = match[1];
+
+            try {
+                // Llamando al RestController existente: GET /api/pedidos/{id}
+                const res = await fetch(`/api/pedidos/${idPedido}`);
+                if (!res.ok) throw new Error('Pedido no encontrado');
+                const pedido = await res.json();
+
+                document.getElementById('pedidoId').textContent = '#' + pedido.id;
+                document.getElementById('pedidoProveedor').textContent = pedido.nombreProveedor;
+                document.getElementById('pedidoEstado').textContent = pedido.estadoPedido;
+                document.getElementById('pedidoTotal').textContent =
+                    '$ ' + Number(pedido.totalPedido).toLocaleString('es-CO');
+
+                document.getElementById('pedidoCargando').style.display = 'none';
+                document.getElementById('pedidoContenido').style.display = 'flex';
+
+            } catch (e) {
+                document.getElementById('pedidoCargando').style.display = 'none';
+                document.getElementById('pedidoNoDisponible').style.display = 'block';
+                console.error('Error cargando pedido origen:', e);
+            }
+        })();
+    </script>
+
+</body>
+
+</html>

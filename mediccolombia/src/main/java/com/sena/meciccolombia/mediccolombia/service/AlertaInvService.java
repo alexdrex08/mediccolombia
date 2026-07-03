@@ -1,4 +1,4 @@
-package com.sena.meciccolombia.mediccolombia.service.impl;
+package com.sena.meciccolombia.mediccolombia.service;
 
 import java.util.List;
 

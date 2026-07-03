@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link th:href="@{/css/login.css}" rel="stylesheet">
+    <title>Recuperar Contraseña - Asuras Col</title>
+</head>
+
+<body>
+    <div class="login-container">
+
+        <div class="login-form">
+            <div class="card shadow-sm p-4" style="width:100%; max-width:420px;">
+
+                <div class="text-center mb-4">
+                    <img th:src="@{/img/logo_prototipo.png}" alt="Logo" style="max-width:70px;">
+                    <h4 class="fw-bold mt-2">Recuperar contraseña</h4>
+                    <p class="text-muted small" id="subtitulo">Paso 1 de 2 — Verifica tu identidad</p>
+                </div>
+
+                <!-- Barra de progreso — 2 pasos -->
+                <div class="d-flex align-items-center mb-4 px-2 gap-2">
+                    <div class="text-center" style="flex:0 0 auto;">
+                        <div id="dot1"
+                            class="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-1"
+                            style="width:28px; height:28px; color:white; font-size:0.8rem; font-weight:bold;">1</div>
+                        <small class="text-muted" style="font-size:0.7rem;">Identidad</small>
+                    </div>
+                    <div style="flex:1; height:2px; background:#dee2e6; margin-bottom:1.2rem;"></div>
+                    <div class="text-center" style="flex:0 0 auto;">
+                        <div id="dot2"
+                            class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto mb-1"
+                            style="width:28px; height:28px; color:white; font-size:0.8rem; font-weight:bold;">2</div>
+                        <small class="text-muted" style="font-size:0.7rem;">Nueva clave</small>
+                    </div>
+                </div>
+
+                <!-- Mensajes flash desde el controller (errores de servidor) -->
+                <div th:if="${error}" class="alert alert-danger py-2 mb-3">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    <span th:text="${error}"></span>
+                </div>
+
+                <!-- Mensaje de error AJAX (JS) -->
+                <div id="mensajeError" class="alert alert-danger py-2 mb-3 d-none">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    <span id="textoError"></span>
+                </div>
+
+                <!-- ========================
+                     PASO 1 — Número de documento + token
+                     ======================== -->
+                <div id="paso1">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Número de documento</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-id-card"></i></span>
+                            <input type="text" id="inputIdentificacion" class="form-control"
+                                placeholder="Ej: 1234567890">
+                        </div>
+                        <div class="form-text">El número de documento con el que te registraste.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Token de recuperación</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+                            <input type="text" id="inputToken" class="form-control"
+                                placeholder="Token entregado por el administrador">
+                            <button type="button" class="btn btn-outline-secondary"
+                                onclick="toggleVisibilidad('inputToken', this)">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="form-text">
+                            <i class="fa-solid fa-circle-info me-1 text-muted"></i>
+                            Solicita el token al administrador del sistema.
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary w-100" onclick="verificarPaso1()">
+                        <i class="fa-solid fa-arrow-right me-2"></i>Verificar y continuar
+                    </button>
+                </div>
+
+                <!-- ========================
+                     PASO 2 — Nueva contraseña
+                     ======================== -->
+                <div id="paso2" style="display:none;">
+
+                    <div class="alert alert-success py-2 mb-3">
+                        <i class="fa-solid fa-shield-halved me-2"></i>
+                        Identidad verificada. Elige tu nueva contraseña.
+                    </div>
+
+                    <form th:action="@{/auth/cambiar-contrasena-recuperacion}" method="post">
+
+                        <!-- Campos ocultos — se pueblan desde JS en verificarPaso1() -->
+                        <input type="hidden" name="identificacion" id="hiddenIdentificacion">
+                        <input type="hidden" name="token" id="hiddenToken">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nueva contraseña</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                                <input type="password" name="nuevaContrasena" id="inputNueva" class="form-control"
+                                    placeholder="••••••••" minlength="6" required>
+                                <button type="button" class="btn btn-outline-secondary"
+                                    onclick="toggleVisibilidad('inputNueva', this)">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Confirmar contraseña</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                                <input type="password" name="confirmarContrasena" id="inputConfirmar"
+                                    class="form-control" placeholder="••••••••" required>
+                                <button type="button" class="btn btn-outline-secondary"
+                                    onclick="toggleVisibilidad('inputConfirmar', this)">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                            <div id="errorConfirmar" class="text-danger small mt-1" style="display:none;">
+                                Las contraseñas no coinciden.
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary" onclick="volverPaso1()">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <button type="submit" class="btn btn-success flex-grow-1">
+                                <i class="fa-solid fa-key me-2"></i>Cambiar contraseña
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+                <div class="text-center mt-3">
+                    <a th:href="@{/auth/login}" class="small text-decoration-none text-muted">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Volver al inicio de sesión
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- BANNER -->
+        <div class="banner position-relative">
+            <div class="banner-content">
+                <img th:src="@{/img/logo_prototipo.png}" alt="Logo" style="max-width:100px;" class="mb-3">
+                <h2 class="fw-bold">Asuras Col</h2>
+                <p class="lead fst-italic">"Control y confianza en cada registro"</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+        async function verificarPaso1() {
+            const identificacion = document.getElementById('inputIdentificacion').value.trim();
+            const token = document.getElementById('inputToken').value.trim();
+
+            if (!identificacion) { mostrarError('Ingresa tu número de documento.'); return; }
+            if (!token) { mostrarError('Ingresa el token de recuperación.'); return; }
+
+            try {
+                // Verificar que el documento existe en BD
+                console.log("verificado documento:" + identificacion);
+                const res = await fetch(
+                    `/auth/api/verificar-token?identificacion=${encodeURIComponent(identificacion)}&token=${encodeURIComponent(token)}`,
+                    { headers: { 'Accept': 'application/json' } }
+                );
+
+                const contentType = res.headers.get('Content-Type') || '';
+                if (contentType.includes('text/html')) {
+                    mostrarError('Error de sesión. Recarga la página');
+                    return;
+                }
+                if (res.status === 403) {
+                    mostrarError('Token de recuperación inválido. Contacta al administrador.');
+                    return;
+                }
+                if (res.status === 404) {
+                    mostrarError('No encontramos un usuario con ese número de documento.');
+                    return;
+                }
+
+                if (!res.ok) {
+                    mostrarError('No encontramos un usuario con ese número de documento.');
+                    return;
+                }
+
+                // Documento encontrado — pasar datos a campos ocultos y mostrar paso 2
+                document.getElementById('hiddenIdentificacion').value = identificacion;
+                document.getElementById('hiddenToken').value = token;
+                ocultarError();
+                irPaso(2);
+
+            } catch (e) {
+                mostrarError('Error de conexión. Intenta de nuevo.');
+                console.error(e);
+            }
+        }
+
+        // =============================================
+        // NAVEGACIÓN
+        // =============================================
+        function irPaso(num) {
+            document.getElementById('paso1').style.display = num === 1 ? 'block' : 'none';
+            document.getElementById('paso2').style.display = num === 2 ? 'block' : 'none';
+
+            const dot1 = document.getElementById('dot1');
+            const dot2 = document.getElementById('dot2');
+            dot1.className = `rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1 ${num >= 1 ? 'bg-primary' : 'bg-secondary'}`;
+            dot2.className = `rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1 ${num >= 2 ? 'bg-primary' : 'bg-secondary'}`;
+
+            const subtitulos = {
+                1: 'Paso 1 de 2 — Verifica tu identidad',
+                2: 'Paso 2 de 2 — Nueva contraseña'
+            };
+            document.getElementById('subtitulo').textContent = subtitulos[num];
+        }
+
+        function volverPaso1() {
+            ocultarError();
+            irPaso(1);
+        }
+
+        // =============================================
+        // VALIDACIÓN DEL FORMULARIO PASO 2
+        // =============================================
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('#paso2 form');
+            if (!form) return;
+
+            form.addEventListener('submit', function (e) {
+                const nueva = document.getElementById('inputNueva').value;
+                const confirmar = document.getElementById('inputConfirmar').value;
+                const errDiv = document.getElementById('errorConfirmar');
+                if (nueva !== confirmar) {
+                    e.preventDefault();
+                    errDiv.style.display = 'block';
+                    document.getElementById('inputConfirmar').classList.add('is-invalid');
+                } else {
+                    errDiv.style.display = 'none';
+                }
+            });
+
+            document.getElementById('inputConfirmar').addEventListener('input', function () {
+                const nueva = document.getElementById('inputNueva').value;
+                const errDiv = document.getElementById('errorConfirmar');
+                if (this.value && this.value !== nueva) {
+                    errDiv.style.display = 'block';
+                    this.classList.add('is-invalid');
+                } else {
+                    errDiv.style.display = 'none';
+                    this.classList.remove('is-invalid');
+                }
+            });
+        });
+
+        // =============================================
+        // UTILIDADES
+        // =============================================
+        function mostrarError(msg) {
+            const el = document.getElementById('mensajeError');
+            document.getElementById('textoError').textContent = msg;
+            el.classList.remove('d-none');
+        }
+
+        function ocultarError() {
+            document.getElementById('mensajeError').classList.add('d-none');
+        }
+
+        function toggleVisibilidad(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password' || input.type === 'text') {
+                const esPassword = input.type === 'password';
+                input.type = esPassword ? 'text' : 'password';
+                icon.classList.toggle('fa-eye', !esPassword);
+                icon.classList.toggle('fa-eye-slash', esPassword);
+            }
+        }
+    </script>
+</body>
+
+</html>

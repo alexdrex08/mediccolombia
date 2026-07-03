@@ -45,6 +45,7 @@ public class VentaRegistroMapper {
                                 .fechaVenta(LocalDateTime.now())
                                 .cliente(cliente)
                                 .usuario(usuario)
+                                .medioPago(dto.getMedioPago())
                                 .totalVenta(BigDecimal.ZERO)
                             .build();
     }
@@ -54,8 +55,10 @@ public class VentaRegistroMapper {
                                         .id(ventaRegistro.getId())
                                         .fechaVenta(ventaRegistro.getFechaVenta())
                                         .nombreCliente(ventaRegistro.getCliente().getNombreCliente())
+                                        .documentoCliente(ventaRegistro.getCliente().getIdentificacion())
                                         .nombreUsuario(ventaRegistro.getUsuario().getNombre())
                                         .totalVenta(ventaRegistro.getTotalVenta())
+                                        .medioPago(ventaRegistro.getMedioPago())
                                         .detalles(detalles)
                                         .build();
     }

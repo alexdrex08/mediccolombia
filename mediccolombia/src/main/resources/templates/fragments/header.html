@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <title>Plantilla</title>
+
+<body>
+
+    <header th:fragment="header" role="banner">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+            <div class="container-fluid">
+
+                <!-- LOGO + NOMBRE -->
+                <a class="navbar-brand d-flex align-items-center" th:href="@{/dashboard}">
+                    <img th:src="@{/img/logo_prototipo.png}" alt="Logo" style="max-height:40px;" class="me-2">
+
+                    <span class="fw-bold">Asuras Col</span>
+                </a>
+
+                <!-- BOTONES TOGGLE -->
+                <div class="d-flex align-items-center collapso">
+
+                    <button class="btn me-2 buttonSidebar" id="sidebarToggle" title="Mostrar menú lateral">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                </div>
+
+                <!-- CONTENIDO NAV -->
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/principal}">
+                                <i class="fa-solid fa-house me-1"
+                                th:classappend="${vistaActiva == 'principal'} ? 'active' : ''"
+                                ></i>Inicio
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/dashboard}">
+                                <i class="fa-solid fa-chart-line me-1"
+                                th:classappend="${vistaActiva == 'dashboard'} ? 'active' : ''"
+                                ></i>Dashboard
+                            </a>
+                        </li>
+
+                        <!-- INVENTARIO -->
+                        <li class="nav-item dropdown">
+
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownInventario" role="button"
+                                data-bs-toggle="dropdown">
+
+                                <i class="fa-solid fa-boxes-stacked me-1"></i>
+                                Inventario
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-dark">
+
+                                <li>
+                                    <a class="dropdown-item" th:href="@{/productos}">
+                                        Ver productos
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item" th:href="@{/movimientos/entradas}">
+                                        Entradas
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item" th:href="@{/movimientos/salidas}">
+                                        Salidas
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item" th:href="@{/reportes}">
+                                        Reportes
+                                    </a>
+                                </li>
+
+                            </ul>
+
+                        </li>
+
+                        <!-- PERFIL -->
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/perfil}">
+                                <i class="fa-solid fa-user me-1"
+                                th:classappend="${vistaActiva == 'perfil'} ? 'active' : ''"
+                                ></i>
+                                Perfil
+                            </a>
+                        </li>
+
+                        <!-- CONFIGURACIÓN -->
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/configuracion}">
+                                <i class="fa-solid fa-gear me-1"
+                                th:classappend="${vistaActiva == 'configuracion'} ? 'active' : ''"
+                                ></i>
+                                Configuración
+                            </a>
+                        </li>
+
+                        <!-- CERRAR SESIÓN -->
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" th:href="@{/logout}">
+                                <i class="fa-solid fa-right-from-bracket me-1"></i>
+                                Cerrar sesión
+                            </a>
+                        </li>
+
+                    </ul>
+
+                    <!-- BÚSQUEDA -->
+                    <form class="d-flex">
+
+                        <input class="form-control me-2" type="search" placeholder="Buscar...">
+
+                        <button class="btn btn-outline-success" type="submit">
+
+                            <i class="fa-solid fa-magnifying-glass"></i>
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+        </nav>
+    </header>
+
+</body>
+
+</html>

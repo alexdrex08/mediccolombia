@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Mi Perfil - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5">
+
+                <!-- TÍTULO -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="fw-bold">
+                        <i class="fa-solid fa-user me-3 fs-1 text-secondary"></i>Perfil de Usuario
+                    </h2>
+                </div>
+
+                <!-- Mensajes flash -->
+                <div th:if="${mensaje}" class="alert alert-success py-2 mb-3">
+                    <i class="fa-solid fa-circle-check me-2"></i>
+                    <span th:text="${mensaje}"></span>
+                </div>
+                <div th:if="${error}" class="alert alert-danger py-2 mb-3">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    <span th:text="${error}"></span>
+                </div>
+
+                <div class="row g-4">
+
+                    <!-- =============================================
+                         COLUMNA IZQUIERDA
+                         ============================================= -->
+                    <div class="col-lg-3">
+                        <div class="card shadow-sm">
+                            <div class="card-body text-center">
+                                <img th:src="@{/img/avatar-placeholder.webp}" class="rounded-circle mb-3" width="110"
+                                    height="110" alt="Avatar">
+
+                                <h5 class="fw-bold mb-0" th:text="${usuario.nombre}">—</h5>
+                                <small class="text-muted" th:text="${usuario.rol}">—</small>
+
+                                <hr>
+
+                                <div class="text-start small">
+                                    <p class="mb-1">
+                                        <strong>Estado:</strong>
+                                        <span
+                                            th:if="${usuario.estadoUsuario != null and !#lists.isEmpty(usuario.estadoUsuario)}"
+                                            th:text="${usuario.estadoUsuario[#lists.size(usuario.estadoUsuario) - 1].tipoEstado}"
+                                            class="badge bg-success"></span>
+                                        <span
+                                            th:if="${usuario.estadoUsuario == null or #lists.isEmpty(usuario.estadoUsuario)}"
+                                            class="badge bg-secondary">Sin estado</span>
+                                    </p>
+                                    <p class="mb-1">
+                                        <strong>Correo:</strong><br>
+                                        <span th:text="${usuario.correo} ?: 'No registrado'" class="text-muted"></span>
+                                    </p>
+                                </div>
+
+                                <hr>
+
+                                <a th:href="@{/auth/cambiar}"
+                                    class="btn btn-sm btn-outline-secondary w-100">
+                                    <i class="fa-solid fa-lock me-1"></i> Cambiar contraseña
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Estadísticas -->
+                        <div class="card shadow-sm mt-4">
+                            <div class="card-body">
+                                <h6 class="fw-bold mb-3">Estadísticas del Usuario</h6>
+                                <p class="mb-1">Movimientos: <strong th:text="${totalMovimientos} ?: '0'"></strong></p>
+                                <p class="mb-1">Ventas: <strong th:text="${totalVentas} ?: '0'"></strong></p>
+                                <p class="mb-1">Entradas: <strong th:text="${totalEntradas} ?: '0'"></strong></p>
+                                <p class="mb-1">Salidas: <strong th:text="${totalSalidas} ?: '0'"></strong></p>
+                                <hr>
+                                <small class="text-muted">Historial asociado al usuario.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- =============================================
+                         COLUMNA DERECHA
+                         ============================================= -->
+                    <div class="col-lg-9">
+
+                        <!-- INFORMACIÓN PERSONAL -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0">Información Personal</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="fw-bold small text-muted text-uppercase">Nombre completo</label>
+                                        <p class="mb-0" th:text="${usuario.nombre} ?: 'No registrado'"></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="fw-bold small text-muted text-uppercase">Rol en el sistema</label>
+                                        <p class="mb-0">
+                                            <span class="badge bg-dark fs-6"
+                                                th:text="${usuario.rol} ?: 'Sin rol asignado'"></span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="fw-bold small text-muted text-uppercase">Correo</label>
+                                        <p class="mb-0" th:text="${usuario.correo} ?: 'No registrado'"></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="fw-bold small text-muted text-uppercase">ID de usuario</label>
+                                        <p class="mb-0 text-muted">#<span th:text="${usuario.id}"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- HISTORIAL DE ESTADOS -->
+                        <div class="card shadow-sm mb-4">
+                            <div
+                                class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Historial de Estados</h5>
+                                <span class="badge bg-light text-dark"
+                                    th:text="${#lists.size(usuario.estadoUsuario)} + ' registros'"></span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div
+                                    th:if="${usuario.estadoUsuario != null and !#lists.isEmpty(usuario.estadoUsuario)}">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Estado</th>
+                                                <th>Desde</th>
+                                                <th>Hasta</th>
+                                                <th>Observación</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="estado : ${usuario.estadoUsuario}">
+                                                <td>
+                                                    <span class="badge bg-primary"
+                                                        th:text="${estado.tipoEstado}"></span>
+                                                </td>
+                                                <td th:text="${#temporals.format(estado.fechaInicio, 'dd/MM/yyyy')}">
+                                                </td>
+                                                <td>
+                                                    <span th:if="${estado.fechaFin != null}"
+                                                        th:text="${#temporals.format(estado.fechaFin, 'dd/MM/yyyy')}"></span>
+                                                    <span th:if="${estado.fechaFin == null}"
+                                                        class="badge bg-success">Activo</span>
+                                                </td>
+                                                <td class="text-muted small" th:text="${estado.observacion} ?: '—'">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div th:if="${usuario.estadoUsuario == null or #lists.isEmpty(usuario.estadoUsuario)}"
+                                    class="text-center text-muted py-4">
+                                    <i class="fa-solid fa-circle-info me-2"></i>Sin historial de estados registrado
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ACTIVIDAD RECIENTE -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-dark text-white">
+                                <h5 class="mb-0">Actividad Reciente</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div th:if="${actividadReciente != null and !#lists.isEmpty(actividadReciente)}">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Tipo</th>
+                                                <th>Producto</th>
+                                                <th class="text-center">Cantidad</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="mov : ${actividadReciente}">
+                                                <td
+                                                    th:text="${#temporals.format(mov.fechaMovimiento, 'dd/MM/yyyy HH:mm')}">
+                                                </td>
+                                                <td>
+                                                    <span
+                                                        th:classappend="${mov.tipoMovimiento != null and mov.tipoMovimiento.contains('Compra')} ? 'bg-primary' : 'bg-danger'"
+                                                        class="badge" th:text="${mov.tipoMovimiento}"></span>
+                                                </td>
+                                                <td th:text="${mov.nombreProducto}"></td>
+                                                <td class="text-center fw-bold" th:text="${mov.cantidad} + ' ud'"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div th:if="${actividadReciente == null or #lists.isEmpty(actividadReciente)}"
+                                    class="text-center text-muted py-4">
+                                    <i class="fa-solid fa-clock me-2"></i>Sin actividad reciente registrada
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white text-end"
+                                th:if="${actividadReciente != null and !#lists.isEmpty(actividadReciente)}">
+                                <a th:href="@{/movimientos}" class="btn btn-sm btn-outline-secondary">
+                                    Ver todos los movimientos
+                                </a>
+                            </div>
+                        </div>
+                        <!-- seccion para el administrador  -->
+                        <div th:if="${esAdmin}" class="card shadow-sm border-warning mb-4">
+                            <div
+                                class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="fa-solid fa-users-gear me-2"></i>Gestión de Usuarios
+                                </h5>
+                                
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Nombre</th>
+                                                <th>Correo</th>
+                                                <th>Documento</th>
+                                                <th class="text-center">Rol</th>
+                                                <th class="text-center">Acción</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="u : ${todosUsuarios}">
+                                                <td class="text-muted small">#<span th:text="${u.id}"></span></td>
+                                                <td class="fw-bold" th:text="${u.nombre}"></td>
+                                                <td class="text-muted small" th:text="${u.correo}"></td>
+                                                <td class="text-muted small" th:text="${u.identificacion} ?: '—'"></td>
+                                                <td class="text-center">
+                                                    <span
+                                                        th:classappend="${u.rol == 'ADMIN'} ? 'bg-dark' : (${u.rol == 'FARMACEUTICO'} ? 'bg-info text-dark' : 'bg-secondary')"
+                                                        class="badge" th:text="${u.rol}"></span>
+                                                </td>
+                                                <td class="text-center">
+
+                                                    <button class="btn btn-sm btn-outline-warning"
+                                                        th:attr="data-id=${u.id}, data-nombre=${u.nombre}"
+                                                        onclick="abrirModalEstado(this)">
+                                                        <i class="fa-solid fa-user-gear me-1"></i>Estado
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- seccion oculta solo para el administrador -->
+    <div th:if="${esAdmin}">
+        <div class="modal fade" id="modalEstado" tabindex="-1" aria-labelledby="modalEstadoLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title" id="modalEstadoLabel">
+                            <i class="fa-solid fa-user-gear me-2"></i>
+                            Cambiar estado de: <strong id="modalNombreUsuario"></strong>
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <!-- mapeamos los estados -->
+                    <form id="formEstado" method="post" th:action="@{/perfil/usuarios/0/estado}">
+
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Tipo de estado</label>
+                                <select name="idTipoEstado" class="form-select" required>
+                                    <option value="">Seleccionar estado...</option>
+                                    <!-- tipos de estado de los usuarios -->
+                                    <option th:each="te : ${tiposEstado}" th:value="${te.id}"
+                                        th:text="${te.nombreTipo}"></option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Fecha de inicio</label>
+                                <!-- fecha -->
+                                <input type="datetime-local" name="fechaInicio" class="form-control" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    Fecha de fin
+                                    <span class="text-muted small fw-normal">(opcional)</span>
+                                </label>
+                                <input type="datetime-local" name="fechaFin" class="form-control">
+                                <div class="form-text">
+                                    Dejar vacío si el estado es indefinido o activo sin fecha límite.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    Observación
+                                    <span class="text-muted small fw-normal">(opcional)</span>
+                                </label>
+                                <textarea name="observacion" class="form-control" rows="2"
+                                    placeholder="Ej: Usuario suspendido por inactividad..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-warning text-dark fw-bold">
+                                <i class="fa-solid fa-floppy-disk me-1"></i>Guardar estado
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+
+    <script th:if="${esAdmin}">
+        function abrirModalEstado(btn) {
+            const id = btn.dataset.id;
+            const nombre = btn.dataset.nombre;
+
+            // Mostrar nombre en el título del modal
+            document.getElementById('modalNombreUsuario').textContent = nombre;
+
+
+            document.getElementById('formEstado').action = `/perfil/usuarios/${id}/estado`;
+
+            //limpiar todos los cmapos
+            document.getElementById('formEstado').reset();
+
+            const ahora = new Date();
+            const fechaLocal = ahora.toISOString().slice(0, 16);
+            document.querySelector('input[name="fechaInicio"]').value = fechaLocal;
+
+            // Mostrar el modal
+            new bootstrap.Modal(document.getElementById('modalEstado')).show();
+        }
+    </script>
+
+</body>
+
+</html>

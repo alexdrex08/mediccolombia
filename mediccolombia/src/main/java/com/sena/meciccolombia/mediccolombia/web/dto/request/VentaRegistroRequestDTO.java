@@ -13,6 +13,7 @@ public class VentaRegistroRequestDTO {
 
     private Long idCliente;
     private Long idUsuario;
+    private String medioPago;
     private List<DetalleVentaRequestDTO> detalles;
     
 }

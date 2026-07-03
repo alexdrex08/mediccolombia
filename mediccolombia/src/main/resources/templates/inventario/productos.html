@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Productos - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header ::  header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5" id="inicio-container">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="fw-bold text-dark mb-0"><i
+                            class="fa-solid fa-boxes-stacked me-2 text-primary"></i>Gestión
+                        de Inventario</h2>
+                    <span class="text-muted small">
+                        Actualizado: <span
+                            th:text="${#temporals.format(fechaActualizacion, 'dd/MM/yyyy HH:mm')}"></span>
+                    </span>
+                </div>
+
+                <div class="row g-4 mb-4">
+
+                    <div class="col-12 col-md-4">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="fa-solid fa-bell text-danger fs-1 me-3"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-1">Alertas activas</h5>
+                                    <p class="text-muted small mb-0">
+                                        <span th:text="${totalAlertas}"></span> alerta(s) registrada(s) en total
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="fa-solid fa-box-open text-primary fs-1 me-3"></i>
+                                <div th:if="${productoMenorStock != null}">
+                                    <h5 class="fw-bold mb-1">Producto con menor stock</h5>
+                                    <p class="text-muted small mb-0"
+                                        th:text="${productoMenorStock.nombreProducto} + ' (Stock: ' + ${productoMenorStock.stock} + ' ud)'">
+                                    </p>
+                                </div>
+                                <div th:if="${productoMenorStock == null}">
+                                    <h5 class="fw-bold mb-1">Producto con menor stock</h5>
+                                    <p class="text-muted small mb-0">Aún no hay productos registrados</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="fa-solid fa-chart-pie text-success fs-1 me-3"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-1">Reportes</h5>
+                                    <p class="text-muted small mb-2">
+                                        <span th:text="${totalReportes}"></span> reporte(s) generado(s)
+                                    </p>
+                                    <a th:href="@{/reportes}" class="btn btn-sm btn-outline-success">
+                                        Ver reportes
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="fa-solid fa-arrow-up text-primary fs-1 me-3"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-1">Registrar Entrada</h5>
+                                    <p class="text-muted small mb-2">
+                                        <span th:text="${totalEntradas}"></span> entrada(s) registrada(s)
+                                    </p>
+                                    <a th:href="@{/movimientos/entradas}" class="btn btn-sm btn-outline-primary">
+                                        Entradas
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="fa-solid fa-arrow-down text-warning fs-1 me-3"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-1">Registrar Salida</h5>
+                                    <p class="text-muted small mb-2">
+                                        <span th:text="${totalSalidas}"></span> salida(s) registrada(s)
+                                    </p>
+                                    <a th:href="@{/movimientos/salidas}"
+                                        class="btn btn-sm btn-outline-warning text-dark">
+                                        Salidas
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="fa-solid fa-triangle-exclamation text-danger fs-1 me-3"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-1">Riesgos del Inventario</h5>
+                                    <p class="text-muted small mb-1">
+                                        <span th:text="${proximosAVencer}"></span> producto(s) próximos a vencer
+                                    </p>
+                                    <p class="text-muted small mb-0">
+                                        <span th:text="${alertasCriticas}"></span> producto(s) con stock crítico
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card shadow-sm border-0 mb-5 dash-table">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa-solid fa-box me-2 text-secondary"></i>Inventario general
+                    </div>
+
+                    <!-- FILTROS -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body">
+                            <div class="row g-3">
+
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Buscar producto</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i
+                                                class="fa-solid fa-magnifying-glass"></i></span>
+                                        <input type="text" id="buscarNombre" class="form-control"
+                                            placeholder="Nombre del producto...">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Categoría</label>
+                                    <select id="filtroCategoria" class="form-select">
+                                        <option value="">Todas</option>
+                                        <option th:each="cat : ${categorias}" th:value="${cat.nombreCategoria}"
+                                            th:text="${cat.nombreCategoria}"></option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Estado de stock</label>
+                                    <select id="filtroEstado" class="form-select">
+                                        <option value="">Todos</option>
+                                        <option value="Crítico">Crítico</option>
+                                        <option value="Suficiente">Suficiente</option>
+                                        <option value="Exceso">Exceso</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <table class="table table-hover align-middle shadow-sm">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Categoría</th>
+                                    <th>Stock actual</th>
+                                    <th>Estado</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="tablaProductos">
+                                <tr th:if="${#lists.isEmpty(productos)}">
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        No hay productos registrados todavía.
+                                    </td>
+                                </tr>
+                                <tr th:each="m : ${productos}"
+                                    th:attr="data-nombre=${#strings.toLowerCase(m.nombreProducto)}, data-categoria=${m.categoria}, data-estado=${m.estadoStock}">
+                                    <td th:text="${m.id}"></td>
+                                    <td th:text="${m.nombreProducto}"></td>
+                                    <td th:text="${m.categoria}"></td>
+                                    <td th:text="${m.stock}"></td>
+                                    <td>
+                                        <span class="badge"
+                                            th:classappend="${m.estadoStock == 'Crítico'} ? 'bg-danger' : (${m.estadoStock == 'Suficiente'} ? 'bg-success' : 'bg-warning text-dark')"
+                                            th:text="${m.estadoStock}"></span>
+                                    </td>
+                                    <td class="text-center">
+                                        <!-- Ver detalle -->
+                                        <a th:href="@{/productos/ver/{id}(id=${m.id})}"
+                                            class="btn btn-sm btn-outline-primary me-1" title="Ver detalle">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+
+                                        <!-- Editar — solo ADMIN -->
+                                        <a th:if="${esAdmin}" th:href="@{/productos/editar/{id}(id=${m.id})}"
+                                            class="btn btn-sm btn-outline-secondary me-1" title="Editar producto">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+
+                                        <!-- Eliminar — solo ADMIN -->
+                                        <form th:if="${esAdmin}" th:action="@{/productos/eliminar/{id}(id=${m.id})}"
+                                            method="post" style="display:inline;"
+                                            onsubmit="return confirm('¿Eliminar «' + this.dataset.nombre + '»? Esta acción no se puede deshacer.')"
+                                            th:data-nombre="${m.nombreProducto}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                title="Eliminar producto">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <nav aria-label="Paginación de productos">
+                            <ul id="paginacion" class="pagination justify-content-center"></ul>
+                        </nav>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+    <script>
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+            new bootstrap.Tooltip(el);
+        });
+
+        (function () {
+            const filasPorPagina = 5;
+            const filas = Array.from(document.querySelectorAll('#tablaProductos tr[data-nombre]'));
+
+            const inputBuscar = document.getElementById('buscarNombre');
+            const selectCategoria = document.getElementById('filtroCategoria');
+            const selectEstado = document.getElementById('filtroEstado');
+            const contenedorPaginacion = document.getElementById('paginacion');
+
+            let paginaActual = 1;
+
+            function filasFiltradas() {
+                const texto = inputBuscar.value.trim().toLowerCase();
+                const categoria = selectCategoria.value;
+                const estado = selectEstado.value;
+
+                return filas.filter(fila => {
+                    const coincideTexto = fila.dataset.nombre.includes(texto);
+                    const coincideCategoria = categoria === '' || fila.dataset.categoria === categoria;
+                    const coincideEstado = estado === '' || fila.dataset.estado === estado;
+                    return coincideTexto && coincideCategoria && coincideEstado;
+                });
+            }
+
+            function render() {
+                const visibles = filasFiltradas();
+                const totalPaginas = Math.max(1, Math.ceil(visibles.length / filasPorPagina));
+                if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+
+                filas.forEach(fila => fila.style.display = 'none');
+                visibles
+                    .slice((paginaActual - 1) * filasPorPagina, paginaActual * filasPorPagina)
+                    .forEach(fila => fila.style.display = '');
+
+                renderPaginacion(totalPaginas, visibles.length);
+            }
+
+            function renderPaginacion(totalPaginas, totalFilas) {
+                contenedorPaginacion.innerHTML = '';
+
+                if (totalFilas === 0) {
+                    contenedorPaginacion.innerHTML =
+                        '<li class="page-item disabled"><span class="page-link">Sin resultados</span></li>';
+                    return;
+                }
+
+                const crearItem = (texto, pagina, deshabilitado, activo) => {
+                    const li = document.createElement('li');
+                    li.className = 'page-item' + (deshabilitado ? ' disabled' : '') + (activo ? ' active' : '');
+                    const a = document.createElement('a');
+                    a.className = 'page-link';
+                    a.href = '#';
+                    a.textContent = texto;
+                    a.addEventListener('click', e => {
+                        e.preventDefault();
+                        if (!deshabilitado) {
+                            paginaActual = pagina;
+                            render();
+                        }
+                    });
+                    li.appendChild(a);
+                    return li;
+                };
+
+                contenedorPaginacion.appendChild(crearItem('Anterior', paginaActual - 1, paginaActual === 1, false));
+                for (let i = 1; i <= totalPaginas; i++) {
+                    contenedorPaginacion.appendChild(crearItem(String(i), i, false, i === paginaActual));
+                }
+                contenedorPaginacion.appendChild(
+                    crearItem('Siguiente', paginaActual + 1, paginaActual === totalPaginas, false));
+            }
+
+            inputBuscar.addEventListener('input', () => { paginaActual = 1; render(); });
+            selectCategoria.addEventListener('change', () => { paginaActual = 1; render(); });
+            selectEstado.addEventListener('change', () => { paginaActual = 1; render(); });
+
+            render();
+        })();
+    </script>
+</body>
+
+</html>

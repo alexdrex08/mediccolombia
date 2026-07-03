@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Detalle Salida - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5">
+
+                <!-- ENCABEZADO -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-0">
+                            <i class="fa-solid fa-arrow-down text-warning fs-1 me-3"></i>Detalle de Salida
+                        </h2>
+                        <p class="text-muted">Registro detallado del despacho o retiro de producto del inventario</p>
+                    </div>
+                    <a th:href="@{/movimientos/salidas}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fa-solid fa-arrow-left me-2"></i> Volver a salidas
+                    </a>
+                </div>
+
+                <!-- =============================================
+                     TARJETAS DE RESUMEN 
+                     ============================================= -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="card p-3 shadow-sm border-0 h-100">
+                            <h6 class="fw-bold text-muted small text-uppercase">ID Movimiento</h6>
+                            <p class="fs-4 fw-bold text-warning mb-0">
+                                #<span th:text="${movimiento.id}"></span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card p-3 shadow-sm border-0 h-100">
+                            <h6 class="fw-bold text-muted small text-uppercase">Fecha de registro</h6>
+                            <p class="fs-6 fw-bold mb-0"
+                                th:text="${#temporals.format(movimiento.fechaMovimiento, 'dd/MM/yyyy')}"></p>
+                            <p class="text-muted small mb-0"
+                                th:text="${#temporals.format(movimiento.fechaMovimiento, 'HH:mm')} + ' hrs'"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card p-3 shadow-sm border-0 h-100">
+                            <h6 class="fw-bold text-muted small text-uppercase">Responsable</h6>
+                            <p class="fw-bold mb-0" th:text="${movimiento.nombreUsuario}"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card p-3 shadow-sm border-0 h-100">
+                            <h6 class="fw-bold text-muted small text-uppercase">Tipo de salida</h6>
+                            <span class="badge bg-warning text-dark px-3 py-2 fs-6"
+                                th:text="${movimiento.tipoMovimiento}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =============================================
+                     PRODUCTO RETIRADO
+                     ============================================= -->
+                <div class="card mb-4 border-0 shadow-sm">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa-solid fa-box-open me-2 text-secondary"></i> Producto retirado
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th class="text-center">Cantidad retirada</th>
+                                        <th class="text-center">Stock resultante</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-bold" th:text="${movimiento.nombreProducto}"></td>
+                                        <td class="text-center">
+                                            <span class="badge bg-danger fs-6"
+                                                th:text="'- ' + ${movimiento.cantidad} + ' ud'"></span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="fw-bold"
+                                                th:text="${movimiento.stockResultante} + ' ud'"></span>
+                                            <span th:if="${movimiento.stockResultante == 0}"
+                                                class="badge bg-danger ms-2">Agotado</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4 border-0 shadow-sm">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa-solid fa-receipt me-2 text-secondary"></i> Origen de la salida
+                    </div>
+                    <div class="card-body" id="bloqueOrigen" th:attr="data-picker=${movimiento.pickerChecker}">
+
+                        <!-- Estado de carga -->
+                        <div id="origenCargando" class="text-muted">
+                            <i class="fa-solid fa-spinner fa-spin me-2"></i>Verificando origen...
+                        </div>
+
+                        <!-- Contenido cuando es una VENTA (pickerChecker = "VENTA-{id}") -->
+                        <div id="origenVenta" style="display:none;">
+                            <div class="alert alert-success py-2 mb-3">
+                                <i class="fa-solid fa-cash-register me-2"></i>
+                                Esta salida fue generada al registrar la venta
+                                <strong id="ventaIdLabel"></strong>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-3">
+                                    <p class="text-muted small text-uppercase fw-bold mb-1">N° de Venta</p>
+                                    <p class="fw-bold mb-0" id="ventaId">—</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="text-muted small text-uppercase fw-bold mb-1">Cliente</p>
+                                    <p class="fw-bold mb-0" id="ventaCliente">—</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="text-muted small text-uppercase fw-bold mb-1">Fecha de venta</p>
+                                    <p class="fw-bold mb-0" id="ventaFecha">—</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="text-muted small text-uppercase fw-bold mb-1">Total de venta</p>
+                                    <p class="fw-bold mb-0 text-success" id="ventaTotal">—</p>
+                                </div>
+                            </div>
+
+                            <!-- Detalle de productos de esa venta -->
+                            <p class="text-muted small text-uppercase fw-bold mb-2">Productos en esa venta</p>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th class="text-center">Cantidad</th>
+                                            <th class="text-end">Precio Unit.</th>
+                                            <th class="text-end">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ventaDetalles"></tbody>
+                                </table>
+                            </div>
+
+                            <div class="mt-3">
+                                <a id="linkVerVenta" href="#" class="btn btn-sm btn-outline-primary">
+                                    <i class="fa-solid fa-eye me-1"></i> Ver detalle completo de la venta
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Contenido cuando NO es una venta (retiro, ajuste, daño, etc.) -->
+                        <div id="origenOtro" style="display:none;">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <p class="text-muted small text-uppercase fw-bold mb-1">Tipo de operación</p>
+                                    
+                                    <span class="badge bg-warning text-dark fs-6 px-3 py-2"
+                                        id="origenTipoLabel">—</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="text-muted small text-uppercase fw-bold mb-1">Motivo registrado</p>
+                                    <p class="mb-0" id="origenMotivo">—</p>
+                                </div>
+                            </div>
+
+                            <!-- Nota contextual según tipo -->
+                            <div id="notaVencimiento" class="alert alert-warning mt-3 mb-0 py-2" style="display:none;">
+                                <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                                Este retiro fue generado automáticamente por el scheduler de vencimientos.
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- =============================================
+                     INFORMACIÓN DEL MOVIMIENTO 
+                     ============================================= -->
+                <div class="card mb-4 border-0 shadow-sm">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa-solid fa-tag me-2 text-secondary"></i> Información del movimiento
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <p class="fw-bold mb-1 text-muted small text-uppercase">Motivo / Descripción</p>
+                                <p class="mb-0" th:text="${movimiento.movimiento} ?: 'Sin descripción registrada'"></p>
+                            </div>
+                            <div class="col-md-6"
+                                th:if="${movimiento.pickerChecker != null and movimiento.pickerChecker != ''}">
+                                <p class="fw-bold mb-1 text-muted small text-uppercase">Referencia de trazabilidad</p>
+                                <code class="text-warning" th:text="${movimiento.pickerChecker}"></code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTEXTO DEL PRODUCTO -->
+                <div class="card border-0 shadow-sm mb-5">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa-solid fa-clock-rotate-left me-2 text-secondary"></i> Contexto del producto
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <i class="fa-solid fa-box me-2 text-warning"></i>
+                                Producto: <strong th:text="${movimiento.nombreProducto}"></strong>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa-solid fa-layer-group me-2 text-danger"></i>
+                                Stock luego de este retiro:
+                                <strong th:text="${movimiento.stockResultante} + ' unidades'"></strong>
+                                <span th:if="${movimiento.stockResultante == 0}" class="badge bg-danger ms-2">Producto
+                                    agotado</span>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa-solid fa-user me-2 text-muted"></i>
+                                Operación realizada por:
+                                <strong th:text="${movimiento.nombreUsuario}"></strong>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa-solid fa-calendar me-2 text-muted"></i>
+                                Registrada el
+                                <strong
+                                    th:text="${#temporals.format(movimiento.fechaMovimiento, 'dd/MM/yyyy')}"></strong>
+                                a las
+                                <strong
+                                    th:text="${#temporals.format(movimiento.fechaMovimiento, 'HH:mm')} + ' hrs'"></strong>
+                            </li>
+                        </ul>
+                        <div class="mt-3 d-flex gap-2">
+                            <a th:href="@{/inventario}" class="btn btn-sm btn-outline-warning">
+                                <i class="fa-solid fa-box me-1"></i> Ver en inventario
+                            </a>
+                            <a th:href="@{/alertas}" class="btn btn-sm btn-outline-secondary">
+                                <i class="fa-solid fa-bell me-1"></i> Ver alertas activas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+
+
+    <div id="datosMovimiento" th:attr="data-tipo=${movimiento.tipoMovimiento}, data-motivo=${movimiento.movimiento}"
+        style="display:none;"></div>
+
+    <script>
+        // =============================================
+        // AJAX — Cargar origen de la salida
+        //
+        // Flujo:
+        // 1. Leer pickerChecker del data-attribute
+        // 2. Si empieza con "VENTA-" → parsear id, llamar GET /api/ventas/{id}
+        //    y mostrar bloque de venta con cliente y detalles
+        // 3. Si no → mostrar bloque genérico con tipo y motivo del movimiento
+        // =============================================
+        (async function cargarOrigenSalida() {
+            const bloque = document.getElementById('bloqueOrigen');
+            const picker = bloque.dataset.picker;
+            const datosExtra = document.getElementById('datosMovimiento');
+            const tipoMov = datosExtra.dataset.tipo || '';
+            const motivoMov = datosExtra.dataset.motivo || 'Sin descripción registrada';
+
+            const elCargando = document.getElementById('origenCargando');
+            const elVenta = document.getElementById('origenVenta');
+            const elOtro = document.getElementById('origenOtro');
+
+            // ── Caso: salida tipo Venta con pickerChecker "VENTA-{id}" ── ESTE SERIA EL FLUJO NORMAL
+            if (picker && picker.startsWith('VENTA-')) {
+                const idVenta = picker.replace('VENTA-', '').trim();
+
+                try {
+                    // Llama al RestController: GET /api/ventas/{id}
+                    // Devuelve VentaRegistroResponseDTO:
+                    // { id, fechaVenta, nombreCliente, nombreUsuario, totalVenta, detalles }
+                    const res = await fetch(`/api/ventas/${idVenta}`);
+                    if (!res.ok) throw new Error('Venta no encontrada');
+                    const venta = await res.json();
+
+                    // Poblar encabezado
+                    document.getElementById('ventaIdLabel').textContent = '#' + venta.id;
+                    document.getElementById('ventaId').textContent = '#' + venta.id;
+                    document.getElementById('ventaCliente').textContent = venta.nombreCliente ?? '—';
+                    document.getElementById('ventaTotal').textContent =
+                        '$ ' + Number(venta.totalVenta).toLocaleString('es-CO');
+
+                    // Formatear fecha
+                    if (venta.fechaVenta) {
+                        const fecha = new Date(Array.isArray(venta.fechaVenta)
+                            ? venta.fechaVenta[0] + '-' +
+                            String(venta.fechaVenta[1]).padStart(2, '0') + '-' +
+                            String(venta.fechaVenta[2]).padStart(2, '0') + 'T' +
+                            String(venta.fechaVenta[3] ?? 0).padStart(2, '0') + ':' +
+                            String(venta.fechaVenta[4] ?? 0).padStart(2, '0')
+                            : venta.fechaVenta);
+                        document.getElementById('ventaFecha').textContent =
+                            fecha.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                            + ' ' + fecha.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+                    }
+
+                    // Link al detalle completo
+                    document.getElementById('linkVerVenta').href = '/ventas/' + venta.id;
+
+                    // Tabla de detalles de la venta
+                    // detalles: [{ nombreProducto, cantidad, precioUnitario, subtotal }]
+                    const tbodyDetalles = document.getElementById('ventaDetalles');
+                    if (venta.detalles && venta.detalles.length > 0) {
+                        tbodyDetalles.innerHTML = venta.detalles.map(d => `
+                            <tr>
+                                <td>${d.nombreProducto ?? '—'}</td>
+                                <td class="text-center">${d.cantidad}</td>
+                                <td class="text-end">$ ${Number(d.precioUnitario).toLocaleString('es-CO')}</td>
+                                <td class="text-end fw-bold">$ ${Number(d.subtotal).toLocaleString('es-CO')}</td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        tbodyDetalles.innerHTML = `
+                            <tr><td colspan="4" class="text-center text-muted py-2">
+                                Sin detalles disponibles
+                            </td></tr>`;
+                    }
+
+                    elCargando.style.display = 'none';
+                    elVenta.style.display = 'block';
+
+                } catch (e) {
+                    // Si falla el fetch, mostramos el bloque genérico igualmente
+                    console.error('Error cargando venta origen:', e);
+                    mostrarBloqueGenerico(tipoMov, motivoMov);
+                }
+
+            } else {
+                // ── Caso: salida sin pickerChecker tipo VENTA (retiro, daño, ajuste...) ──
+                mostrarBloqueGenerico(tipoMov, motivoMov);
+            }
+        })();
+
+        function mostrarBloqueGenerico(tipo, motivo) {
+            document.getElementById('origenCargando').style.display = 'none';
+            document.getElementById('origenTipoLabel').textContent = tipo || 'Salida de inventario';
+            document.getElementById('origenMotivo').textContent = motivo || 'Sin descripción registrada';
+
+            // Nota especial para retiros automáticos por vencimiento
+            if (tipo && tipo.toLowerCase().includes('vencimiento')) {
+                document.getElementById('notaVencimiento').style.display = 'block';
+            }
+            document.getElementById('origenOtro').style.display = 'block';
+        }
+    </script>
+
+</body>
+
+</html>

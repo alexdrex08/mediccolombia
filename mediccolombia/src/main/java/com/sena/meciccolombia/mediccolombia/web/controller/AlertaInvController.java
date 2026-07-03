@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sena.meciccolombia.mediccolombia.scheduler.AlertaInvScheduler;
-import com.sena.meciccolombia.mediccolombia.service.impl.AlertaInvService;
+import com.sena.meciccolombia.mediccolombia.service.AlertaInvService;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.AlertaInvResponseDTO;
 
 import lombok.RequiredArgsConstructor;

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Detalle Cliente - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5">
+
+                <!-- ENCABEZADO -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold text-dark mb-0">
+                            <i class="fa-solid fa-user me-2 text-primary"></i>
+                            <span th:text="${cliente.nombreCliente}"></span>
+                        </h2>
+                        <p class="text-muted small mb-0">
+                            <i class="fa-solid fa-id-card me-1"></i>
+                            <span th:text="${cliente.identificacion}"></span>
+                            <span class="mx-2">·</span>
+                            ID interno: #<span th:text="${cliente.id}"></span>
+                        </p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a th:href="@{'/clientes/' + ${cliente.id} + '/editar'}" class="btn btn-outline-primary btn-sm">
+                            <i class="fa-solid fa-pen me-1"></i> Editar
+                        </a>
+                        <form th:action="@{'/clientes/' + ${cliente.id} + '/eliminar'}" method="post"
+                            onsubmit="return confirm('¿Eliminar este cliente? Esta acción no se puede deshacer.')">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="fa-solid fa-trash me-1"></i> Eliminar
+                            </button>
+                        </form>
+                        <a th:href="@{/clientes}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fa-solid fa-arrow-left me-1"></i> Volver
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Mensajes flash -->
+                <div th:if="${mensaje}" class="alert alert-success py-2 mb-3">
+                    <i class="fa-solid fa-circle-check me-2"></i>
+                    <span th:text="${mensaje}"></span>
+                </div>
+                <div th:if="${error}" class="alert alert-danger py-2 mb-3">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    <span th:text="${error}"></span>
+                </div>
+
+                <!-- Mensajes AJAX (JS) -->
+                <div id="mensajeAjax" class="alert d-none py-2 mb-3">
+                    <i class="fa-solid fa-circle-check me-2" id="iconoMensaje"></i>
+                    <span id="textoMensajeAjax"></span>
+                </div>
+
+                <div class="row g-4">
+
+                    <!-- =============================================
+                         COLUMNA IZQUIERDA — Info básica
+                         ============================================= -->
+                    <div class="col-12 col-lg-3">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body text-center py-4">
+                                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex
+                                            align-items-center justify-content-center mb-3"
+                                    style="width:80px; height:80px;">
+                                    <i class="fa-solid fa-user text-primary fs-2"></i>
+                                </div>
+                                <h5 class="fw-bold mb-1" th:text="${cliente.nombreCliente}"></h5>
+                                <p class="text-muted small mb-3" th:text="${cliente.identificacion}"></p>
+                                <hr>
+                                <div class="text-start small">
+                                    <p class="mb-2">
+                                        <i class="fa-solid fa-envelope me-2 text-muted"></i>
+                                        <span
+                                            th:text="${cliente.correos == null or cliente.correos.isEmpty()} ? 'Sin correos' : (${#lists.size(cliente.correos)} + ' correo(s)')"></span>
+                                    </p>
+                                    <p class="mb-2">
+                                        <i class="fa-solid fa-phone me-2 text-muted"></i>
+                                        <span
+                                            th:text="${cliente.telefonos == null or cliente.telefonos.isEmpty()} ? 'Sin teléfonos' : (${#lists.size(cliente.telefonos)} + ' teléfono(s)')"></span>
+                                    </p>
+                                    <p class="mb-0">
+                                        <i class="fa-solid fa-location-dot me-2 text-muted"></i>
+                                        <span
+                                            th:text="${cliente.direcciones == null or cliente.direcciones.isEmpty()} ? 'Sin direcciones' : (${#lists.size(cliente.direcciones)} + ' dirección(es)')"></span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- =============================================
+                         COLUMNA DERECHA — Contacto
+                         ============================================= -->
+                    <div class="col-12 col-lg-9">
+
+                        <!-- ── CORREOS ── -->
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div
+                                class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">
+                                    <i class="fa-solid fa-envelope me-2 text-primary"></i>Correos electrónicos
+                                </span>
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                    data-bs-target="#modalCorreo">
+                                    <i class="fa-solid fa-plus me-1"></i>Agregar
+                                </button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div th:if="${cliente.correos != null and !cliente.correos.isEmpty()}">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Correo</th>
+                                                <th>Tipo</th>
+                                                <th class="text-center">Eliminar</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="c : ${cliente.correos}">
+                                                <td th:text="${c.correoElectronico}"></td>
+                                                <td>
+                                                    <span class="badge bg-primary" th:text="${c.tipoCorreo}"></span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <button class="btn btn-sm btn-outline-danger"
+                                                        th:attr="onclick='eliminarCorreo(' + ${c.id} + ')'">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div th:if="${cliente.correos == null or cliente.correos.isEmpty()}" class="text-center text-muted py-3">
+                                    <i class="fa-solid fa-envelope-open me-2"></i>
+                                    Sin correos registrados
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── TELÉFONOS ── -->
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div
+                                class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">
+                                    <i class="fa-solid fa-phone me-2 text-success"></i>Teléfonos
+                                </span>
+                                <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
+                                    data-bs-target="#modalTelefono">
+                                    <i class="fa-solid fa-plus me-1"></i>Agregar
+                                </button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div th:if="${cliente.telefonos != null and !cliente.telefonos.isEmpty()}">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Número</th>
+                                                <th>Tipo</th>
+                                                <th>Complemento</th>
+                                                <th class="text-center">Eliminar</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="t : ${cliente.telefonos}">
+                                                <td class="fw-bold" th:text="${t.numero}"></td>
+                                                <td>
+                                                    <span class="badge bg-success" th:text="${t.tipoTelefono}"></span>
+                                                </td>
+                                                <td class="text-muted small" th:text="${t.complemento} ?: '—'"></td>
+                                                <td class="text-center">
+                                                    <button class="btn btn-sm btn-outline-danger"
+                                                        th:attr="onclick='eliminarTelefono(' + ${t.id} + ')'">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div th:if="${cliente.telefonos == null or cliente.telefonos.isEmpty()}"
+                                    class="text-center text-muted py-3">
+                                    <i class="fa-solid fa-phone-slash me-2"></i>
+                                    Sin teléfonos registrados
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── DIRECCIONES ── -->
+                        <div class="card shadow-sm border-0">
+                            <div
+                                class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">
+                                    <i class="fa-solid fa-location-dot me-2 text-warning"></i>Direcciones
+                                </span>
+                                <button class="btn btn-sm btn-outline-warning text-dark" data-bs-toggle="modal"
+                                    data-bs-target="#modalDireccion">
+                                    <i class="fa-solid fa-plus me-1"></i>Agregar
+                                </button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div th:if="${cliente.direcciones != null and !cliente.direcciones.isEmpty()}">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Dirección</th>
+                                                <th>Barrio</th>
+                                                <th>Tipo</th>
+                                                <th>Complemento</th>
+                                                <th class="text-center">Eliminar</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="d : ${cliente.direcciones}">
+                                                <td class="fw-bold" th:text="${d.direccion}"></td>
+                                                <td th:text="${d.barrio} ?: '—'"></td>
+                                                <td>
+                                                    <span class="badge bg-warning text-dark"
+                                                        th:text="${d.tipoDireccion}"></span>
+                                                </td>
+                                                <td class="text-muted small" th:text="${d.complemento} ?: '—'"></td>
+                                                <td class="text-center">
+                                                    <button class="btn btn-sm btn-outline-danger"
+                                                        th:attr="onclick='eliminarDireccion(' + ${d.id} + ')'">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div th:if="${cliente.direcciones == null or cliente.direcciones.isEmpty()}" class="text-center text-muted py-3">
+                                    <i class="fa-solid fa-map-pin me-2"></i>
+                                    Sin direcciones registradas
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- =============================================
+         MODAL — Agregar Correo
+         ============================================= -->
+    <div class="modal fade" id="modalCorreo" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fa-solid fa-envelope me-2 text-primary"></i>Agregar Correo
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Correo electrónico</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-at"></i></span>
+                            <input type="email" id="inputCorreo" class="form-control" placeholder="ejemplo@correo.com">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tipo de correo</label>
+                        <select id="selectTipoCorreo" class="form-select">
+                            <option value="">Seleccionar...</option>
+                            <option th:each="tc : ${tiposCorreo}" th:value="${tc.id}" th:text="${tc.nombreTipo}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="agregarCorreo()">
+                        <i class="fa-solid fa-floppy-disk me-1"></i>Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =============================================
+         MODAL — Agregar Teléfono
+         ============================================= -->
+    <div class="modal fade" id="modalTelefono" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fa-solid fa-phone me-2 text-success"></i>Agregar Teléfono
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Número</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
+                            <input type="text" id="inputNumero" class="form-control" placeholder="Ej: 3001234567">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tipo de teléfono</label>
+                        <select id="selectTipoTelefono" class="form-select">
+                            <option value="">Seleccionar...</option>
+                            <option th:each="tt : ${tiposTelefono}" th:value="${tt.id}" th:text="${tt.nombreTipo}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            Complemento <span class="text-muted fw-normal small">(opcional)</span>
+                        </label>
+                        <input type="text" id="inputComplementoTel" class="form-control" placeholder="Ej: Ext. 101">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="agregarTelefono()">
+                        <i class="fa-solid fa-floppy-disk me-1"></i>Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =============================================
+         MODAL — Agregar Dirección
+         ============================================= -->
+    <div class="modal fade" id="modalDireccion" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fa-solid fa-location-dot me-2 text-warning"></i>Agregar Dirección
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Dirección</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-map-marker-alt"></i></span>
+                            <input type="text" id="inputDireccion" class="form-control"
+                                placeholder="Ej: Calle 50 # 12-34">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Barrio</label>
+                        <select id="selectBarrio" class="form-select">
+                            <option value="">Seleccionar barrio...</option>
+                            <option th:each="b : ${barrios}" th:value="${b.id}" th:text="${b.nombreBarrio}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tipo de dirección</label>
+                        <select id="selectTipoDireccion" class="form-select">
+                            <option value="">Seleccionar...</option>
+                            <option th:each="td : ${tiposDireccion}" th:value="${td.id}" th:text="${td.nombreTipo}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            Complemento <span class="text-muted fw-normal small">(opcional)</span>
+                        </label>
+                        <input type="text" id="inputComplementoDir" class="form-control"
+                            placeholder="Ej: Apto 301, Torre B">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning text-dark" onclick="agregarDireccion()">
+                        <i class="fa-solid fa-floppy-disk me-1"></i>Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+
+    <script th:inline="javascript">
+        const CLIENTE_ID = /[[${ cliente.id }]]/;
+
+        // =============================================
+        // UTILIDADES
+        // =============================================
+        function mostrarMensaje(texto, tipo = 'success') {
+            const div = document.getElementById('mensajeAjax');
+            const span = document.getElementById('textoMensajeAjax');
+            const icon = document.getElementById('iconoMensaje');
+            div.className = `alert alert-${tipo} py-2 mb-3`;
+            icon.className = tipo === 'success'
+                ? 'fa-solid fa-circle-check me-2'
+                : 'fa-solid fa-circle-exclamation me-2';
+            span.textContent = texto;
+            div.classList.remove('d-none');
+            // Ocultar después de 3 segundos
+            setTimeout(() => div.classList.add('d-none'), 3000);
+        }
+
+        function cerrarModal(id) {
+            bootstrap.Modal.getInstance(document.getElementById(id))?.hide();
+        }
+
+        async function postAPI(url, body) {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if (!res.ok) {
+                const txt = await res.text();
+                throw new Error(txt || `Error ${res.status}`);
+            }
+            return res.json();
+        }
+
+        async function deleteAPI(url) {
+            const res = await fetch(url, { method: 'DELETE' });
+            if (!res.ok) throw new Error(`Error ${res.status}`);
+        }
+
+        // =============================================
+        // CORREOS
+        // POST /api/correos
+        // =============================================
+        async function agregarCorreo() {
+            const correo = document.getElementById('inputCorreo').value.trim();
+            const idTipoCorreo = document.getElementById('selectTipoCorreo').value;
+
+            if (!correo) { mostrarMensaje('Ingresa un correo electrónico.', 'danger'); return; }
+            if (!idTipoCorreo) { mostrarMensaje('Selecciona el tipo de correo.', 'danger'); return; }
+
+            try {
+                await postAPI('/api/correos', {
+                    correoElectronico: correo,
+                    idCliente: CLIENTE_ID,
+                    idProveedor: null,
+                    idTipoCorreo: parseInt(idTipoCorreo)
+                });
+                cerrarModal('modalCorreo');
+                mostrarMensaje('Correo agregado correctamente.');
+                setTimeout(() => location.reload(), 800);
+            } catch (e) {
+                mostrarMensaje('Error al agregar el correo: ' + e.message, 'danger');
+            }
+        }
+
+        // DELETE /api/correos/{id}
+        async function eliminarCorreo(id) {
+            if (!confirm('¿Eliminar este correo?')) return;
+            try {
+                await deleteAPI(`/api/correos/${id}`);
+                mostrarMensaje('Correo eliminado.');
+                setTimeout(() => location.reload(), 800);
+            } catch (e) {
+                mostrarMensaje('Error al eliminar el correo.', 'danger');
+            }
+        }
+
+        // =============================================
+        // TELÉFONOS
+        // POST /api/telefonos
+        // =============================================
+        async function agregarTelefono() {
+            const numero = document.getElementById('inputNumero').value.trim();
+            const idTipo = document.getElementById('selectTipoTelefono').value;
+            const complemento = document.getElementById('inputComplementoTel').value.trim();
+
+            if (!numero) { mostrarMensaje('Ingresa un número de teléfono.', 'danger'); return; }
+            if (!idTipo) { mostrarMensaje('Selecciona el tipo de teléfono.', 'danger'); return; }
+
+            try {
+                await postAPI('/api/telefonos', {
+                    numero,
+                    complemento: complemento || null,
+                    idCliente: CLIENTE_ID,
+                    idProveedor: null,
+                    idTipoTelefono: parseInt(idTipo)
+                });
+                cerrarModal('modalTelefono');
+                mostrarMensaje('Teléfono agregado correctamente.');
+                setTimeout(() => location.reload(), 800);
+            } catch (e) {
+                mostrarMensaje('Error al agregar el teléfono: ' + e.message, 'danger');
+            }
+        }
+
+        // DELETE /api/telefonos/{id}
+        async function eliminarTelefono(id) {
+            if (!confirm('¿Eliminar este teléfono?')) return;
+            try {
+                await deleteAPI(`/api/telefonos/${id}`);
+                mostrarMensaje('Teléfono eliminado.');
+                setTimeout(() => location.reload(), 800);
+            } catch (e) {
+                mostrarMensaje('Error al eliminar el teléfono.', 'danger');
+            }
+        }
+
+        // =============================================
+        // DIRECCIONES
+        // POST /api/direccions
+        // =============================================
+        async function agregarDireccion() {
+            const dir = document.getElementById('inputDireccion').value.trim();
+            const idBarrio = document.getElementById('selectBarrio').value;
+            const idTipo = document.getElementById('selectTipoDireccion').value;
+            const complemento = document.getElementById('inputComplementoDir').value.trim();
+
+            if (!dir) { mostrarMensaje('Ingresa una dirección.', 'danger'); return; }
+            if (!idBarrio) { mostrarMensaje('Selecciona un barrio.', 'danger'); return; }
+            if (!idTipo) { mostrarMensaje('Selecciona el tipo de dirección.', 'danger'); return; }
+
+            try {
+                await postAPI('/api/direccions', {
+                    direccion: dir,
+                    complemento: complemento || null,
+                    idCliente: CLIENTE_ID,
+                    idProveedor: null,
+                    idBarrio: parseInt(idBarrio),
+                    idTipoDireccion: parseInt(idTipo)
+                });
+                cerrarModal('modalDireccion');
+                mostrarMensaje('Dirección agregada correctamente.');
+                setTimeout(() => location.reload(), 800);
+            } catch (e) {
+                mostrarMensaje('Error al agregar la dirección: ' + e.message, 'danger');
+            }
+        }
+
+        // DELETE /api/direccions/{id}
+        async function eliminarDireccion(id) {
+            if (!confirm('¿Eliminar esta dirección?')) return;
+            try {
+                await deleteAPI(`/api/direccions/${id}`);
+                mostrarMensaje('Dirección eliminada.');
+                setTimeout(() => location.reload(), 800);
+            } catch (e) {
+                mostrarMensaje('Error al eliminar la dirección.', 'danger');
+            }
+        }
+    </script>
+</body>
+
+</html>

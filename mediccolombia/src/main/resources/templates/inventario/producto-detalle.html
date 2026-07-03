@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Detalle de Producto - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5">
+
+                <!-- ENCABEZADO -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-0">
+                            <i class="fa-solid fa-boxes-stacked text-primary me-2"></i>
+                            Detalle del Producto
+                        </h2>
+                        <p class="text-muted small mt-1 mb-0"
+                            th:text="'Registrado por: ' + ${producto.usuarioIngresado}"></p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a th:if="${esAdmin}" th:href="@{/productos/editar/{id}(id=${producto.id})}"
+                            class="btn btn-outline-secondary btn-sm">
+                            <i class="fa-solid fa-pen me-1"></i>Editar
+                        </a>
+                        <a th:href="@{/productos}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fa-solid fa-arrow-left me-1"></i>Volver al listado
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ── TARJETAS DE MÉTRICAS RÁPIDAS ──────────────────────────── -->
+                <div class="row g-4 mb-4">
+
+                    <div class="col-md-3">
+                        <div class="card shadow-sm border-0 h-100 p-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="fa-solid fa-boxes-stacked fa-2x text-primary"></i>
+                                <div>
+                                    <div class="text-muted small">Stock actual</div>
+                                    <div class="fw-bold fs-4" th:text="${producto.stock}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card shadow-sm border-0 h-100 p-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="fa-solid fa-arrow-up fa-2x text-success"></i>
+                                <div>
+                                    <div class="text-muted small">Total entradas</div>
+                                    <div class="fw-bold fs-4 text-success" th:text="${totalEntradas}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card shadow-sm border-0 h-100 p-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="fa-solid fa-arrow-down fa-2x text-danger"></i>
+                                <div>
+                                    <div class="text-muted small">Total salidas</div>
+                                    <div class="fw-bold fs-4 text-danger" th:text="${totalSalidas}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card shadow-sm border-0 h-100 p-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="fa-solid fa-bell fa-2x text-warning"></i>
+                                <div>
+                                    <div class="text-muted small">Alertas activas</div>
+                                    <div class="fw-bold fs-4 text-warning" th:text="${totalAlertas}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ── INFORMACIÓN GENERAL ──────────────────────────────────── -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <h6 class="fw-bold mb-0 text-primary">
+                            <i class="fa-solid fa-circle-info me-2"></i>Información General
+                        </h6>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-4">
+
+                            <div class="col-md-4">
+                                <p class="text-muted small mb-1 text-uppercase fw-bold">Nombre</p>
+                                <p class="fw-bold fs-6 mb-0" th:text="${producto.nombreProducto}"></p>
+                            </div>
+
+                            <div class="col-md-4">
+                                <p class="text-muted small mb-1 text-uppercase fw-bold">Categoría</p>
+                                <p class="mb-0" th:text="${producto.categoria}"></p>
+                            </div>
+
+                            <div class="col-md-4">
+                                <p class="text-muted small mb-1 text-uppercase fw-bold">Lote</p>
+                                <p class="mb-0 font-monospace" th:text="${producto.lote}"></p>
+                            </div>
+
+                            <div class="col-md-4">
+                                <p class="text-muted small mb-1 text-uppercase fw-bold">Estado de stock</p>
+                                <span class="badge fs-6"
+                                    th:classappend="${producto.estadoStock == 'Crítico'} ? 'bg-danger' : (${producto.estadoStock == 'Suficiente'} ? 'bg-success' : 'bg-warning text-dark')"
+                                    th:text="${producto.estadoStock}"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <p class="text-muted small mb-1 text-uppercase fw-bold">Rango de stock</p>
+                                <p class="mb-0">
+                                    Mín: <strong th:text="${producto.stockMinimo}"></strong> ud
+                                    &nbsp;/&nbsp;
+                                    Máx: <strong th:text="${producto.stockMaximo}"></strong> ud
+                                </p>
+                            </div>
+
+                            <div class="col-md-4">
+                                <p class="text-muted small mb-1 text-uppercase fw-bold">Fecha de expiración</p>
+                                <p class="mb-0"
+                                    th:classappend="${producto.fechaExpiracion.isBefore(#temporals.createNow())} ? 'text-danger fw-bold' : 'text-success'"
+                                    th:text="${#temporals.format(producto.fechaExpiracion, 'dd/MM/yyyy')}"></p>
+                            </div>
+
+                            <div class="col-md-4">
+                                <p class="text-muted small mb-1 text-uppercase fw-bold">Fecha de ingreso</p>
+                                <p class="mb-0"
+                                    th:text="${#temporals.format(producto.fechaIngreso, 'dd/MM/yyyy HH:mm')}"></p>
+                            </div>
+
+                            <div class="col-md-4">
+                                <p class="text-muted small mb-1 text-uppercase fw-bold">Última modificación</p>
+                                <p class="mb-0"
+                                    th:text="${producto.fechaModificacion != null} ? ${#temporals.format(producto.fechaModificacion, 'dd/MM/yyyy HH:mm')} : 'Sin modificaciones'">
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── ALERTAS ACTIVAS DEL PRODUCTO ──────────────────────────── -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div
+                        class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0 text-danger">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>Alertas Activas
+                        </h6>
+                        <span class="badge bg-danger" th:text="${totalAlertas} + ' alerta(s)'"></span>
+                    </div>
+                    <div class="card-body p-4">
+
+                        <div th:if="${#lists.isEmpty(alertas)}" class="text-center text-muted py-3">
+                            <i class="fa-solid fa-circle-check text-success fa-2x mb-2 d-block"></i>
+                            Este producto no tiene alertas activas.
+                        </div>
+
+                        <ul th:if="${!#lists.isEmpty(alertas)}" class="list-group list-group-flush">
+                            <li th:each="alerta : ${alertas}"
+                                class="list-group-item d-flex justify-content-between align-items-start py-3">
+                                <div>
+                                    <p class="mb-1 fw-semibold" th:text="${alerta.descripcion}"></p>
+                                    <small class="text-muted"
+                                        th:text="'Generada el ' + ${#temporals.format(alerta.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></small>
+                                </div>
+                                <span class="badge ms-3 mt-1"
+                                    th:classappend="${alerta.tipoAlerta == 'PRODUCTO_VENCIDO'} ? 'bg-danger' : 'bg-warning text-dark'"
+                                    th:text="${alerta.tipoAlerta == 'STOCK_BAJO'} ? 'Stock bajo' : (${alerta.tipoAlerta == 'PROXIMO_A_VENCER'} ? 'Próximo a vencer' : 'Vencido')">
+                                </span>
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+
+                <!-- ── HISTORIAL DE MOVIMIENTOS ──────────────────────────────── -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div
+                        class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0 text-secondary">
+                            <i class="fa-solid fa-clock-rotate-left me-2"></i>Historial de Movimientos
+                        </h6>
+                        <span class="badge bg-secondary" th:text="${totalMovimientos} + ' movimiento(s)'"></span>
+                    </div>
+                    <div class="card-body p-0">
+
+                        <div th:if="${#lists.isEmpty(movimientos)}" class="text-center text-muted py-4">
+                            Este producto aún no tiene movimientos registrados.
+                        </div>
+
+                        <div th:if="${!#lists.isEmpty(movimientos)}" class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">Fecha</th>
+                                        <th>Tipo</th>
+                                        <th>Motivo</th>
+                                        <th class="text-center">Cantidad</th>
+                                        <th class="text-center">Stock resultante</th>
+                                        <th>Responsable</th>
+                                        <th>Código</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="m : ${movimientos}">
+                                        <td class="ps-4 text-nowrap"
+                                            th:text="${#temporals.format(m.fechaMovimiento, 'dd/MM/yyyy HH:mm')}"></td>
+                                        <td>
+                                            <span class="badge"
+                                                th:classappend="${idsEntrada.contains(m.id)} ? 'bg-success' : 'bg-danger'"
+                                                th:text="${idsEntrada.contains(m.id)} ? 'Entrada' : 'Salida'">
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-muted small" th:text="${m.tipoMovimiento}"></span>
+                                            <br th:if="${m.movimiento != null and !#strings.isEmpty(m.movimiento)}">
+                                            <span class="small fst-italic text-muted"
+                                                th:if="${m.movimiento != null and !#strings.isEmpty(m.movimiento)}"
+                                                th:text="${m.movimiento}"></span>
+                                        </td>
+                                        <td class="text-center fw-bold"
+                                            th:classappend="${idsEntrada.contains(m.id)} ? 'text-success' : 'text-danger'"
+                                            th:text="${idsEntrada.contains(m.id)} ? '+' + ${m.cantidad} : '-' + ${m.cantidad}">
+                                        </td>
+                                        <td class="text-center" th:text="${m.stockResultante} + ' ud'"></td>
+                                        <td th:text="${m.nombreUsuario}"></td>
+                                        <td>
+                                            <span class="font-monospace small text-muted"
+                                                th:if="${m.pickerChecker != null}" th:text="${m.pickerChecker}"></span>
+                                            <span class="text-muted" th:if="${m.pickerChecker == null}">—</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- ── VENTAS EN LAS QUE PARTICIPÓ ESTE PRODUCTO ──────────────────── -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div
+                        class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0" style="color:#198754;">
+                            <i class="fa-solid fa-receipt me-2"></i>Ventas Asociadas
+                        </h6>
+                        <span class="badge bg-success" th:text="${totalVentas} + ' venta(s)'"></span>
+                    </div>
+                    <div class="card-body p-0">
+
+                        <div th:if="${#lists.isEmpty(ventas)}" class="text-center text-muted py-4">
+                            Este producto aún no ha sido vendido.
+                        </div>
+
+                        <div th:if="${!#lists.isEmpty(ventas)}" class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">Fecha de venta</th>
+                                        <th>Cliente</th>
+                                        <th class="text-center">Cantidad</th>
+                                        <th class="text-end">Precio unit.</th>
+                                        <th class="text-end">Subtotal</th>
+                                        <th>Medio de pago</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="dv : ${ventas}">
+                                        <td class="ps-4 text-nowrap"
+                                            th:text="${#temporals.format(dv.venta.fechaVenta, 'dd/MM/yyyy HH:mm')}">
+                                        </td>
+                                        <td th:text="${dv.venta.cliente.nombreCliente}"></td>
+                                        <td class="text-center fw-bold" th:text="${dv.cantidad}"></td>
+                                        <td class="text-end"
+                                            th:text="'$ ' + ${#numbers.formatDecimal(dv.precioUnitario, 0, 'COMMA', 0, 'POINT')}">
+                                        </td>
+                                        <td class="text-end fw-bold text-success">
+                                            <span
+                                                th:text="'$ ' + ${#numbers.formatDecimal(dv.precioUnitario * dv.cantidad, 0, 'COMMA', 0, 'POINT')}"></span>
+                                        </td>
+                                        <td>
+                                            <span class="badge"
+                                                th:classappend="${dv.venta.medioPago == 'EFECTIVO'} ? 'bg-success' : 'bg-info text-dark'"
+                                                th:text="${dv.venta.medioPago}"></span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- ── PEDIDOS DE COMPRA EN LOS QUE PARTICIPÓ ESTE PRODUCTO ──────── -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div
+                        class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0 text-primary">
+                            <i class="fa-solid fa-truck me-2"></i>Pedidos de Compra Asociados
+                        </h6>
+                        <span class="badge bg-primary" th:text="${totalPedidos} + ' pedido(s)'"></span>
+                    </div>
+                    <div class="card-body p-0">
+
+                        <div th:if="${#lists.isEmpty(pedidos)}" class="text-center text-muted py-4">
+                            Este producto no ha sido incluido en ningún pedido de compra.
+                        </div>
+
+                        <div th:if="${!#lists.isEmpty(pedidos)}" class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">N° Pedido</th>
+                                        <th>Fecha</th>
+                                        <th>Proveedor</th>
+                                        <th class="text-center">Cantidad</th>
+                                        <th class="text-end">Subtotal</th>
+                                        <th>Estado</th>
+                                        <th>Observación</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="dp : ${pedidos}">
+                                        <td class="ps-4 fw-bold" th:text="'#' + ${dp.pedido.id}"></td>
+                                        <td class="text-nowrap"
+                                            th:text="${#temporals.format(dp.pedido.fechaPedido, 'dd/MM/yyyy')}"></td>
+                                        <td th:text="${dp.pedido.proveedor.nombreProv}"></td>
+                                        <td class="text-center fw-bold" th:text="${dp.cantidad}"></td>
+                                        <td class="text-end"
+                                            th:text="'$ ' + ${#numbers.formatDecimal(dp.subtotal, 0, 'COMMA', 0, 'POINT')}">
+                                        </td>
+                                        <td>
+                                            <span class="badge"
+                                                th:classappend="${dp.pedido.estadoPedido.id == 6} ? 'bg-success' :
+                                                    (${dp.pedido.estadoPedido.id == 7 or dp.pedido.estadoPedido.id == 8} ? 'bg-danger' : 'bg-warning text-dark')"
+                                                th:text="${dp.pedido.estadoPedido.nombreEstado}"></span>
+                                        </td>
+                                        <td class="text-muted small"
+                                            th:text="${dp.pedido.observacion != null and !#strings.isEmpty(dp.pedido.observacion)} ? ${dp.pedido.observacion} : '—'">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+                <!-- ── BOTONES FINALES ──────────────────────────────────────── -->
+                <div class="d-flex gap-2 justify-content-end mt-2">
+                    <a th:if="${esAdmin}" th:href="@{/productos/editar/{id}(id=${producto.id})}"
+                        class="btn btn-outline-secondary">
+                        <i class="fa-solid fa-pen me-1"></i>Editar producto
+                    </a>
+                    <a th:href="@{/productos}" class="btn btn-primary">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Volver al inventario
+                    </a>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+</body>
+
+</html>

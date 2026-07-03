@@ -1,0 +1,70 @@
+       #sidebar-wrapper {
+           min-height: 100vh;
+           width: 250px;
+           /* Ancho expandido */
+           transition: all 0.3s ease-in-out;
+           flex-shrink: 0;
+           /* Asegura que la barra no se encoja */
+       }
+
+
+       /* 2. Definir el ancho de la barra lateral cuando la clase 'toggled' esté activa en el body */
+       body.toggled #sidebar-wrapper {
+           width: 70px;
+           /* Ancho colapsado */
+       }
+
+       /* 3. El contenido principal debe ocupar el resto del espacio */
+       #page-content-wrapper {
+           width: 100%;
+       }
+
+       /* Opcional: Estilo para los iconos en modo colapsado */
+       body.toggled #sidebar-wrapper .list-group .list-group-item {
+           display: none;
+       }
+
+       body.toggled #sidebar-wrapper .menu-img {
+           display: none;
+       }
+
+       body.toggled #sidebar-wrapper .sidebar-heading .card-text {
+           display: none;
+       }
+
+       @media (max-width: 992px) {
+
+           /* Sidebar completamente oculto por defecto */
+           #sidebar-wrapper {
+               position: fixed;
+               left: -250px;
+               top: 0;
+               height: 100%;
+               width: 250px;
+               z-index: 1050;
+               background-color: #212529;
+               transition: left 0.3s ease-in-out;
+           }
+
+           body.show-sidebar #sidebar-wrapper {
+               left: 0;
+           }
+               body.toggled #sidebar-wrapper {
+        width: 250px !important;
+    }
+            body.toggled #sidebar-wrapper .list-group .list-group-item {
+           display: block;
+       }
+
+       body.toggled #sidebar-wrapper .menu-img {
+           display: block;
+       }
+
+       body.toggled #sidebar-wrapper .sidebar-heading .card-text {
+           display: block;
+       }
+
+           #sidebar-wrapper .menu-img {
+               padding-bottom: 4rem;
+           }
+       }

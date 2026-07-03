@@ -1,0 +1,235 @@
+<div th:fragment="menu" class="bg-dark text-white border-end d-flex flex-column justify-content-between"
+    id="sidebar-wrapper" style="min-height:100vh;">
+
+    <!-- ENCABEZADO -->
+    <div>
+        <div class="sidebar-heading p-4 fs-4 d-flex align-items-center justify-content-center">
+            <span class="card-text">Menú</span>
+        </div>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <div class="list-group list-group-flush">
+
+            <!-- INVENTARIO -->
+            <a href="#collapseInventario" class="list-group-item list-group-item-action bg-dark text-white p-4"
+                data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseInventario"
+                th:classappend="${vistaActiva == 'inventario'} ? 'active' : ''">
+                <i class="fa-solid fa-box me-2"></i> Inventario
+                <i class="fa-solid fa-caret-up fa-flip-vertical float-end"></i>
+            </a>
+            <div class="collapse ms-3" id="collapseInventario"
+                th:classappend="${vistaActiva == 'inventario'} ? 'show' : ''">
+                <a th:href="@{/productos}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'inventario-lista'} ? 'active' : ''">
+                    Ver Inventario
+                </a>
+                <a th:href="@{/productos/nuevo}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'inventario-nuevo'} ? 'active' : ''">
+                    Registrar Producto
+                </a>
+
+                <!-- Movimientos (anidado) -->
+                <a href="#collapseMovimientos"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    data-bs-toggle="collapse" aria-expanded="false" aria-controls="collapseMovimientos"
+                    th:classappend="${vistaActiva == 'movimientos'} ? 'active' : ''">
+                    Movimientos
+                    <i class="fa-solid fa-caret-up fa-flip-vertical float-end"></i>
+                </a>
+                <div class="collapse ms-3" id="collapseMovimientos"
+                    th:classappend="${vistaActiva == 'movimientos'} ? 'show' : ''">
+                    <a th:href="@{/movimientos/entradas}"
+                        class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                        th:classappend="${vistaActiva == 'movimientos-entradas'} ? 'active' : ''">
+                        Entradas
+                    </a>
+                    <a th:href="@{/movimientos/salidas}"
+                        class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                        th:classappend="${vistaActiva == 'movimientos-salidas'} ? 'active' : ''">
+                        Salidas
+                    </a>
+                </div>
+
+                <!-- Alertas  -->
+                <a th:href="@{/productos/alertas}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'alertas'} ? 'active' : ''">
+                    <i class="fa-solid fa-bell me-1"></i> Vencimientos y Alertas
+                </a>
+            </div>
+
+            <!-- VENTAS / POS -->
+            <a href="#collapseVentas" class="list-group-item list-group-item-action bg-dark text-white p-4"
+                data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseVentas"
+                th:classappend="${vistaActiva == 'ventas'} ? 'active' : ''">
+                <i class="fa-solid fa-cash-register me-2"></i> Ventas
+                <i class="fa-solid fa-caret-up fa-flip-vertical float-end"></i>
+            </a>
+            <div class="collapse ms-3" id="collapseVentas"
+                th:classappend="${vistaActiva == 'ventas'} ? 'show' : ''">
+                <a th:href="@{/ventas/nueva-venta}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'ventas-nueva'} ? 'active' : ''">
+                    Nueva Venta (POS)
+                </a>
+                <a th:href="@{/ventas}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'ventas-lista'} ? 'active' : ''">
+                     Historial de Ventas
+                </a>
+            </div>
+
+            <!-- CLIENTES -->
+            <a href="#collapseClientes" class="list-group-item list-group-item-action bg-dark text-white p-4"
+                data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseClientes"
+                th:classappend="${vistaActiva == 'clientes'} ? 'active' : ''">
+                <i class="fa-solid fa-users me-2"></i> Clientes
+                <i class="fa-solid fa-caret-up fa-flip-vertical float-end"></i>
+            </a>
+            <div class="collapse ms-3" id="collapseClientes"
+                th:classappend="${vistaActiva == 'clientes'} ? 'show' : ''">
+                <a th:href="@{/clientes}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'clientes-lista'} ? 'active' : ''">
+                    Ver Clientes
+                </a>
+                <a th:href="@{/clientes/nuevo}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'clientes-nuevo'} ? 'active' : ''">
+                    Registrar Cliente
+                </a>
+            </div>
+
+            <!-- PROVEEDORES -->
+            <a href="#collapseProveedores" class="list-group-item list-group-item-action bg-dark text-white p-4"
+                data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseProveedores"
+                th:classappend="${vistaActiva == 'proveedores'} ? 'active' : ''">
+                <i class="fa-solid fa-truck me-2"></i> Proveedores
+                <i class="fa-solid fa-caret-up fa-flip-vertical float-end"></i>
+            </a>
+            <div class="collapse ms-3" id="collapseProveedores"
+                th:classappend="${vistaActiva == 'proveedores'} ? 'show' : ''">
+
+                <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase" style="font-size:0.7rem; letter-spacing:0.05em;">Proveedores</span>
+                <a th:href="@{/proveedores}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'proveedores-lista'} ? 'active' : ''">
+                    Ver Proveedores
+                </a>
+                <a th:href="@{/proveedores/nuevo}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'proveedores-nuevo'} ? 'active' : ''">
+                    Registrar Nuevo
+                </a>
+                <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase" style="font-size:0.7rem; letter-spacing:0.05em;">Pedidos</span>
+                <a th:href="@{/pedidos}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'pedidos-lista'} ? 'active' : ''">
+                    Ver Pedidos
+                </a>
+                <a th:href="@{/pedidos/nuevo}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'pedidos-nuevo'} ? 'active' : ''">
+                    Nuevo Pedido
+                </a>
+            </div>
+
+            <!-- REPORTES Y PROYECCIONES -->
+            <a href="#collapseReportes" class="list-group-item list-group-item-action bg-dark text-white p-4"
+                data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseReportes"
+                th:classappend="${vistaActiva == 'reportes'} ? 'active' : ''">
+                <i class="fa-solid fa-chart-column me-2"></i> Reportes
+                <i class="fa-solid fa-caret-up fa-flip-vertical float-end"></i>
+            </a>
+            <div class="collapse ms-3" id="collapseReportes"
+                th:classappend="${vistaActiva == 'reportes'} ? 'show' : ''">
+                <!-- Reportes -->
+                <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase" style="font-size:0.7rem; letter-spacing:0.05em;">Reportes</span>
+                <a th:href="@{/reportes/stock}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'reportes-stock'} ? 'active' : ''">
+                    Stock General
+                </a>
+                <a th:href="@{/reportes/vencidos}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'reportes-vencidos'} ? 'active' : ''">
+                    Productos Vencidos
+                </a>
+                <a th:href="@{/reportes/movimientos}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'reportes-movimientos'} ? 'active' : ''">
+                    Entradas y Salidas
+                </a>
+                <a th:href="@{/reportes/ventas}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'reportes-ventas'} ? 'active' : ''">
+                    Ventas
+                </a>
+                <a th:href="@{/reportes/proveedores}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'reportes-proveedores'} ? 'active' : ''">
+                    Proveedores
+                </a>
+                <!-- Proyecciones -->
+                <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase" style="font-size:0.7rem; letter-spacing:0.05em;">Proyecciones</span>
+                <a th:href="@{/proyecciones}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'proyecciones'} ? 'active' : ''">
+                    Ver Proyecciones
+                </a>
+                <a th:href="@{/proyecciones/manual}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'proyecciones-manual'} ? 'active' : ''">
+                    Consulta Manual
+                </a>
+            </div>
+
+            <!-- USUARIOS Y ROLES -->
+            <a href="#collapseUsuarios" class="list-group-item list-group-item-action bg-dark text-white p-4"
+                data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseUsuarios"
+                th:classappend="${vistaActiva == 'usuarios'} ? 'active' : ''">
+                <i class="fa-solid fa-user-shield me-2"></i> Usuarios y Roles
+                <i class="fa-solid fa-caret-up fa-flip-vertical float-end"></i>
+            </a>
+            <div class="collapse ms-3" id="collapseUsuarios"
+                th:classappend="${vistaActiva == 'usuarios'} ? 'show' : ''">
+                <a th:href="@{/usuarios}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'usuarios-lista'} ? 'active' : ''">
+                    Ver Usuarios
+                </a>
+                <a th:href="@{/usuarios/nuevo}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'usuarios-nuevo'} ? 'active' : ''">
+                    Registrar Usuario
+                </a>
+            </div>
+
+            <!-- CONFIGURACIÓN -->
+            <a href="#collapseConfig" class="list-group-item list-group-item-action bg-dark text-white p-4"
+                data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseConfig"
+                th:classappend="${vistaActiva == 'configuracion'} ? 'active' : ''">
+                <i class="fa-solid fa-gear me-2"></i> Configuración
+                <i class="fa-solid fa-caret-up fa-flip-vertical float-end"></i>
+            </a>
+            <div class="collapse ms-3" id="collapseConfig"
+                th:classappend="${vistaActiva == 'configuracion'} ? 'show' : ''">
+                <a th:href="@{/configuracion}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'configuracion-params'} ? 'active' : ''">
+                    Parámetros del Sistema
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- PIE CON LOGO Y SLOGAN -->
+    <div class="text-center mt-auto border-top border-secondary p-3 menu-img">
+        <img th:src="@{/img/logo_prototipo.png}" alt="Logo" class="img-fluid mb-2" style="max-width:80px;">
+        <p class="small text-secondary fst-italic m-0">"Control y confianza en cada registro"</p>
+    </div>
+
+</div>

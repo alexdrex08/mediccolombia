@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UsuarioServiceImpl implements UsuarioService{
+public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioDAO usuarioDAO;
     private final EstadoUsuarioDAO estadoUsuarioDAO;
@@ -41,27 +41,30 @@ public class UsuarioServiceImpl implements UsuarioService{
     @Override
     @Transactional
     public UsuarioResponseDTO crear(UsuarioCreateRequestDTO dto) {
-        if(dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
-        if(usuarioDAO.existsByCorreo(dto.getCorreo())){
+        System.out.println("ENTRO AL SERVICE");
+        if (dto == null)
+            throw new IllegalArgumentException("El DTO no puede ser nulo");
+        if (usuarioDAO.existsByCorreo(dto.getCorreo())) {
             throw new ResourceNotFoundException("Ya existe un usuario con este correo");
         }
-
         String contrasenaCodificada = passwordEncoder.encode(dto.getContrasena());
         Usuario usuario = usuarioMapper.toEntity(dto, contrasenaCodificada);
         return usuarioMapper.toResponseDTO(usuarioDAO.save(usuario));
     }
 
-
     @Override
     @Transactional
     public UsuarioResponseDTO actualizar(Long id, UsuarioUpdateRequest dto) {
-        if(dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
+        if (dto == null)
+            throw new IllegalArgumentException("El DTO no puede ser nulo");
 
-        if(id  == null) throw new IllegalArgumentException("El ID no puede ser nulo");
+        if (id == null)
+            throw new IllegalArgumentException("El ID no puede ser nulo");
 
         Usuario usuario = usuarioDAO.findById(id)
-                                    .orElseThrow(() -> new ResourceNotFoundException("El Usuario con el ID:"+ id + " no fue encontrado o no existe"));
-        if(!usuario.getCorreo().equalsIgnoreCase(dto.getCorreo()) && usuarioDAO.existsByCorreo(dto.getCorreo())){
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "El Usuario con el ID:" + id + " no fue encontrado o no existe"));
+        if (!usuario.getCorreo().equalsIgnoreCase(dto.getCorreo()) && usuarioDAO.existsByCorreo(dto.getCorreo())) {
             throw new ResourceNotFoundException("Ya existe un usuario con ese correo");
         }
 
@@ -75,47 +78,55 @@ public class UsuarioServiceImpl implements UsuarioService{
     @Override
     @Transactional
     public void eliminar(Long id) {
-        if(id == null)  throw new IllegalArgumentException("El ID no puede ser nulo");
-        if(!usuarioDAO.existsById(id)) throw new ResourceNotFoundException("Usuario con ID" + id + " no fue encontrado");
+        if (id == null)
+            throw new IllegalArgumentException("El ID no puede ser nulo");
+        if (!usuarioDAO.existsById(id))
+            throw new ResourceNotFoundException("Usuario con ID" + id + " no fue encontrado");
         usuarioDAO.deleteById(id);
     }
 
     @Override
     @Transactional(readOnly = true)
     public UsuarioResponseDTO obtenerPorId(Long id) {
-        if(id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
+        if (id == null)
+            throw new IllegalArgumentException("El ID no puede ser nulo");
         return usuarioDAO.findById(id)
-                        .map(usuarioMapper::toResponseDTO)
-                        .orElseThrow(() -> new ResourceNotFoundException("Usuario con el ID: "+ id + " no fue encontrado"));
+                .map(usuarioMapper::toResponseDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario con el ID: " + id + " no fue encontrado"));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<UsuarioResponseDTO> listar() {
         return usuarioDAO.findAll()
-                        .stream()
-                        .map(usuarioMapper::toResponseDTO)
-                        .toList();
+                .stream()
+                .map(usuarioMapper::toResponseDTO)
+                .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public UsuarioResponseDTO buscarPorCorreo(String correo) {
-        if(correo == null) throw new IllegalArgumentException("El correo no puede ser nulo");
+        if (correo == null)
+            throw new IllegalArgumentException("El correo no puede ser nulo");
         return usuarioDAO.findByCorreo(correo)
-                        .map(usuarioMapper::toResponseDTO)
-                        .orElseThrow(() -> new ResourceNotFoundException("Usuario con correo: " +correo+ " no fue encontrado"));
+                .map(usuarioMapper::toResponseDTO)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Usuario con correo: " + correo + " no fue encontrado"));
     }
 
     @Override
     @Transactional
     public void cambiarContrasena(Long id, UsuarioCambiarContrasenaDTO dto) {
-        if(id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        if(dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
+        if (id == null)
+            throw new IllegalArgumentException("El ID no puede ser nulo");
+        if (dto == null)
+            throw new IllegalArgumentException("El DTO no puede ser nulo");
 
         Usuario usuario = usuarioDAO.findById(id)
-                                    .orElseThrow(() -> new ResourceNotFoundException("El Usuario con el ID:" + id + " no encontrado o no existe"));
-        if (!passwordEncoder.matches(dto.getContrasenaActual(), usuario.getContrasena())){
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "El Usuario con el ID:" + id + " no encontrado o no existe"));
+        if (!passwordEncoder.matches(dto.getContrasenaActual(), usuario.getContrasena())) {
             throw new IllegalArgumentException("La contraseña actual es incorrecta");
         }
 
@@ -123,34 +134,36 @@ public class UsuarioServiceImpl implements UsuarioService{
         usuarioDAO.save(usuario);
     }
 
-
     @Override
     @Transactional(readOnly = true)
     public UsuarioDetalleResponseDTO obtenerDetalle(Long id) {
-       if(id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
+        if (id == null)
+            throw new IllegalArgumentException("El ID no puede ser nulo");
 
-       Usuario usuario = usuarioDAO.findById(id)    
-                                .orElseThrow(() -> new ResourceNotFoundException("El usuario con el ID:" + id + " no encontrado"));
+        Usuario usuario = usuarioDAO.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("El usuario con el ID:" + id + " no encontrado"));
         List<EstadoUsuarioResponseDTO> estados = estadoUsuarioDAO.findByUsuarioId(id)
-                                .stream()
-                                .map(estadoUsuarioMapper::toResponseDTO)
-                                .toList();
+                .stream()
+                .map(estadoUsuarioMapper::toResponseDTO)
+                .toList();
 
         return usuarioMapper.toDetalleDTO(usuario, estados);
     }
+
     @Override
     @Transactional(readOnly = true)
-     public UsuarioDetalleMovimientosResponseDto obtenerDetalleMovimiento(Long id) {
-       if(id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
+    public UsuarioDetalleMovimientosResponseDto obtenerDetalleMovimiento(Long id) {
+        if (id == null)
+            throw new IllegalArgumentException("El ID no puede ser nulo");
 
-       Usuario usuario = usuarioDAO.findById(id)    
-                                .orElseThrow(() -> new ResourceNotFoundException("El usuario con el ID:" + id + " no encontrado"));
+        Usuario usuario = usuarioDAO.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("El usuario con el ID:" + id + " no encontrado"));
         List<MovimientoProdResponseDTO> movimientos = movimientoProdDAO.findByUsuarioId(id)
-                                .stream()
-                                .map(movimientoProdMapper::toResponseDTO)
-                                .toList();
+                .stream()
+                .map(movimientoProdMapper::toResponseDTO)
+                .toList();
 
         return usuarioMapper.toDetalleMovimientoDTO(usuario, movimientos);
     }
-    
+
 }

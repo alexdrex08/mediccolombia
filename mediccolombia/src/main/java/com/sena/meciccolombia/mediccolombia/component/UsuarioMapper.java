@@ -21,6 +21,7 @@ public class UsuarioMapper {
                         .nombre(dto.getNombre())
                         .correo(dto.getCorreo())
                         .contrasena(contrasenaCodificada)
+                        .identificacion(dto.getIdentificacion())
                         .rol(dto.getRol())
                         .build();
     }
@@ -31,6 +32,7 @@ public class UsuarioMapper {
                                 .id(entity.getId())
                                 .nombre(entity.getNombre())
                                 .correo(entity.getCorreo())
+                                .identificacion(entity.getIdentificacion())
                                 .rol(entity.getRol())
                                 .build();
     }

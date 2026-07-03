@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Pedidos - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5">
+
+                <!-- ENCABEZADO -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold text-dark mb-0">
+                            <i class="fa-solid fa-truck-fast me-2 text-primary"></i>Pedidos de Compra
+                        </h2>
+                        <p class="text-muted small mb-0">Gestión de órdenes de compra a proveedores</p>
+                    </div>
+                    <a th:href="@{/pedidos/nuevo}" class="btn btn-primary">
+                        <i class="fa-solid fa-plus me-1"></i> Nuevo Pedido
+                    </a>
+                </div>
+
+                <!-- Mensajes flash -->
+                <div th:if="${mensaje}" class="alert alert-success py-2 mb-3">
+                    <i class="fa-solid fa-circle-check me-2"></i>
+                    <span th:text="${mensaje}"></span>
+                </div>
+                <div th:if="${error}" class="alert alert-danger py-2 mb-3">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    <span th:text="${error}"></span>
+                </div>
+
+                <!-- TARJETAS RESUMEN -->
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-md-3">
+                        <div class="card shadow-sm border-0 h-100 p-3">
+                            <div class="card-body">
+                                <p class="text-muted small mb-1">Total pedidos</p>
+                                <h3 class="fw-bold mb-0" th:text="${totalPedidos}">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card shadow-sm border-0 h-100 p-3">
+                            <div class="card-body">
+                                <p class="text-muted small mb-1">En proceso</p>
+                                <h3 class="fw-bold mb-0 text-warning" th:text="${pedidosEnProceso}">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card shadow-sm border-0 h-100 p-3">
+                            <div class="card-body">
+                                <p class="text-muted small mb-1">Completados</p>
+                                <h3 class="fw-bold mb-0 text-success" th:text="${pedidosCompletados}">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card shadow-sm border-0 h-100 p-3">
+                            <div class="card-body">
+                                <p class="text-muted small mb-1">Cancelados / Devueltos</p>
+                                <h3 class="fw-bold mb-0 text-danger" th:text="${pedidosCancelados}">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FILTROS -->
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="card-body">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                    <input type="text" id="filtroBuscar" class="form-control"
+                                        placeholder="Buscar por proveedor o ID...">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="filtroEstado" class="form-select">
+                                    <option value="">Todos los estados</option>
+                                    <option th:each="e : ${estados}" th:value="${e.nombreEstado}"
+                                        th:text="${e.nombreEstado}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-outline-secondary w-100" onclick="limpiarFiltros()">
+                                    <i class="fa-solid fa-rotate-left me-1"></i>Limpiar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABLA DE PEDIDOS -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa-solid fa-list me-2 text-secondary"></i>Pedidos registrados
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th># Pedido</th>
+                                        <th>Proveedor</th>
+                                        <th>Fecha</th>
+                                        <th class="text-center">Estado</th>
+                                        <th class="text-end">Total</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaPedidos">
+                                    <tr th:each="p : ${pedidos}" th:if="${pedidos != null and !#lists.isEmpty(pedidos)}"
+                                        th:attr="data-proveedor=${p.nombreProveedor}, data-estado=${p.estadoPedido}">
+                                        <td class="fw-bold">#<span th:text="${p.id}"></span></td>
+                                        <td th:text="${p.nombreProveedor}"></td>
+                                        <td th:text="${#temporals.format(p.fechaPedido, 'dd/MM/yyyy HH:mm')}"></td>
+                                        <td class="text-center">
+
+                                            <span
+                                                th:classappend="
+                                                ${p.estadoPedido == 'Completado / Recibido'} ? 'bg-success' :
+                                                (${p.estadoPedido == 'Cancelado' or p.estadoPedido == 'Rechazado' or p.estadoPedido == 'Devuelto'} ? 'bg-danger' : 'bg-warning text-dark')"
+                                                class="badge px-2 py-1" th:text="${p.estadoPedido}"></span>
+                                        </td>
+                                        <td class="text-end fw-bold">
+                                            $&nbsp;<span
+                                                th:text="${#numbers.formatDecimal(p.totalPedido, 0, 'COMMA', 0, 'POINT')}"></span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a th:href="@{'/pedidos/' + ${p.id}}"
+                                                class="btn btn-sm btn-outline-primary">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${pedidos == null or #lists.isEmpty(pedidos)}">
+                                        <td colspan="6" class="text-center text-muted py-4">
+                                            <i class="fa-solid fa-box-open me-2"></i>
+                                            No hay pedidos registrados aún
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <nav>
+                            <ul id="paginacion" class="pagination justify-content-center mb-0"></ul>
+                        </nav>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+    <script>
+        const filtroBuscar = document.getElementById('filtroBuscar');
+        const filtroEstado = document.getElementById('filtroEstado');
+        [filtroBuscar, filtroEstado].forEach(el => el.addEventListener('input', filtrar));
+
+        function filtrar() {
+            const texto = filtroBuscar.value.toLowerCase();
+            const estado = filtroEstado.value;
+            const filas = document.querySelectorAll('#tablaPedidos tr[data-proveedor]');
+            filas.forEach(row => {
+                const prov = (row.dataset.proveedor || '').toLowerCase();
+                const est = row.dataset.estado || '';
+                row.style.display =
+                    prov.includes(texto) && (estado === '' || est === estado)
+                        ? '' : 'none';
+            });
+            paginar();
+        }
+
+        const filasPorPagina = 10;
+        function paginar() {
+            const filas = Array.from(document.querySelectorAll('#tablaPedidos tr[data-proveedor]'))
+                .filter(r => r.style.display !== 'none');
+            const pag = document.getElementById('paginacion');
+            pag.innerHTML = '';
+            const totalPag = Math.ceil(filas.length / filasPorPagina);
+            for (let i = 1; i <= totalPag; i++) {
+                pag.innerHTML += `<li class="page-item"><a class="page-link" onclick="irPag(${i})">${i}</a></li>`;
+            }
+            irPag(1);
+        }
+        function irPag(num) {
+            const filas = Array.from(document.querySelectorAll('#tablaPedidos tr[data-proveedor]'))
+                .filter(r => r.style.display !== 'none');
+            filas.forEach((r, i) => {
+                r.style.display = (i >= (num - 1) * filasPorPagina && i < num * filasPorPagina) ? '' : 'none';
+            });
+            document.querySelectorAll('#paginacion .page-item').forEach((li, idx) => {
+                li.classList.toggle('active', idx + 1 === num);
+            });
+        }
+        function limpiarFiltros() {
+            filtroBuscar.value = '';
+            filtroEstado.value = '';
+            filtrar();
+        }
+        paginar();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link th:href="@{/css/register.css}" rel="stylesheet">
+    <title>Registro - Asuras Col</title>
+</head>
+
+<body>
+    <div class="register-container">
+
+        <!-- FORMULARIO -->
+        <div class="register-form">
+            <div class="card shadow-sm p-4" style="width:100%; max-width:450px;">
+
+                <div class="text-center mb-4">
+                    <img th:src="@{/img/logo_prototipo.png}" alt="Logo" style="max-width:70px;">
+                    <h4 class="fw-bold mt-2">Crear cuenta</h4>
+                    <p class="text-muted small">Únete a Asuras Col</p>
+                </div>
+
+                <!-- Error de registro (correo duplicado, etc.) -->
+                <div th:if="${error}" class="alert alert-danger py-2 mb-3">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    <span th:text="${error}"></span>
+                </div>
+
+                <!--
+                    POST a /auth/register — manejado por AuthViewController.
+                -->
+                <form th:action="@{/auth/register}" method="post">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nombre completo</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                            <input type="text" name="nombre" class="form-control"
+                                   placeholder="Tu nombre y apellido"
+                                   th:value="${nombreAnterior}"
+                                   required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Número de documento</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-id-card"></i></span>
+                            <input type="text" name="identificacion" class="form-control"
+                                   th:value="${identificacionAnterior}"
+                                   required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Correo electrónico</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                            <input type="email" name="correo" class="form-control"
+                                   placeholder="alguien@gmail.com"
+                                   th:value="${correoAnterior}"
+                                   required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Contraseña</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                            <input type="password" name="contrasena" id="inputContrasena"
+                                   class="form-control" placeholder="••••••••"
+                                   minlength="6" required>
+                            <button type="button" class="btn btn-outline-secondary"
+                                    onclick="toggleContrasena('inputContrasena', this)">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Confirmar contraseña</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                            <input type="password" id="inputConfirmar"
+                                   class="form-control" placeholder="••••••••" required>
+                            <button type="button" class="btn btn-outline-secondary"
+                                    onclick="toggleContrasena('inputConfirmar', this)">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <!-- Mensaje de validación en cliente -->
+                        <div id="errorConfirmar" class="text-danger small mt-1" style="display:none;">
+                            Las contraseñas no coinciden.
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="terms" required>
+                        <label class="form-check-label small" for="terms">
+                            Acepto los <a href="#" class="text-decoration-none">términos y condiciones</a>.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100" id="btnRegistrar">
+                        <i class="fa-solid fa-user-plus me-2"></i>Registrar cuenta
+                    </button>
+
+                </form>
+
+                <div class="text-center mt-3">
+                    <small class="text-muted">¿Ya tienes cuenta?</small>
+                    <a th:href="@{/login}" class="text-decoration-none ms-1">Inicia sesión</a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- BANNER -->
+        <div class="banner position-relative">
+            <div class="banner-content">
+                <img th:src="@{/img/logo_prototipo.png}" alt="Logo" style="max-width:100px;" class="mb-3">
+                <h2 class="fw-bold">Asuras Col</h2>
+                <p class="lead fst-italic">"Control y confianza en cada registro"</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleContrasena(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        // Validación en cliente: contraseñas coinciden antes de enviar
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const pass = document.getElementById('inputContrasena').value;
+            const confirm = document.getElementById('inputConfirmar').value;
+            const errorDiv = document.getElementById('errorConfirmar');
+            if (pass !== confirm) {
+                e.preventDefault();
+                errorDiv.style.display = 'block';
+                document.getElementById('inputConfirmar').classList.add('is-invalid');
+            } else {
+                errorDiv.style.display = 'none';
+                document.getElementById('inputConfirmar').classList.remove('is-invalid');
+            }
+        });
+
+        document.getElementById('inputConfirmar').addEventListener('input', function () {
+            const pass = document.getElementById('inputContrasena').value;
+            const errorDiv = document.getElementById('errorConfirmar');
+            if (this.value && this.value !== pass) {
+                errorDiv.style.display = 'block';
+                this.classList.add('is-invalid');
+            } else {
+                errorDiv.style.display = 'none';
+                this.classList.remove('is-invalid');
+            }
+        });
+    </script>
+</body>
+</html>

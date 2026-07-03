@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Vencimientos y Alertas - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5">
+
+                <!-- ENCABEZADO -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold text-dark mb-0">
+                            <i class="fa-solid fa-bell me-2 text-warning"></i>Vencimientos y Alertas
+                        </h2>
+                        <p class="text-muted small mb-0">
+                            Las alertas son generadas automáticamente por el sistema cada medianoche.
+                        </p>
+                    </div>
+                    <div class="text-muted small text-end">
+                        <i class="fa-solid fa-clock me-1"></i>
+                        Última ejecución del sistema: medianoche
+                    </div>
+                </div>
+
+                <!-- Mensajes flash -->
+                <div th:if="${mensaje}" class="alert alert-success py-2 mb-3">
+                    <i class="fa-solid fa-circle-check me-2"></i>
+                    <span th:text="${mensaje}"></span>
+                </div>
+                <div th:if="${error}" class="alert alert-danger py-2 mb-3">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    <span th:text="${error}"></span>
+                </div>
+
+                <!-- =============================================
+                     TARJETAS DE RESUMEN
+                     ============================================= -->
+                <div class="row g-3 mb-4">
+
+                    <div class="col-12 col-md-3">
+                        <div class="card shadow-sm border-0 p-3 h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="fa-solid fa-triangle-exclamation text-danger fs-1 me-3"></i>
+                                <div>
+                                    <p class="text-muted small mb-0">Stock bajo</p>
+                                    <h3 class="fw-bold mb-0 text-danger" th:text="${totalStockBajo}">0</h3>
+                                    <small class="text-muted">productos críticos</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-3">
+                        <div class="card shadow-sm border-0 p-3 h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="fa-solid fa-hourglass-half text-warning fs-1 me-3"></i>
+                                <div>
+                                    <p class="text-muted small mb-0">Próximos a vencer</p>
+                                    <h3 class="fw-bold mb-0 text-warning" th:text="${totalProximasVencer}">0</h3>
+                                    <small class="text-muted">en los próximos 7 días</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-3">
+                        <div class="card shadow-sm border-0 p-3 h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="fa-solid fa-skull-crossbones text-dark fs-1 me-3"></i>
+                                <div>
+                                    <p class="text-muted small mb-0">Productos vencidos</p>
+                                    <h3 class="fw-bold mb-0" th:text="${totalVencidas}">0</h3>
+                                    <small class="text-muted">retirados del inventario</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-3">
+                        <div class="card shadow-sm border-0 p-3 h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="fa-solid fa-bell text-secondary fs-1 me-3"></i>
+                                <div>
+                                    <p class="text-muted small mb-0">Total de alertas</p>
+                                    <h3 class="fw-bold mb-0" th:text="${totalAlertas}">0</h3>
+                                    <small class="text-muted">activas en el sistema</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- =============================================
+                        BLOQUE DE ALERTAS
+                     ============================================= -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white border-bottom p-0">
+                        <ul class="nav nav-tabs border-0 px-3 pt-2" id="tabsAlertas" role="tablist">
+
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active fw-bold" id="tab-stock-tab" data-bs-toggle="tab"
+                                    data-bs-target="#tab-stock" type="button" role="tab">
+                                    <i class="fa-solid fa-triangle-exclamation text-danger me-1"></i>
+                                    Stock Bajo
+                                    <span class="badge bg-danger ms-1" th:text="${totalStockBajo}"></span>
+                                </button>
+                            </li>
+
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold" id="tab-vencer-tab" data-bs-toggle="tab"
+                                    data-bs-target="#tab-vencer" type="button" role="tab">
+                                    <i class="fa-solid fa-hourglass-half text-warning me-1"></i>
+                                    Próximos a Vencer
+                                    <span class="badge bg-warning text-dark ms-1"
+                                        th:text="${totalProximasVencer}"></span>
+                                </button>
+                            </li>
+
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold" id="tab-vencidos-tab" data-bs-toggle="tab"
+                                    data-bs-target="#tab-vencidos" type="button" role="tab">
+                                    <i class="fa-solid fa-skull-crossbones me-1"></i>
+                                    Vencidos
+                                    <span class="badge bg-dark ms-1" th:text="${totalVencidas}"></span>
+                                </button>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                    <div class="tab-content" id="tabsAlertasContent">
+
+                        <!-- ── TAB 1: STOCK BAJO ── -->
+                        <div class="tab-pane fade show active" id="tab-stock" role="tabpanel"
+                            aria-labelledby="tab-stock-tab">
+                            <div class="p-3">
+                                <div class="alert alert-danger py-2 mb-3">
+                                    <i class="fa-solid fa-circle-info me-2"></i>
+                                    Productos cuyo stock actual es igual o menor al stock mínimo definido.
+                                    Considera realizar un pedido de reposición.
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Producto</th>
+                                            <th>Descripción</th>
+                                            <th>Fecha detección</th>
+                                            <th th:if="${esAdmin}" class="text-center">Resolver</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="alerta : ${alertasStockBajo}">
+                                            <td class="text-muted small">#<span th:text="${alerta.id}"></span></td>
+                                            <td class="fw-bold" th:text="${alerta.nombreProducto}"></td>
+                                            <td class="text-muted small" th:text="${alerta.descripcion}"></td>
+                                            <td
+                                                th:text="${#temporals.format(alerta.fechaCreacion, 'dd/MM/yyyy HH:mm')}">
+                                            </td>
+   
+                                            <td th:if="${esAdmin}" class="text-center">
+                                                <form th:action="@{'/alertas/' + ${alerta.id} + '/eliminar'}"
+                                                    method="post" onsubmit="return confirmarEliminar()">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                        title="Marcar como resuelta">
+                                                        <i class="fa-solid fa-check me-1"></i>Resolver
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(alertasStockBajo)}">
+                                            <td th:colspan="${esAdmin} ? 5 : 4" class="text-center text-muted py-4">
+                                                <i class="fa-solid fa-circle-check text-success me-2"></i>
+                                                No hay alertas de stock bajo activas
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- ── TAB 2: PRÓXIMOS A VENCER ── -->
+                        <div class="tab-pane fade" id="tab-vencer" role="tabpanel" aria-labelledby="tab-vencer-tab">
+                            <div class="p-3">
+                                <div class="alert alert-warning py-2 mb-3">
+                                    <i class="fa-solid fa-circle-info me-2"></i>
+                                    Productos con fecha de expiración dentro de los próximos
+                                    <strong>7 días</strong>. Planifica su uso o devolución al proveedor.
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Producto</th>
+                                            <th>Descripción</th>
+                                            <th>Fecha detección</th>
+                                            <th th:if="${esAdmin}" class="text-center">Resolver</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="alerta : ${alertasProximasVencer}">
+                                            <td class="text-muted small">#<span th:text="${alerta.id}"></span></td>
+                                            <td class="fw-bold" th:text="${alerta.nombreProducto}"></td>
+                                            <td class="text-muted small" th:text="${alerta.descripcion}"></td>
+                                            <td
+                                                th:text="${#temporals.format(alerta.fechaCreacion, 'dd/MM/yyyy HH:mm')}">
+                                            </td>
+                                            <td th:if="${esAdmin}" class="text-center">
+                                                <form th:action="@{'/alertas/' + ${alerta.id} + '/eliminar'}"
+                                                    method="post" onsubmit="return confirmarEliminar()">
+                                                    <button type="submit"
+                                                        class="btn btn-sm btn-outline-warning text-dark"
+                                                        title="Marcar como resuelta">
+                                                        <i class="fa-solid fa-check me-1"></i>Resolver
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(alertasProximasVencer)}">
+                                            <td th:colspan="${esAdmin} ? 5 : 4" class="text-center text-muted py-4">
+                                                <i class="fa-solid fa-circle-check text-success me-2"></i>
+                                                No hay productos próximos a vencer
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- ── TAB 3: VENCIDOS ── -->
+                        <div class="tab-pane fade" id="tab-vencidos" role="tabpanel" aria-labelledby="tab-vencidos-tab">
+                            <div class="p-3">
+                                <div class="alert alert-dark py-2 mb-3">
+                                    <i class="fa-solid fa-circle-info me-2"></i>
+                                    Productos ya vencidos. El scheduler los retiró automáticamente del
+                                    inventario con un movimiento de tipo
+                                    <strong>Retiro por Vencimiento</strong>.
+                                    Puedes resolver la alerta una vez confirmado el retiro físico.
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Producto</th>
+                                            <th>Descripción</th>
+                                            <th>Fecha detección</th>
+                                            <th th:if="${esAdmin}" class="text-center">Resolver</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="alerta : ${alertasVencidas}">
+                                            <td class="text-muted small">#<span th:text="${alerta.id}"></span></td>
+                                            <td class="fw-bold" th:text="${alerta.nombreProducto}"></td>
+                                            <td class="text-muted small" th:text="${alerta.descripcion}"></td>
+                                            <td
+                                                th:text="${#temporals.format(alerta.fechaCreacion, 'dd/MM/yyyy HH:mm')}">
+                                            </td>
+                                            <td th:if="${esAdmin}" class="text-center">
+                                                <form th:action="@{'/alertas/' + ${alerta.id} + '/eliminar'}"
+                                                    method="post" onsubmit="return confirmarEliminar()">
+                                                    <button type="submit" class="btn btn-sm btn-outline-secondary"
+                                                        title="Marcar como resuelta">
+                                                        <i class="fa-solid fa-check me-1"></i>Resolver
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(alertasVencidas)}">
+                                            <td th:colspan="${esAdmin} ? 5 : 4" class="text-center text-muted py-4">
+                                                <i class="fa-solid fa-circle-check text-success me-2"></i>
+                                                No hay alertas de productos vencidos
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Nota informativa sobre el scheduler -->
+                <div class="alert alert-light border mt-4 py-2 text-center">
+                    <i class="fa-solid fa-circle-info me-2 text-muted"></i>
+                    <small class="text-muted">
+                        Las alertas se generan automáticamente cada día a medianoche.
+                        Tras resolver una alerta, esta se elimina del registro, pero se mantendrá la información para próximos reportes. <br> Si deseas ver el historial de alertas resueltas, puedes consultar los reportes de inventario.
+                    </small>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+    <script>
+        function confirmarEliminar() {
+            return confirm('¿Marcar esta alerta como resuelta y eliminarla del registro?');
+        }
+    </script>
+</body>
+
+</html>

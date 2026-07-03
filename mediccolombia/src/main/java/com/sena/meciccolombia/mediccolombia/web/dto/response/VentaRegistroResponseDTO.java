@@ -18,6 +18,8 @@ public class VentaRegistroResponseDTO {
     private String nombreCliente;
     private String nombreUsuario;
     private BigDecimal totalVenta;
+    private String documentoCliente;
+    private String medioPago;
     private List<DetalleVentaResponseDTO> detalles;
     
 }

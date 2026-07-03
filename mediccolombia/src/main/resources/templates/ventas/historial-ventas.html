@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head th:replace="~{fragments/head :: head(titulo='Historial de Ventas - MedicColombia')}"></head>
+
+<body class="toggled">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<div class="d-flex" id="wrapper">
+    <div th:replace="~{fragments/sidebar :: menu}"></div>
+
+    <div id="page-content-wrapper">
+        <main class="container-fluid p-4 my-5">
+
+            <!-- ENCABEZADO -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold text-dark mb-0">
+                    <i class="fa-solid fa-receipt me-2 text-primary"></i>Historial de Ventas
+                </h2>
+                <a th:href="@{/ventas/nueva-venta}" class="btn btn-success">
+                    <i class="fa-solid fa-plus me-1"></i> Nueva Venta
+                </a>
+            </div>
+
+            <!-- TARJETAS DE RESUMEN — estáticas por ahora, conectar con controller -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-md-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <i class="fa-solid fa-money-bill-wave text-success fs-1 me-3"></i>
+                            <div>
+                                <h5 class="fw-bold mb-1">Total vendido hoy</h5>
+                                <!-- Conectar: ${totalHoy} desde VentaViewController -->
+                                <p class="text-muted small mb-0">$ <span th:text="${totalHoy} ?: '—'"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <i class="fa-solid fa-cart-shopping text-primary fs-1 me-3"></i>
+                            <div>
+                                <h5 class="fw-bold mb-1">Ventas del día</h5>
+                                <!-- Conectar: ${cantidadVentasHoy} -->
+                                <p class="text-muted small mb-0"><span th:text="${cantidadVentasHoy} ?: '—'"></span> transacciones</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <i class="fa-solid fa-star text-warning fs-1 me-3"></i>
+                            <div>
+                                <h5 class="fw-bold mb-1">Producto más vendido</h5>
+                                <!-- Conectar: ${masVendido} -->
+                                <p class="text-muted small mb-0" th:text="${masVendido} ?: '—'"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FILTROS -->
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">Buscar por cliente o ID</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                <input type="text" id="filtroBuscar" class="form-control" placeholder="Nombre del cliente o ID venta...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold small">Medio de pago</label>
+                            <select id="filtroMedioPago" class="form-select">
+                                <option value="">Todos</option>
+                                <option value="EFECTIVO">Efectivo</option>
+                                <option value="TARJETA">Tarjeta</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold small">Fecha</label>
+                            <input type="date" id="filtroFecha" class="form-control">
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button class="btn btn-outline-secondary w-100" onclick="limpiarFiltros()">
+                                <i class="fa-solid fa-rotate-left me-1"></i> Limpiar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLA DE VENTAS -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white fw-bold">
+                    <i class="fa-solid fa-list me-2 text-secondary"></i>Ventas registradas
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th># Venta</th>
+                                    <th>Cliente</th>
+                                    <th>Fecha</th>
+                                    <th class="text-center">Medio de pago</th>
+                                    <th class="text-end">Total</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaVentas">
+
+                                <!-- Iteración Thymeleaf — conectar cuando VentaViewController esté listo -->
+                                <tr th:each="v : ${ventas}" th:if="${ventas != null and !#lists.isEmpty(ventas)}"
+                                    th:attr="data-cliente=${v.nombreCliente}, data-pago=${v.medioPago}">
+                                    <td class="fw-bold">#<span th:text="${v.id}"></span></td>
+                                    <td th:text="${v.nombreCliente} ?: 'Cliente eliminado'"></td>
+                                    <td th:text="${#temporals.format(v.fechaVenta, 'dd/MM/yyyy HH:mm')}"></td>
+                                    <td class="text-center">
+                                        <span th:if="${v.medioPago == 'EFECTIVO'}"
+                                            class="badge bg-success">
+                                            <i class="fa-solid fa-money-bill-wave me-1"></i>Efectivo
+                                        </span>
+                                        <span th:if="${v.medioPago == 'TARJETA'}"
+                                            class="badge bg-primary">
+                                            <i class="fa-solid fa-credit-card me-1"></i>Tarjeta
+                                        </span>
+                                    </td>
+                                    <td class="text-end fw-bold">
+                                        $ <span th:text="${#numbers.formatDecimal(v.totalVenta, 0, 'COMMA', 0, 'POINT')}"></span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a th:href="@{'/ventas/' + ${v.id}}"
+                                            class="btn btn-sm btn-outline-primary">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+
+                                <!-- Fila vacía si no hay ventas -->
+                                <tr th:if="${ventas == null or #lists.isEmpty(ventas)}">
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <i class="fa-solid fa-receipt me-2"></i>
+                                        No hay ventas registradas aún
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Paginación -->
+                <div class="card-footer bg-white">
+                    <nav>
+                        <ul id="paginacion" class="pagination justify-content-center mb-0"></ul>
+                    </nav>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<script th:replace="~{fragments/scripts :: scripts}"></script>
+<script>
+    // =============================================
+    // FILTROS EN CLIENTE (sobre filas ya renderizadas)
+    // =============================================
+    const filtroBuscar = document.getElementById('filtroBuscar');
+    const filtroMedioPago = document.getElementById('filtroMedioPago');
+    const filtroFecha = document.getElementById('filtroFecha');
+
+    [filtroBuscar, filtroMedioPago, filtroFecha].forEach(el => el.addEventListener('input', filtrar));
+
+    function filtrar() {
+        const texto = filtroBuscar.value.toLowerCase();
+        const pago = filtroMedioPago.value;
+        const filas = document.querySelectorAll('#tablaVentas tr[data-cliente]');
+
+        filas.forEach(row => {
+            const cliente = (row.dataset.cliente ?? '').toLowerCase();
+            const medioPago = row.dataset.pago ?? '';
+            const coincide =
+                cliente.includes(texto) &&
+                (pago === '' || medioPago === pago);
+            row.style.display = coincide ? '' : 'none';
+        });
+
+        paginar();
+    }
+
+    // =============================================
+    // PAGINACION
+    // =============================================
+    const filasPorPagina = 10;
+
+    function paginar() {
+        const filas = Array.from(document.querySelectorAll('#tablaVentas tr[data-cliente]'))
+            .filter(r => r.style.display !== 'none');
+        const totalPaginas = Math.ceil(filas.length / filasPorPagina);
+        const pag = document.getElementById('paginacion');
+        pag.innerHTML = '';
+
+        for (let i = 1; i <= totalPaginas; i++) {
+            pag.innerHTML += `<li class="page-item">
+                <a class="page-link" onclick="irPagina(${i})">${i}</a>
+            </li>`;
+        }
+
+        irPagina(1);
+    }
+
+    function irPagina(num) {
+        const filas = Array.from(document.querySelectorAll('#tablaVentas tr[data-cliente]'))
+            .filter(r => r.style.display !== 'none');
+        filas.forEach((row, i) => {
+            row.style.display = (i >= (num - 1) * filasPorPagina && i < num * filasPorPagina) ? '' : 'none';
+        });
+        // Resaltar página activa
+        document.querySelectorAll('#paginacion .page-item').forEach((li, idx) => {
+            li.classList.toggle('active', idx + 1 === num);
+        });
+    }
+
+    function limpiarFiltros() {
+        filtroBuscar.value = '';
+        filtroMedioPago.value = '';
+        filtroFecha.value = '';
+        filtrar();
+    }
+
+    paginar();
+</script>
+
+</body>
+</html>

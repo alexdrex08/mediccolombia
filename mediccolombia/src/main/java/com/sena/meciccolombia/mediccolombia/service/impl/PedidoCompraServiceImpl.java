@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,7 @@ import com.sena.meciccolombia.mediccolombia.domain.PedidoCompra;
 import com.sena.meciccolombia.mediccolombia.domain.Producto;
 import com.sena.meciccolombia.mediccolombia.domain.Proveedor;
 import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
+import com.sena.meciccolombia.mediccolombia.security.MyUserDetails;
 import com.sena.meciccolombia.mediccolombia.service.MovimientoProdService;
 import com.sena.meciccolombia.mediccolombia.service.PedidoCompraService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.CambiarEstadoPedidoRequestDTO;
@@ -195,7 +198,7 @@ public class PedidoCompraServiceImpl implements PedidoCompraService {
         for (DetallePedido detalle : detalles) {
             MovimientoProdRequestDTO movimientoDTO = MovimientoProdRequestDTO.builder()
                     .idProducto(detalle.getProducto().getId())
-                    .idUsuario(USUARIO_ADMIN)
+                    .idUsuario(obtenerIdUsuarioActual())
                     .cantidad(detalle.getCantidad())
                     .idTipoMovimiento(TIPO_MOVIMIENTO_COMPRA)
                     .movimiento("Entrada por pedido #" + pedidoCompra.getId())
@@ -211,7 +214,7 @@ public class PedidoCompraServiceImpl implements PedidoCompraService {
         for (DetallePedido detalle : detalles) {
             MovimientoProdRequestDTO movimientoDTO = MovimientoProdRequestDTO.builder()
                     .idProducto(detalle.getProducto().getId())
-                    .idUsuario(USUARIO_ADMIN)
+                    .idUsuario(obtenerIdUsuarioActual())
                     .cantidad(detalle.getCantidad())
                     .idTipoMovimiento(TIPO_MOVIMIENTO_DEVOLUCION_PROVEEDOR)
                     .movimiento("Devolucion a proveedor por pedido #" + pedido.getId())
@@ -263,6 +266,15 @@ public class PedidoCompraServiceImpl implements PedidoCompraService {
                     return pedidoCompraMapper.toResponseDTO(pedido, detalles);
                 })
                 .toList();
+    }
+
+    private Long obtenerIdUsuarioActual() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null ||
+                !(authentication.getPrincipal() instanceof MyUserDetails user)) {
+            throw new IllegalStateException("No existe un usuario autenticado.");
+        }
+        return user.getId();
     }
 
 }

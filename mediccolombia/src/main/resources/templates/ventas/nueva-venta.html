@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head th:replace="~{fragments/head :: head(titulo='Nueva Venta - MedicColombia')}"></head>
+
+<body class="bg-light">
+
+    <div class="container-fluid py-3 px-4">
+
+        <!-- ENCABEZADO POS -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-3">
+                <a th:href="@{/ventas}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Volver
+                </a>
+                <h4 class="fw-bold mb-0">
+                    <i class="fa-solid fa-cash-register me-2 text-primary"></i>Nueva Venta
+                </h4>
+            </div>
+            <span class="text-muted small" id="fechaHoraActual"></span>
+        </div>
+
+        <div class="row g-3">
+
+            <!-- ==============================
+             COLUMNA IZQUIERDA
+             ============================== -->
+            <div class="col-12 col-lg-8">
+
+                <!-- BUSCADOR DE PRODUCTO -->
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="card-header bg-white fw-bold border-bottom">
+                        <i class="fa-solid fa-magnifying-glass me-2 text-primary"></i>Buscar Producto
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-6 position-relative">
+                                <label class="form-label small fw-bold">Nombre del producto</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa-solid fa-pills"></i></span>
+                                    <input type="text" id="inputBuscarProducto" class="form-control"
+                                        placeholder="Escribe para buscar..." autocomplete="off">
+                                </div>
+                                <div id="resultadosBusqueda" class="list-group position-absolute z-3 shadow"
+                                    style="max-height:220px; overflow-y:auto; display:none; width:calc(100% - 24px); left:12px; top:68px;">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Cantidad</label>
+                                <input type="number" id="inputCantidad" class="form-control" min="1" value="1">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Precio unitario ($)</label>
+                                <input type="number" id="inputPrecio" class="form-control" min="0" placeholder="0">
+                            </div>
+                            <div class="col-md-1">
+                                <button class="btn btn-primary w-100" onclick="agregarAlCarrito()" title="Agregar">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Badge producto seleccionado -->
+                        <div id="productoSeleccionado" class="mt-2 d-none">
+                            <span class="badge bg-primary fs-6 py-2 px-3">
+                                <i class="fa-solid fa-check me-1"></i>
+                                <span id="nombreProductoSeleccionado"></span>
+                                — Stock: <strong id="stockProductoSeleccionado"></strong> ud
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARRITO -->
+                <div class="card shadow-sm border-0 mb-3">
+                    <div
+                        class="card-header bg-white fw-bold border-bottom d-flex justify-content-between align-items-center">
+                        <span><i class="fa-solid fa-cart-shopping me-2 text-success"></i>Detalle de la Venta</span>
+                        <span class="badge bg-secondary" id="contadorItems">0 ítems</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th class="text-center">Cantidad</th>
+                                        <th class="text-end">Precio Unit.</th>
+                                        <th class="text-end">Subtotal</th>
+                                        <th class="text-center">Quitar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaCarrito">
+                                    <tr id="filaVacia">
+                                        <td colspan="5" class="text-center text-muted py-4">
+                                            <i class="fa-solid fa-box-open me-2"></i>Aún no hay productos agregados
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CLIENTE -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white fw-bold border-bottom">
+                        <i class="fa-solid fa-user me-2 text-info"></i>Cliente
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-2 align-items-end mb-3">
+                            <div class="col-md-5">
+                                <label class="form-label small fw-bold">Número de documento</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa-solid fa-id-card"></i></span>
+                                    <input type="text" id="inputDocumentoCliente" class="form-control"
+                                        placeholder="Ej: 1234567890">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-outline-info w-100" onclick="buscarCliente()">
+                                    <i class="fa-solid fa-magnifying-glass me-1"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Cliente encontrado -->
+                        <div id="clienteEncontrado" class="alert alert-success d-none py-2">
+                            <i class="fa-solid fa-circle-check me-2"></i>
+                            Cliente: <strong id="nombreClienteEncontrado"></strong>
+                            <span class="text-muted ms-2" id="docClienteEncontrado"></span>
+                            <button type="button" class="btn-close float-end" onclick="limpiarCliente()"></button>
+                        </div>
+
+                        <!-- Formulario creación rápida — solo los campos reales de ClienteResquestDTO -->
+                        <div id="formNuevoCliente" class="d-none">
+                            <div class="alert alert-warning py-2 mb-3">
+                                <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                                Cliente no encontrado. Completa los datos para registrarlo.
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-md-8">
+                                    <label class="form-label small fw-bold">Nombre completo</label>
+                                    <input type="text" id="nuevoNombreCliente" class="form-control"
+                                        placeholder="Nombre completo del cliente">
+                                </div>
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <button class="btn btn-success w-100" onclick="guardarNuevoCliente()">
+                                        <i class="fa-solid fa-floppy-disk me-1"></i> Guardar Cliente
+                                    </button>
+                                </div>
+                            </div>
+                            <small class="text-muted mt-1 d-block">
+                                El número de documento se tomará del campo de búsqueda.
+                            </small>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==============================
+             COLUMNA DERECHA — Resumen
+             ============================== -->
+            <div class="col-12 col-lg-4">
+                <div class="card shadow-sm border-0 sticky-top" style="top: 1rem;">
+                    <div class="card-header bg-dark text-white fw-bold">
+                        <i class="fa-solid fa-receipt me-2"></i>Resumen de Venta
+                    </div>
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Ítems</span>
+                            <span id="resumenItems">0</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Subtotal</span>
+                            <span id="resumenSubtotal" class="fw-bold">$ 0</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="fw-bold fs-5">Total</span>
+                            <span id="resumenTotal" class="fw-bold fs-5 text-success">$ 0</span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Cliente asignado</label>
+                            <div id="resumenCliente" class="text-muted small fst-italic">Sin cliente asignado</div>
+                        </div>
+
+                        <!-- Medio de pago — aparece al pulsar Confirmar -->
+                        <div id="seccionMedioPago" class="mb-3 d-none">
+                            <label class="form-label small fw-bold">Medio de pago</label>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-secondary" id="btnEfectivo"
+                                    onclick="seleccionarMedioPago('EFECTIVO')">
+                                    <i class="fa-solid fa-money-bill-wave me-2"></i>Efectivo
+                                </button>
+                                <button class="btn btn-outline-secondary" id="btnTarjeta"
+                                    onclick="seleccionarMedioPago('TARJETA')">
+                                    <i class="fa-solid fa-credit-card me-2"></i>Tarjeta
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-2">
+                            <button class="btn btn-warning fw-bold" id="btnConfirmarVenta" onclick="mostrarMedioPago()">
+                                <i class="fa-solid fa-check-circle me-2"></i>Confirmar Venta
+                            </button>
+                            <button class="btn btn-success fw-bold d-none" id="btnRegistrarVenta"
+                                onclick="registrarVenta()">
+                                <i class="fa-solid fa-floppy-disk me-2"></i>Registrar Venta
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="limpiarTodo()">
+                                <i class="fa-solid fa-rotate-left me-1"></i>Cancelar
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+    <script th:inline="javascript">
+        const ID_USUARIO_ACTUAL = /*[[${idUsuarioActual}]]*/ 0;
+        console.log(ID_USUARIO_ACTUAL);
+
+        // =============================================
+        // ESTADO CENTRAL DE LA VENTA
+        // =============================================
+        const venta = {
+            items: [],      // { idProducto, nombreProducto, cantidad, precioUnitario, subtotal }
+            cliente: null,  // { id, nombreCliente, identificacion }
+            medioPago: null // 'EFECTIVO' | 'TARJETA'
+        };
+
+        // =============================================
+        // RELOJ EN TIEMPO REAL
+        // =============================================
+        function actualizarHora() {
+            document.getElementById('fechaHoraActual').textContent =
+                new Date().toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+                + ' — ' + new Date().toLocaleTimeString('es-CO');
+        }
+        actualizarHora();
+        setInterval(actualizarHora, 1000);
+
+        // =============================================
+        // BÚSQUEDA AJAX DE PRODUCTO
+        // =============================================
+        let productoActual = null;
+        const inputBuscar = document.getElementById('inputBuscarProducto');
+        const resultados = document.getElementById('resultadosBusqueda');
+
+        let debounce;
+        inputBuscar.addEventListener('input', function () {
+            clearTimeout(debounce);
+            const q = this.value.trim();
+            if (q.length < 2) { resultados.style.display = 'none'; return; }
+            debounce = setTimeout(() => buscarProducto(q), 300);
+        });
+
+        async function buscarProducto(nombre) {
+            try {
+                // GET /api/productos/buscar?nombre=...
+                const res = await fetch(`/api/productos/buscar?nombre=${encodeURIComponent(nombre)}`);
+                if (!res.ok) throw new Error();
+                const lista = await res.json();
+                resultados.innerHTML = '';
+                if (lista.length === 0) {
+                    resultados.innerHTML = '<div class="list-group-item text-muted small">Sin resultados</div>';
+                } else {
+                    lista.forEach(p => {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'list-group-item list-group-item-action';
+                        btn.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">${p.nombreProducto}</span>
+                            <span class="badge ${p.stock > 0 ? 'bg-success' : 'bg-danger'} ms-2">Stock: ${p.stock}</span>
+                        </div>
+                        <small class="text-muted">${p.lote ?? ''}</small>`;
+                        btn.onclick = () => seleccionarProducto(p);
+                        resultados.appendChild(btn);
+                    });
+                }
+                resultados.style.display = 'block';
+            } catch (e) { console.error('Error buscando producto:', e); }
+        }
+
+        function seleccionarProducto(p) {
+            productoActual = p;
+            inputBuscar.value = p.nombreProducto;
+            resultados.style.display = 'none';
+            document.getElementById('nombreProductoSeleccionado').textContent = p.nombreProducto;
+            document.getElementById('stockProductoSeleccionado').textContent = p.stock;
+            document.getElementById('productoSeleccionado').classList.remove('d-none');
+        }
+
+        document.addEventListener('click', e => {
+            if (!inputBuscar.contains(e.target)) resultados.style.display = 'none';
+        });
+
+        // =============================================
+        // CARRITO
+        // =============================================
+        function agregarAlCarrito() {
+            if (!productoActual) { alert('Selecciona un producto de la búsqueda primero.'); return; }
+            const cantidad = parseInt(document.getElementById('inputCantidad').value);
+            const precio = parseFloat(document.getElementById('inputPrecio').value);
+
+            if (!cantidad || cantidad < 1) { alert('La cantidad debe ser mayor a 0.'); return; }
+            if (!precio || precio <= 0) { alert('Ingresa un precio unitario válido.'); return; }
+            if (cantidad > productoActual.stock) {
+                alert(`Stock insuficiente. Disponible: ${productoActual.stock} ud`); return;
+            }
+
+            const existente = venta.items.find(i => i.idProducto === productoActual.id);
+            if (existente) {
+                existente.cantidad += cantidad;
+                existente.subtotal = existente.cantidad * existente.precioUnitario;
+            } else {
+                venta.items.push({
+                    idProducto: productoActual.id,
+                    nombreProducto: productoActual.nombreProducto,
+                    cantidad,
+                    precioUnitario: precio,
+                    subtotal: cantidad * precio
+                });
+            }
+            renderCarrito();
+            limpiarBuscador();
+        }
+
+        function renderCarrito() {
+            const tbody = document.getElementById('tablaCarrito');
+            if (venta.items.length === 0) {
+                tbody.innerHTML = `<tr id="filaVacia">
+                <td colspan="5" class="text-center text-muted py-4">
+                    <i class="fa-solid fa-box-open me-2"></i>Aún no hay productos agregados
+                </td></tr>`;
+                actualizarResumen();
+                return;
+            }
+            tbody.innerHTML = venta.items.map((item, idx) => `
+            <tr>
+                <td>${item.nombreProducto}</td>
+                <td class="text-center">${item.cantidad}</td>
+                <td class="text-end">$ ${fmt(item.precioUnitario)}</td>
+                <td class="text-end fw-bold">$ ${fmt(item.subtotal)}</td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-outline-danger" onclick="quitarItem(${idx})">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </td>
+            </tr>`).join('');
+            actualizarResumen();
+        }
+
+        function quitarItem(idx) {
+            venta.items.splice(idx, 1);
+            renderCarrito();
+        }
+
+        function actualizarResumen() {
+            const total = venta.items.reduce((acc, i) => acc + i.subtotal, 0);
+            const totalItems = venta.items.reduce((acc, i) => acc + i.cantidad, 0);
+            document.getElementById('resumenSubtotal').textContent = '$ ' + fmt(total);
+            document.getElementById('resumenTotal').textContent = '$ ' + fmt(total);
+            document.getElementById('resumenItems').textContent = totalItems;
+            document.getElementById('contadorItems').textContent = venta.items.length + ' ítems';
+        }
+
+        function limpiarBuscador() {
+            inputBuscar.value = '';
+            document.getElementById('inputCantidad').value = 1;
+            document.getElementById('inputPrecio').value = '';
+            document.getElementById('productoSeleccionado').classList.add('d-none');
+            productoActual = null;
+        }
+
+        // =============================================
+        // CLIENTE — AJAX
+        // =============================================
+        async function buscarCliente() {
+            const doc = document.getElementById('inputDocumentoCliente').value.trim();
+            if (!doc) { alert('Ingresa un número de documento.'); return; }
+            try {
+                // GET /api/clientes/identificacion/{identificacion}
+                const res = await fetch(`/api/clientes/identificacion/${encodeURIComponent(doc)}`);
+                if (!res.ok) {
+                    // 404
+                    document.getElementById('formNuevoCliente').classList.remove('d-none');
+                    document.getElementById('clienteEncontrado').classList.add('d-none');
+                    return;
+                }
+                // ClienteResponseDTO: { id, nombreCliente, identificacion }
+                const cliente = await res.json();
+                asignarCliente(cliente);
+            } catch (e) {
+                document.getElementById('formNuevoCliente').classList.remove('d-none');
+            }
+        }
+
+        function asignarCliente(cliente) {
+            venta.cliente = { id: cliente.id, nombreCliente: cliente.nombreCliente, identificacion: cliente.identificacion };
+            document.getElementById('nombreClienteEncontrado').textContent = cliente.nombreCliente;
+            document.getElementById('docClienteEncontrado').textContent = '— ' + cliente.identificacion;
+            document.getElementById('clienteEncontrado').classList.remove('d-none');
+            document.getElementById('formNuevoCliente').classList.add('d-none');
+            document.getElementById('resumenCliente').textContent = cliente.nombreCliente;
+            document.getElementById('resumenCliente').classList.remove('text-muted', 'fst-italic');
+        }
+
+        async function guardarNuevoCliente() {
+            const nombreCliente = document.getElementById('nuevoNombreCliente').value.trim();
+            const identificacion = document.getElementById('inputDocumentoCliente').value.trim();
+
+            if (!nombreCliente) { alert('Ingresa el nombre completo del cliente.'); return; }
+            if (!identificacion) { alert('El número de documento no puede estar vacío.'); return; }
+
+            try {
+                // POST /api/clientes — body según ClienteResquestDTO: { nombreCliente, identificacion }
+                const res = await fetch('/api/clientes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombreCliente, identificacion })
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    alert('Error al guardar el cliente: ' + (err.message ?? res.status));
+                    return;
+                }
+                // Respuesta: ClienteResponseDTO { id, nombreCliente, identificacion }
+                const clienteGuardado = await res.json();
+                asignarCliente(clienteGuardado);
+            } catch (e) {
+                alert('Error de conexión al guardar el cliente.');
+                console.error(e);
+            }
+        }
+
+        function limpiarCliente() {
+            venta.cliente = null;
+            document.getElementById('clienteEncontrado').classList.add('d-none');
+            document.getElementById('formNuevoCliente').classList.add('d-none');
+            document.getElementById('inputDocumentoCliente').value = '';
+            document.getElementById('nuevoNombreCliente').value = '';
+            document.getElementById('resumenCliente').textContent = 'Sin cliente asignado';
+            document.getElementById('resumenCliente').classList.add('text-muted', 'fst-italic');
+        }
+
+        // =============================================
+        // MEDIO DE PAGO Y REGISTRO FINAL
+        // =============================================
+        function mostrarMedioPago() {
+            if (venta.items.length === 0) { alert('Agrega al menos un producto.'); return; }
+            if (!venta.cliente) { alert('Asigna un cliente antes de confirmar.'); return; }
+            document.getElementById('seccionMedioPago').classList.remove('d-none');
+            document.getElementById('btnConfirmarVenta').classList.add('d-none');
+        }
+
+        function seleccionarMedioPago(tipo) {
+            venta.medioPago = tipo;
+            // Limpiar selección visual anterior
+            ['btnEfectivo', 'btnTarjeta'].forEach(id => {
+                document.getElementById(id).classList.remove('btn-primary');
+                document.getElementById(id).classList.add('btn-outline-secondary');
+            });
+            // Resaltar el seleccionado
+            const seleccionado = tipo === 'EFECTIVO' ? 'btnEfectivo' : 'btnTarjeta';
+            document.getElementById(seleccionado).classList.remove('btn-outline-secondary');
+            document.getElementById(seleccionado).classList.add('btn-primary');
+            // Mostrar botón de registrar
+            document.getElementById('btnRegistrarVenta').classList.remove('d-none');
+        }
+
+        async function registrarVenta() {
+            if (!venta.medioPago) { alert('Selecciona un medio de pago.'); return; }
+            const body = {
+                idCliente: venta.cliente.id,
+                idUsuario: ID_USUARIO_ACTUAL,
+                medioPago: venta.medioPago,
+                detalles: venta.items.map(i => ({
+                    idProducto: i.idProducto,
+                    cantidad: i.cantidad,
+                    precioUnitario: i.precioUnitario
+                }))
+            };
+
+            try {
+                const res = await fetch('/api/ventas', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    alert('Error al registrar la venta: ' + (err.message ?? res.status));
+                    return;
+                }
+                // VentaRegistroResponseDTO: { id, fechaVenta, nombreCliente, nombreUsuario, totalVenta, detalles }
+                const ventaGuardada = await res.json();
+                // Redirigir al detalle de la venta recién creada
+                window.location.href = '/ventas/' + ventaGuardada.id;
+            } catch (e) {
+                alert('Error de conexión al registrar la venta.');
+                console.error(e);
+            }
+        }
+
+        function limpiarTodo() {
+            if (confirm('¿Cancelar la venta en curso? Se perderán los productos del carrito.')) {
+                window.location.reload();
+            }
+        }
+
+        // =============================================
+        // UTILIDADES
+        // =============================================
+        function fmt(num) {
+            return Number(num).toLocaleString('es-CO');
+        }
+
+    </script>
+</body>
+
+</html>

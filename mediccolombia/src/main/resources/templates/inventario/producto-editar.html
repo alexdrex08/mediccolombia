@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Editar Producto - Asuras Col')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5" id="producto-container">
+
+                <!-- ENCABEZADO -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold text-dark mb-0">
+                            <i class="fa-solid fa-pen me-2 text-primary"></i>Editar Producto
+                        </h2>
+                        <p class="text-muted small mt-1 mb-0">
+                            Modificando: <strong th:text="${producto.nombreProducto}"></strong>
+                            &nbsp;·&nbsp; ID: <span th:text="${producto.id}"></span>
+                        </p>
+                    </div>
+                    <a th:href="@{/productos/ver/{id}(id=${producto.id})}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Volver al detalle
+                    </a>
+                </div>
+
+                <!-- MENSAJES FLASH -->
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="fa-solid fa-circle-check me-2"></i>
+                    <span th:text="${mensaje}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <form th:action="@{/productos/editar/{id}(id=${producto.id})}" method="post" id="formEditar" novalidate>
+
+                    <!-- SECCIÓN: IDENTIFICACIÓN -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h6 class="fw-bold mb-0 text-primary">
+                                <i class="fa-solid fa-tag me-2"></i>Identificación del Producto
+                            </h6>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-4">
+
+                                <div class="col-md-6">
+                                    <label for="nombreProducto" class="form-label fw-semibold">
+                                        Nombre del producto <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="nombreProducto"
+                                        name="nombreProducto" required maxlength="100"
+                                        th:value="${producto.nombreProducto}">
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="lote" class="form-label fw-semibold">
+                                        Número de lote <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="lote"
+                                        name="lote" required maxlength="50"
+                                        th:value="${producto.lote}">
+                                    <div class="form-text">Modifica solo si el lote fue ingresado incorrectamente.</div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="idCategoria" class="form-label fw-semibold">
+                                        Categoría <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" id="idCategoria" name="idCategoria" required>
+                                        <option value="">Selecciona una categoría...</option>
+                                        <option th:each="cat : ${categorias}"
+                                                th:value="${cat.idCategoria}"
+                                                th:text="${cat.nombreCategoria}"
+                                                th:selected="${cat.nombreCategoria == producto.categoria}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN: CONTROL DE STOCK -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h6 class="fw-bold mb-0 text-primary">
+                                <i class="fa-solid fa-cubes me-2"></i>Control de Stock
+                            </h6>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-4 align-items-start">
+
+                                <!-- Stock actual — solo lectura, no se edita desde aquí -->
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold text-muted">
+                                        Stock actual
+                                        <i class="fa-solid fa-lock ms-1 text-muted" style="font-size:.8em;"></i>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="fa-solid fa-boxes-stacked text-secondary"></i>
+                                        </span>
+                                        <input type="text" class="form-control bg-light"
+                                            th:value="${producto.stock} + ' unidades'" disabled>
+                                    </div>
+                                    <div class="form-text text-warning">
+                                        <i class="fa-solid fa-circle-info me-1"></i>
+                                        El stock solo se modifica mediante movimientos de inventario.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="stockMinimo" class="form-label fw-semibold">
+                                        Stock mínimo <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="fa-solid fa-triangle-exclamation text-warning"></i>
+                                        </span>
+                                        <input type="number" class="form-control" id="stockMinimo"
+                                            name="stockMinimo" required min="0"
+                                            th:value="${producto.stockMinimo}">
+                                    </div>
+                                    <div class="form-text">Umbral de alerta de stock bajo.</div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="stockMaximo" class="form-label fw-semibold">
+                                        Stock máximo <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="fa-solid fa-arrow-up text-success"></i>
+                                        </span>
+                                        <input type="number" class="form-control" id="stockMaximo"
+                                            name="stockMaximo" required min="1"
+                                            th:value="${producto.stockMaximo}">
+                                    </div>
+                                    <div class="form-text">Capacidad máxima permitida.</div>
+                                </div>
+
+                                <!-- Indicador de rango -->
+                                <div class="col-12" id="indicadorStock" style="display:none;">
+                                    <div class="alert alert-info py-2 mb-0 small">
+                                        <i class="fa-solid fa-circle-info me-1"></i>
+                                        Rango configurado: <strong id="textoRango"></strong>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN: VENCIMIENTO -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h6 class="fw-bold mb-0 text-primary">
+                                <i class="fa-solid fa-calendar-xmark me-2"></i>Fecha de Vencimiento
+                            </h6>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-4 align-items-end">
+
+                                <div class="col-md-4">
+                                    <label for="fechaExpiracion" class="form-label fw-semibold">
+                                        Fecha de expiración <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="datetime-local" class="form-control"
+                                        id="fechaExpiracion" name="fechaExpiracion" required
+                                        th:value="${#temporals.format(producto.fechaExpiracion, 'yyyy-MM-dd''T''HH:mm')}">
+                                    <div class="form-text">Debe ser una fecha futura.</div>
+                                    <div id="feedbackFecha" class="invalid-feedback">
+                                        La fecha de expiración debe ser futura.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div id="diasRestantes" class="card border-0 bg-light p-3">
+                                        <div class="small text-muted mb-1">Días hasta el vencimiento</div>
+                                        <div class="fw-bold fs-5" id="textoDiasRestantes">Calculando...</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOTONES -->
+                    <div class="d-flex justify-content-end gap-2 mt-2">
+                        <a th:href="@{/productos/ver/{id}(id=${producto.id})}" class="btn btn-outline-secondary">
+                            <i class="fa-solid fa-xmark me-1"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="fa-solid fa-floppy-disk me-1"></i>Guardar cambios
+                        </button>
+                    </div>
+
+                </form>
+
+            </main>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+    <script>
+        (function () {
+            const minimoInput = document.getElementById('stockMinimo');
+            const maximoInput = document.getElementById('stockMaximo');
+            const fechaInput  = document.getElementById('fechaExpiracion');
+            const indicador   = document.getElementById('indicadorStock');
+            const textoRango  = document.getElementById('textoRango');
+            const diasCard    = document.getElementById('diasRestantes');
+            const textoDias   = document.getElementById('textoDiasRestantes');
+
+            function calcularDias(valor) {
+                if (!valor) return;
+                const seleccionada = new Date(valor);
+                const ahora = new Date();
+                const dias = Math.ceil((seleccionada - ahora) / (1000 * 60 * 60 * 24));
+                if (dias > 0) {
+                    textoDias.textContent = dias + ' día(s)';
+                    textoDias.className = 'fw-bold fs-5 ' + (dias <= 30 ? 'text-warning' : 'text-success');
+                    fechaInput.classList.remove('is-invalid');
+                    fechaInput.classList.add('is-valid');
+                } else {
+                    textoDias.textContent = 'Fecha pasada';
+                    textoDias.className = 'fw-bold fs-5 text-danger';
+                    fechaInput.classList.add('is-invalid');
+                    fechaInput.classList.remove('is-valid');
+                }
+            }
+
+            // Calcular al cargar con el valor actual
+            calcularDias(fechaInput.value);
+            fechaInput.addEventListener('change', () => calcularDias(fechaInput.value));
+
+            function actualizarRango() {
+                const min = parseInt(minimoInput.value);
+                const max = parseInt(maximoInput.value);
+                if (!isNaN(min) && !isNaN(max) && max > 0) {
+                    indicador.style.display = '';
+                    textoRango.textContent = min + ' (mínimo) → ' + max + ' (máximo)';
+                    const valido = min < max;
+                    minimoInput.classList.toggle('is-invalid', !valido);
+                    maximoInput.classList.toggle('is-invalid', !valido);
+                    minimoInput.classList.toggle('is-valid', valido);
+                    maximoInput.classList.toggle('is-valid', valido);
+                }
+            }
+            // Ejecutar al cargar
+            actualizarRango();
+            minimoInput.addEventListener('input', actualizarRango);
+            maximoInput.addEventListener('input', actualizarRango);
+
+            document.getElementById('formEditar').addEventListener('submit', function (e) {
+                let valido = true;
+                this.querySelectorAll('[required]').forEach(campo => {
+                    if (!campo.value.trim()) {
+                        campo.classList.add('is-invalid');
+                        valido = false;
+                    }
+                });
+                const min = parseInt(minimoInput.value) || 0;
+                const max = parseInt(maximoInput.value) || 0;
+                if (min >= max) { minimoInput.classList.add('is-invalid'); maximoInput.classList.add('is-invalid'); valido = false; }
+                if (fechaInput.value && new Date(fechaInput.value) <= new Date()) {
+                    fechaInput.classList.add('is-invalid'); valido = false;
+                }
+                if (!valido) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+            });
+        })();
+    </script>
+</body>
+
+</html>
