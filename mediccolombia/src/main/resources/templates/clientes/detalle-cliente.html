@@ -391,7 +391,7 @@
     <script th:replace="~{fragments/scripts :: scripts}"></script>
 
     <script th:inline="javascript">
-        const CLIENTE_ID = /[[${ cliente.id }]]/;
+        const CLIENTE_ID = /*[[${ cliente.id }]]*/ 0;
 
         // =============================================
         // UTILIDADES
