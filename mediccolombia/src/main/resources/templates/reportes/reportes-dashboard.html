@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Dashboard de Reportes - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5">
+
+                <!-- ENCABEZADO -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-0">
+                            <i class="fa-solid fa-chart-pie text-primary me-2"></i>Dashboard de Reportes
+                        </h2>
+                        <p class="text-muted small mt-1 mb-0">
+                            Resumen general de todos los reportes generados en el sistema.
+                        </p>
+                    </div>
+                    <span class="text-muted small">
+                        <i class="fa-regular fa-calendar me-1"></i>
+                        Actualizado: <span
+                            th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span>
+                    </span>
+                </div>
+
+                <!-- MÉTRICAS RÁPIDAS - TOTAL REPORTES -->
+                <div class="row g-4 mb-5">
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm p-3">
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-file-lines fa-2x text-primary mb-2"></i>
+                                <h5 class="fw-bold mb-1">Total Reportes</h5>
+                                <h2 class="fw-bolder text-dark" th:text="${totalReportes}">0</h2>
+                                <p class="small text-muted">Generados en el sistema</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm p-3">
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-calendar-week fa-2x text-info mb-2"></i>
+                                <h5 class="fw-bold mb-1">Última Semana</h5>
+                                <h2 class="fw-bolder text-dark"
+                                    th:text="${ultimosReportes != null ? ultimosReportes.size() : 0}">0</h2>
+                                <p class="small text-muted">Reportes recientes</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm p-3">
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-user-check fa-2x text-success mb-2"></i>
+                                <h5 class="fw-bold mb-1">Activos</h5>
+                                <h2 class="fw-bolder text-dark" th:text="${totalReportes}">0</h2>
+                                <p class="small text-muted">Disponibles para consulta</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm p-3">
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-chart-simple fa-2x text-warning mb-2"></i>
+                                <h5 class="fw-bold mb-1">Tipos</h5>
+                                <h2 class="fw-bolder text-dark">9</h2>
+                                <p class="small text-muted">Categorías de reportes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TARJETAS DE REPORTES POR TIPO -->
+                <h5 class="fw-bold mb-3 text-secondary">
+                    <i class="fa-solid fa-folder-tree me-2"></i>Reportes por Categoría
+                </h5>
+                <div class="row g-4 mb-5">
+
+                    <!-- STOCK -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="badge bg-primary fs-6 px-3 py-2">
+                                        <i class="fa-solid fa-cubes me-1"></i>Stock
+                                    </span>
+                                    <h4 class="fw-bold text-primary mb-0" th:text="${totalStock}">0</h4>
+                                </div>
+                                <h6 class="fw-bold mb-1">Reportes de Stock</h6>
+                                <p class="text-muted small mb-3">Inventario general, crítico, suficiente y exceso</p>
+                                <a th:href="@{/reportes/inventario}" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="fa-solid fa-eye me-1"></i>Ver todos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VENCIMIENTOS -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="badge bg-danger fs-6 px-3 py-2">
+                                        <i class="fa-solid fa-calendar-xmark me-1"></i>Vencimientos
+                                    </span>
+                                    <h4 class="fw-bold text-danger mb-0" th:text="${totalVencimientos}">0</h4>
+                                </div>
+                                <h6 class="fw-bold mb-1">Reportes de Vencimientos</h6>
+                                <p class="text-muted small mb-3">Productos vencidos y próximos a vencer</p>
+                                <a th:href="@{/reportes/inventario}" class="btn btn-outline-danger btn-sm w-100">
+                                    <i class="fa-solid fa-eye me-1"></i>Ver todos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PRODUCTO -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="badge bg-success fs-6 px-3 py-2">
+                                        <i class="fa-solid fa-pills me-1"></i>Producto
+                                    </span>
+                                    <h4 class="fw-bold text-success mb-0" th:text="${totalProducto}">0</h4>
+                                </div>
+                                <h6 class="fw-bold mb-1">Reportes por Producto</h6>
+                                <p class="text-muted small mb-3">Detalle completo de un producto específico</p>
+                                <a th:href="@{/reportes/inventario}" class="btn btn-outline-success btn-sm w-100">
+                                    <i class="fa-solid fa-eye me-1"></i>Ver todos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CATEGORÍA -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="badge bg-info fs-6 px-3 py-2">
+                                        <i class="fa-solid fa-tag me-1"></i>Categoría
+                                    </span>
+                                    <h4 class="fw-bold text-info mb-0" th:text="${totalCategoria}">0</h4>
+                                </div>
+                                <h6 class="fw-bold mb-1">Reportes por Categoría</h6>
+                                <p class="text-muted small mb-3">Productos agrupados por categoría</p>
+                                <a th:href="@{/reportes/inventario}" class="btn btn-outline-info btn-sm w-100">
+                                    <i class="fa-solid fa-eye me-1"></i>Ver todos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VENTAS -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                                        <i class="fa-solid fa-chart-line me-1"></i>Ventas
+                                    </span>
+                                    <h4 class="fw-bold text-warning mb-0" th:text="${totalVentas}">0</h4>
+                                </div>
+                                <h6 class="fw-bold mb-1">Reportes de Ventas</h6>
+                                <p class="text-muted small mb-3">Análisis de ventas y clientes</p>
+                                <a th:href="@{/reportes/ventas}" class="btn btn-outline-warning btn-sm w-100">
+                                    <i class="fa-solid fa-eye me-1"></i>Ver todos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PEDIDOS -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="badge bg-secondary fs-6 px-3 py-2">
+                                        <i class="fa-solid fa-truck me-1"></i>Pedidos
+                                    </span>
+                                    <h4 class="fw-bold text-secondary mb-0" th:text="${totalPedidos}">0</h4>
+                                </div>
+                                <h6 class="fw-bold mb-1">Reportes de Pedidos</h6>
+                                <p class="text-muted small mb-3">Pedidos y proveedores</p>
+                                <a th:href="@{/reportes/pedidos}" class="btn btn-outline-secondary btn-sm w-100">
+                                    <i class="fa-solid fa-eye me-1"></i>Ver todos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CLIENTES -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="badge bg-purple fs-6 px-3 py-2" style="background-color: #6f42c1;">
+                                        <i class="fa-solid fa-users me-1"></i>Clientes
+                                    </span>
+                                    <h4 class="fw-bold mb-0" style="color: #6f42c1;" th:text="${totalClientes}">0</h4>
+                                </div>
+                                <h6 class="fw-bold mb-1">Reportes de Clientes</h6>
+                                <p class="text-muted small mb-3">Clientes con y sin compras</p>
+                                <a th:href="@{/reportes/ventas}" class="btn btn-sm w-100"
+                                    style="border-color: #6f42c1; color: #6f42c1;">
+                                    <i class="fa-solid fa-eye me-1"></i>Ver todos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PROVEEDORES -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="badge bg-teal fs-6 px-3 py-2" style="background-color: #20c997;">
+                                        <i class="fa-solid fa-handshake me-1"></i>Proveedores
+                                    </span>
+                                    <h4 class="fw-bold mb-0" style="color: #20c997;" th:text="${totalProveedores}">0
+                                    </h4>
+                                </div>
+                                <h6 class="fw-bold mb-1">Reportes de Proveedores</h6>
+                                <p class="text-muted small mb-3">Proveedores con y sin pedidos</p>
+                                <a th:href="@{/reportes/pedidos}" class="btn btn-sm w-100"
+                                    style="border-color: #20c997; color: #20c997;">
+                                    <i class="fa-solid fa-eye me-1"></i>Ver todos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GENERAL -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="badge bg-dark fs-6 px-3 py-2">
+                                        <i class="fa-solid fa-globe me-1"></i>General
+                                    </span>
+                                    <h4 class="fw-bold text-dark mb-0" th:text="${totalGeneral}">0</h4>
+                                </div>
+                                <h6 class="fw-bold mb-1">Reportes Generales</h6>
+                                <p class="text-muted small mb-3">Resumen ejecutivo del sistema</p>
+                                <a th:href="@{/reportes/general}" class="btn btn-outline-dark btn-sm w-100">
+                                    <i class="fa-solid fa-eye me-1"></i>Ver todos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ÚLTIMOS REPORTES GENERADOS -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0 text-secondary">
+                            <i class="fa-solid fa-clock-rotate-left me-2"></i>Últimos reportes generados
+                        </h6>
+                        <span class="badge bg-secondary"
+                            th:text="${ultimosReportes != null ? ultimosReportes.size() : 0} + ' reporte(s)'"></span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-3">#</th>
+                                        <th>Tipo</th>
+                                        <th>Asunto</th>
+                                        <th>Fecha</th>
+                                        <th>Generado por</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${ultimosReportes == null or ultimosReportes.isEmpty()}">
+                                        <td colspan="6" class="text-center text-muted py-4">
+                                            <i class="fa-solid fa-folder-open fa-2x mb-2 d-block text-muted"></i>
+                                            Aún no se han generado reportes en el sistema.
+                                        </td>
+                                    </tr>
+                                    <tr th:each="r : ${ultimosReportes}">
+                                        <td class="ps-3 fw-bold text-muted" th:text="${r.id}"></td>
+                                        <td>
+                                            <span class="badge bg-primary small" th:text="${r.tipoReporte}"></span>
+                                        </td>
+                                        <td class="text-muted small">
+                                            <span th:text="${r.get('asunto') != null ? r.get('asunto') : '—'}"></span>
+                                        </td>
+                                        <td
+                                            th:text="${r.get('fechaGeneracion')}">
+                                        </td>
+                                        <td th:text="${r.get('nombreUsuario')}"></td>
+                                        <td class="text-center">
+                                            <a th:href="@{/reportes/{id}(id=${r.get('id')}, origen='principal')}"
+                                                class="btn btn-sm btn-outline-primary">
+                                                <i class="fa-solid fa-eye me-1"></i>Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

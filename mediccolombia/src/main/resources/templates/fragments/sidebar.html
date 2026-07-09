@@ -67,17 +67,15 @@
                 <i class="fa-solid fa-cash-register me-2"></i> Ventas
                 <i class="fa-solid fa-caret-up fa-flip-vertical float-end"></i>
             </a>
-            <div class="collapse ms-3" id="collapseVentas"
-                th:classappend="${vistaActiva == 'ventas'} ? 'show' : ''">
+            <div class="collapse ms-3" id="collapseVentas" th:classappend="${vistaActiva == 'ventas'} ? 'show' : ''">
                 <a th:href="@{/ventas/nueva-venta}"
                     class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
                     th:classappend="${vistaActiva == 'ventas-nueva'} ? 'active' : ''">
                     Nueva Venta (POS)
                 </a>
-                <a th:href="@{/ventas}"
-                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                <a th:href="@{/ventas}" class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
                     th:classappend="${vistaActiva == 'ventas-lista'} ? 'active' : ''">
-                     Historial de Ventas
+                    Historial de Ventas
                 </a>
             </div>
 
@@ -90,8 +88,7 @@
             </a>
             <div class="collapse ms-3" id="collapseClientes"
                 th:classappend="${vistaActiva == 'clientes'} ? 'show' : ''">
-                <a th:href="@{/clientes}"
-                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                <a th:href="@{/clientes}" class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
                     th:classappend="${vistaActiva == 'clientes-lista'} ? 'active' : ''">
                     Ver Clientes
                 </a>
@@ -112,7 +109,8 @@
             <div class="collapse ms-3" id="collapseProveedores"
                 th:classappend="${vistaActiva == 'proveedores'} ? 'show' : ''">
 
-                <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase" style="font-size:0.7rem; letter-spacing:0.05em;">Proveedores</span>
+                <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase"
+                    style="font-size:0.7rem; letter-spacing:0.05em;">Proveedores</span>
                 <a th:href="@{/proveedores}"
                     class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
                     th:classappend="${vistaActiva == 'proveedores-lista'} ? 'active' : ''">
@@ -123,9 +121,9 @@
                     th:classappend="${vistaActiva == 'proveedores-nuevo'} ? 'active' : ''">
                     Registrar Nuevo
                 </a>
-                <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase" style="font-size:0.7rem; letter-spacing:0.05em;">Pedidos</span>
-                <a th:href="@{/pedidos}"
-                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase"
+                    style="font-size:0.7rem; letter-spacing:0.05em;">Pedidos</span>
+                <a th:href="@{/pedidos}" class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
                     th:classappend="${vistaActiva == 'pedidos-lista'} ? 'active' : ''">
                     Ver Pedidos
                 </a>
@@ -146,34 +144,36 @@
             <div class="collapse ms-3" id="collapseReportes"
                 th:classappend="${vistaActiva == 'reportes'} ? 'show' : ''">
                 <!-- Reportes -->
-                <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase" style="font-size:0.7rem; letter-spacing:0.05em;">Reportes</span>
-                <a th:href="@{/reportes/stock}"
+                <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase"
+                    style="font-size:0.7rem; letter-spacing:0.05em;">Reportes</span>
+                <a th:href="@{/reportes/principal}"
                     class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
-                    th:classappend="${vistaActiva == 'reportes-stock'} ? 'active' : ''">
-                    Stock General
+                    th:classappend="${vistaActiva == 'reportes-principal'} ? 'active' : ''">
+                    Vista Principal
                 </a>
-                <a th:href="@{/reportes/vencidos}"
+                <a th:href="@{/reportes/general}"
                     class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
-                    th:classappend="${vistaActiva == 'reportes-vencidos'} ? 'active' : ''">
-                    Productos Vencidos
+                    th:classappend="${vistaActiva == 'reportes-general'} ? 'active' : ''">
+                    Reporte General
                 </a>
-                <a th:href="@{/reportes/movimientos}"
+                <a th:href="@{/reportes/inventario}"
                     class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
-                    th:classappend="${vistaActiva == 'reportes-movimientos'} ? 'active' : ''">
-                    Entradas y Salidas
+                    th:classappend="${vistaActiva == 'reportes-inventario'} ? 'active' : ''">
+                    Reportes Inventario
                 </a>
                 <a th:href="@{/reportes/ventas}"
                     class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
                     th:classappend="${vistaActiva == 'reportes-ventas'} ? 'active' : ''">
-                    Ventas
+                    Reportes de Ventas
                 </a>
-                <a th:href="@{/reportes/proveedores}"
+                <a th:href="@{/reportes/pedidos}"
                     class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
-                    th:classappend="${vistaActiva == 'reportes-proveedores'} ? 'active' : ''">
-                    Proveedores
+                    th:classappend="${vistaActiva == 'reportes-pedidos'} ? 'active' : ''">
+                    Reportes de Pedidos
                 </a>
                 <!-- Proyecciones -->
-                <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase" style="font-size:0.7rem; letter-spacing:0.05em;">Proyecciones</span>
+                <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase"
+                    style="font-size:0.7rem; letter-spacing:0.05em;">Proyecciones</span>
                 <a th:href="@{/proyecciones}"
                     class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
                     th:classappend="${vistaActiva == 'proyecciones'} ? 'active' : ''">
@@ -195,8 +195,7 @@
             </a>
             <div class="collapse ms-3" id="collapseUsuarios"
                 th:classappend="${vistaActiva == 'usuarios'} ? 'show' : ''">
-                <a th:href="@{/usuarios}"
-                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                <a th:href="@{/usuarios}" class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
                     th:classappend="${vistaActiva == 'usuarios-lista'} ? 'active' : ''">
                     Ver Usuarios
                 </a>

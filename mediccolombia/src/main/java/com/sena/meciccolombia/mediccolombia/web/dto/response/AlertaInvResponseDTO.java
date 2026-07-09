@@ -15,5 +15,6 @@ public class AlertaInvResponseDTO {
     private LocalDateTime fechaCreacion;
     private String tipoAlerta;
     private String descripcion;
+    private LocalDateTime fechaResolucion;
     private String nombreProducto;
 }

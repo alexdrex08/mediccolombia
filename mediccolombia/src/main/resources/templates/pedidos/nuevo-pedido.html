@@ -16,9 +16,7 @@
                         <h2 class="fw-bold text-dark mb-0">
                             <i class="fa-solid fa-cart-plus me-2 text-primary"></i>Nuevo Pedido de Compra
                         </h2>
-                        <p class="text-muted small mb-0">
-                            El pedido se creará en estado <strong>Borrador</strong>
-                        </p>
+                        <p class="text-muted small mb-0">El pedido se creará en estado <strong>Borrador</strong></p>
                     </div>
                     <a th:href="@{/pedidos}" class="btn btn-outline-secondary btn-sm">
                         <i class="fa-solid fa-arrow-left me-1"></i> Volver
@@ -36,135 +34,230 @@
                         <!-- ── COLUMNA IZQUIERDA ── -->
                         <div class="col-12 col-lg-8">
 
-                            <!-- PASO 1: SELECCIONAR PROVEEDOR -->
+                            <!-- =============================================
+                             PASO 1 — DOS MODOS DE BÚSQUEDA INDEPENDIENTES - cada uno es una pestaña o TAB para utilziar a conveniencia. 
+                             ============================================= -->
                             <div class="card shadow-sm border-0 mb-4">
-                                <div class="card-header bg-white fw-bold border-bottom">
-                                    <i class="fa-solid fa-truck me-2 text-primary"></i>
-                                    Paso 1 — Seleccionar Proveedor
-                                </div>
-                                <div class="card-body">
-                                    <div class="row g-3">
-                                        <div class="col-md-7">
-                                            <label class="form-label fw-bold">Proveedor</label>
-                                            <select name="idProveedor" id="selectProveedor" class="form-select" required
-                                                onchange="cargarProductosProveedor(this.value)">
-                                                <option value="">Selecciona un proveedor...</option>
-                                                <option th:each="prov : ${proveedores}" th:value="${prov.id}"
-                                                    th:text="${prov.nombreProv} + ' — NIT: ' + ${prov.nit}">
-                                                </option>
-                                            </select>
+                                <div class="card-header bg-white border-bottom p-0">
+                                    <div class="px-4 pt-3 pb-0 d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="fw-bold mb-1">
+                                                <i class="fa-solid fa-magnifying-glass me-2 text-primary"></i>
+                                                Paso 1 — Buscar productos para el pedido
+                                            </h6>
+                                            <p class="text-muted small mb-2">
+                                                Elige cómo quieres buscar. Ambos modos llenan el mismo carrito.
+                                            </p>
                                         </div>
-                                        <div class="col-md-5">
-                                            <label class="form-label fw-bold">Observación
-                                                <span class="text-muted fw-normal small">(opcional)</span>
-                                            </label>
-                                            <input type="text" name="observacion" class="form-control"
-                                                placeholder="Notas del pedido...">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- PASO 2: CATÁLOGO DEL PROVEEDOR -->
-                            <div class="card shadow-sm border-0 mb-4" id="bloqueCatalogo" style="display:none;">
-                                <div
-                                    class="card-header bg-white fw-bold border-bottom d-flex justify-content-between align-items-center">
-                                    <span>
-                                        <i class="fa-solid fa-tags me-2 text-success"></i>
-                                        Paso 2 — Catálogo del Proveedor
-                                    </span>
-                                    <span class="text-muted small" id="nombreProveedorSel"></span>
-                                </div>
-                                <div class="card-body">
-
-                                    <!-- Spinner de carga -->
-                                    <div id="cargandoCatalogo" class="text-center py-3 d-none">
-                                        <i class="fa-solid fa-spinner fa-spin me-2"></i>Cargando productos...
-                                    </div>
-
-                                    <!-- Tabla del catálogo del proveedor -->
-                                    <div id="tablaCatalogoWrapper">
-                                        <div class="table-responsive mb-3">
-                                            <table class="table table-hover align-middle mb-0" id="tablaCatalogo">
-                                                <thead class="table-light">
-                                                    <tr>
-                                                        <th>Producto</th>
-                                                        <th class="text-end">Precio registrado</th>
-                                                        <th class="text-center" style="width:120px;">Cantidad</th>
-                                                        <th class="text-center" style="width:100px;">Agregar</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="cuerpoTablaProveedor">
-                                                    <!-- Filas generadas por JS -->
-                                                </tbody>
-                                            </table>
+                                        <!-- Badge del proveedor activo — aparece cuando el carrito tiene ítems -->
+                                        <div id="badgeProveedorActivo" class="d-none ms-3">
+                                            <span class="badge bg-primary fs-6 py-2 px-3">
+                                                <i class="fa-solid fa-truck me-1"></i>
+                                                Pedido a: <strong id="nombreProveedorActivo"></strong>
+                                            </span>
                                         </div>
                                     </div>
 
-                                    <!-- Separador: producto fuera del catálogo -->
-                                    <hr>
-                                    <p class="text-muted small mb-2">
-                                        <i class="fa-solid fa-circle-info me-1"></i>
-                                        ¿El producto no aparece en el catálogo del proveedor?
-                                        Puedes agregarlo manualmente con precio libre.
-                                    </p>
-
-                                    <div class="row g-2 align-items-end">
-                                        <div class="col-md-5 position-relative">
-                                            <label class="form-label small fw-bold">Buscar otro producto</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">
-                                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                                </span>
-                                                <input type="text" id="inputBuscarExtra" class="form-control"
-                                                    placeholder="Nombre del producto..." autocomplete="off">
-                                            </div>
-                                            <div id="resultadosBusquedaExtra"
-                                                class="list-group position-absolute z-3 shadow" style="display:none; width:calc(100% - 24px);
-                                                    left:12px; top:68px; max-height:200px;
-                                                    overflow-y:auto;">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label class="form-label small fw-bold">Cantidad</label>
-                                            <input type="number" id="inputCantidadExtra" class="form-control" min="1"
-                                                value="1">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label small fw-bold">Precio ($)</label>
-                                            <input type="number" id="inputPrecioExtra" class="form-control" min="0"
-                                                step="0.01" placeholder="Libre">
-                                        </div>
-                                        <div class="col-md-2">
-                                            <button type="button" class="btn btn-outline-primary w-100"
-                                                onclick="agregarProductoExtra()">
-                                                <i class="fa-solid fa-plus"></i>
+                                    <!-- TABS -->
+                                    <ul class="nav nav-tabs border-0 px-4" id="tabsBusqueda" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link active fw-bold small px-3" id="tab-prov-btn"
+                                                data-bs-toggle="tab" data-bs-target="#tab-por-proveedor" type="button"
+                                                role="tab" onclick="limpiarBusquedaArticulo()">
+                                                <i class="fa-solid fa-truck me-1"></i>
+                                                Buscar por proveedor
                                             </button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link fw-bold small px-3" id="tab-prod-btn"
+                                                data-bs-toggle="tab" data-bs-target="#tab-por-producto" type="button"
+                                                role="tab" onclick="limpiarBusquedaProveedor()">
+                                                <i class="fa-solid fa-pills me-1"></i>
+                                                Buscar por producto — comparar precios
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="tab-content" id="tabsBusquedaContent">
+                                    <!-- ==========================================
+                                     TAB A — Por proveedor
+                                     Seleccionar proveedor → ves su catálogo
+                                     ========================================== -->
+                                    <div class="tab-pane fade show active p-4" id="tab-por-proveedor" role="tabpanel">
+
+                                        <!-- Alerta si el carrito ya tiene ítems de otro proveedor -->
+                                        <div id="alertaProveedorBloqueadoA"
+                                            class="alert alert-warning py-2 mb-3 d-none">
+                                            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                                            Ya hay productos de <strong id="provBloqueadoNombreA"></strong> en el
+                                            carrito.
+                                            Vacía el carrito para cambiar de proveedor.
                                         </div>
+
+                                        <div class="row g-3 mb-3">
+                                            <div class="col-md-7">
+                                                <label class="form-label fw-bold">Proveedor</label>
+                                                <select id="selectProveedor" name="idProveedor" class="form-select"
+                                                    onchange="onSelectProveedor(this.value, this.options[this.selectedIndex].text)">
+                                                    <option value="">Selecciona un proveedor...</option>
+                                                    <option th:each="prov : ${proveedores}" th:value="${prov.id}"
+                                                        th:text="${prov.nombreProv} + ' — NIT: ' + ${prov.nit}">
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <label class="form-label fw-bold">Observación
+                                                    <span class="text-muted fw-normal small">(opcional)</span>
+                                                </label>
+                                                <input type="text" name="observacion" id="inputObservacion"
+                                                    class="form-control" placeholder="Notas del pedido...">
+                                            </div>
+                                        </div>
+
+                                        <!-- Catálogo del proveedor seleccionado -->
+                                        <div id="catalogoProveedor" style="display:none;">
+                                            <div id="cargandoCatalogo" class="text-center py-3 d-none">
+                                                <i class="fa-solid fa-spinner fa-spin me-2"></i>Cargando catálogo...
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-hover align-middle mb-0">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Producto</th>
+                                                            <th class="text-end">Precio registrado</th>
+                                                            <th class="text-center" style="width:110px;">Cantidad</th>
+                                                            <th class="text-center" style="width:90px;">Agregar</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="cuerpoTablaCatalogo"></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <!-- Mensaje inicial -->
+                                        <div id="msgSeleccionaProveedor" class="text-muted small fst-italic">
+                                            <i class="fa-solid fa-arrow-up me-1"></i>
+                                            Selecciona un proveedor para ver su catálogo
+                                        </div>
+
                                     </div>
-                                    <div id="productoExtraSeleccionado" class="mt-2 d-none">
-                                        <span class="badge bg-secondary fs-6 py-2 px-3">
-                                            <i class="fa-solid fa-check me-1"></i>
-                                            <span id="nombreProductoExtra"></span>
-                                        </span>
+
+                                    <!-- ==========================================
+                                        TAB B — Por producto, comparar proveedores
+                                        ========================================== -->
+                                    <div class="tab-pane fade p-4" id="tab-por-producto" role="tabpanel">
+
+                                        <!-- Alerta proveedor bloqueado (tab B) -->
+                                        <div id="alertaProveedorBloqueadoB"
+                                            class="alert alert-warning py-2 mb-3 d-none">
+                                            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                                            El carrito ya tiene productos de
+                                            <strong id="provBloqueadoNombreB"></strong>.
+                                            Solo puedes agregar productos de ese mismo proveedor.
+                                            <a href="#" class="alert-link ms-2" onclick="vaciarCarrito()">
+                                                Vaciar carrito
+                                            </a>
+                                        </div>
+
+                                        <!-- Buscador de producto -->
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">
+                                                <i class="fa-solid fa-pills me-1 text-primary"></i>
+                                                Nombre del medicamento o insumo
+                                            </label>
+
+                                            <div class="d-flex flex-column gap-2" id="contenedorBusqueda">
+                                                <!-- Fila principal: input + badge -->
+                                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                    <!-- Input con resultados -->
+                                                    <div class="position-relative flex-fill" style="min-width: 250px;">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text">
+                                                                <i class="fa-solid fa-magnifying-glass"></i>
+                                                            </span>
+                                                            <input type="text" id="inputBuscarArticulo"
+                                                                class="form-control"
+                                                                placeholder="Ej: Ibuprofeno, Loratadina..."
+                                                                autocomplete="off">
+                                                        </div>
+                                                        <div id="resultadosBusquedaArticulo"
+                                                            class="list-group position-absolute z-3 shadow"
+                                                            style="display:none; width:100%; top:100%; max-height:220px; overflow-y:auto;">
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Badge del producto (inicialmente oculto) -->
+                                                    <div id="articuloBadge" class="d-none" style="flex-shrink: 0;">
+                                                        <div
+                                                            class="d-flex align-items-center gap-2 bg-success bg-opacity-10 rounded-3 px-3 py-2 border border-success border-opacity-25">
+                                                            <i class="fa-solid fa-check-circle text-success"></i>
+                                                            <span id="nombreArticuloBadge"
+                                                                class="fw-semibold text-success"></span>
+                                                            <button type="button"
+                                                                class="btn btn-sm btn-outline-secondary border-0"
+                                                                onclick="limpiarBusquedaArticulo()"
+                                                                title="Limpiar selección">
+                                                                <i class="fa-solid fa-xmark"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Spinner -->
+                                        <div id="cargandoComparacion" class="text-center py-3 d-none">
+                                            <i class="fa-solid fa-spinner fa-spin me-2"></i>
+                                            Buscando proveedores con este producto...
+                                        </div>
+
+                                        <!-- Tabla comparativa -->
+                                        <div id="tablaComparacionWrapper" style="display:none;">
+                                            <p class="text-muted small mb-2">
+                                                <i class="fa-solid fa-scale-balanced me-1 text-success"></i>
+                                                Proveedores que ofrecen
+                                                <strong id="nombreArticuloComparacion"></strong> —
+                                                ordenados de menor a mayor precio:
+                                            </p>
+                                            <div class="table-responsive">
+                                                <table class="table table-hover align-middle border rounded mb-0">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Proveedor</th>
+                                                            <th class="text-end">Precio unitario</th>
+                                                            <th class="text-center" style="width:110px;">Cantidad</th>
+                                                            <th class="text-center" style="width:100px;">Pedir</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="cuerpoTablaComparacion"></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <!-- Sin resultados -->
+                                        <div id="sinProveedoresMsg" class="text-center text-muted py-4 d-none">
+                                            <i class="fa-solid fa-box-open fs-3 mb-2 d-block opacity-25"></i>
+                                            Ningún proveedor tiene este producto en su catálogo.
+                                        </div>
+
+                                        <!-- Estado inicial -->
+                                        <div id="msgBuscaArticulo" class="text-muted small fst-italic">
+                                            <i class="fa-solid fa-keyboard me-1"></i>
+                                            Escribe el nombre de un producto para ver quién lo ofrece y a qué precio
+                                        </div>
+
                                     </div>
 
                                 </div>
                             </div>
 
-                            <!-- Mensaje si no hay proveedor seleccionado -->
-                            <div id="mensajeSeleccionaProveedor"
-                                class="alert alert-light border text-muted text-center py-4">
-                                <i class="fa-solid fa-arrow-up me-2"></i>
-                                Selecciona un proveedor para ver su catálogo de productos
-                            </div>
-
-                            <!-- PASO 3: DETALLE DEL PEDIDO -->
+                            <!-- CARRITO — DETALLE DEL PEDIDO -->
                             <div class="card shadow-sm border-0" id="bloqueDetalle" style="display:none;">
                                 <div class="card-header bg-white fw-bold border-bottom d-flex justify-content-between">
                                     <span>
                                         <i class="fa-solid fa-list-check me-2 text-success"></i>
-                                        Paso 3 — Detalle del Pedido
+                                        Paso 2 — Detalle del Pedido
                                     </span>
                                     <span class="badge bg-secondary" id="contadorProductos">0 productos</span>
                                 </div>
@@ -181,16 +274,16 @@
                                                 </tr>
                                             </thead>
                                             <tbody id="tablaDetallePedido">
-                                                <tr id="filaVaciaDetalle">
+                                                <tr>
                                                     <td colspan="5" class="text-center text-muted py-3">
-                                                        Agrega productos desde el catálogo
+                                                        Agrega productos desde la búsqueda
                                                     </td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
-                                <!-- Inputs ocultos generados por JS -->
+                                <!-- Inputs ocultos para el POST -->
                                 <div id="inputsOcultos"></div>
                             </div>
 
@@ -203,7 +296,11 @@
                                     <i class="fa-solid fa-receipt me-2"></i>Resumen del Pedido
                                 </div>
                                 <div class="card-body">
-
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted">Proveedor</span>
+                                        <span id="resumenProveedor" class="text-muted fst-italic small">Sin
+                                            asignar</span>
+                                    </div>
                                     <div class="d-flex justify-content-between mb-2">
                                         <span class="text-muted">Productos distintos</span>
                                         <span id="resumenProductos">0</span>
@@ -225,10 +322,15 @@
                                     </div>
 
                                     <div class="d-grid gap-2">
-                                        <button type="submit" class="btn btn-primary fw-bold" id="btnCrearPedido">
+                                        <button type="submit" class="btn btn-primary fw-bold">
                                             <i class="fa-solid fa-floppy-disk me-2"></i>Crear Pedido
                                         </button>
-                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                        <button id="btnVaciarCarrito" type="button"
+                                            class="btn btn-outline-danger btn-sm" onclick="vaciarCarrito()"
+                                            style="display: none;">
+                                            <i class="fa-solid fa-trash me-1"></i>Vaciar carrito
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
                                             onclick="cancelar()">
                                             <i class="fa-solid fa-rotate-left me-1"></i>Cancelar
                                         </button>
@@ -246,314 +348,48 @@
 
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
-    <script>
-        // =============================================
-        // ESTADO DEL PEDIDO EN MEMORIA
-        // =============================================
-        const pedido = {
-            items: []
-        };
-        let catalogoActual = {};
 
-        async function cargarProductosProveedor(idProveedor) {
-            // Limpiar estado anterior
-            pedido.items = [];
-            catalogoActual = {};
-            renderDetalle();
+    <!-- MODAL DE CONFIRMACIÓN GENÉRICO -->
+    <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacionLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <!-- Header dinámico - cambia según el contexto -->
+                <div class="modal-header" id="modalConfirmacionHeader">
+                    <h5 class="modal-title" id="modalConfirmacionLabel">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        Confirmar acción
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
 
-            if (!idProveedor) {
-                document.getElementById('bloqueCatalogo').style.display = 'none';
-                document.getElementById('bloqueDetalle').style.display = 'none';
-                document.getElementById('mensajeSeleccionaProveedor').style.display = 'block';
-                return;
-            }
+                <!-- Body dinámico -->
+                <div class="modal-body" id="modalConfirmacionBody">
+                    ¿Estás seguro de realizar esta acción?
+                </div>
 
-            document.getElementById('mensajeSeleccionaProveedor').style.display = 'none';
-            document.getElementById('bloqueCatalogo').style.display = 'block';
-            document.getElementById('cargandoCatalogo').classList.remove('d-none');
+                <!-- Footer con botones -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-times me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" id="btnConfirmarAccion">
+                        <i class="fa-solid fa-check me-1"></i>Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            try {
-                const res = await fetch(
-                    `/api/detalle-proveedor-producto/proveedor/${idProveedor}`,
-                    { headers: { 'Accept': 'application/json' } }
-                );
-                if (!res.ok) throw new Error('Error cargando catálogo');
-                const lista = await res.json();
 
-                // Guardar en cache
-                lista.forEach(item => {
-                    catalogoActual[item.idProducto] = {
-                        nombreProducto: item.nombreProducto,
-                        precioUnitario: parseFloat(item.precioUnitario)
-                    };
-                });
-
-                // Actualizar nombre del proveedor en el header
-                if (lista.length > 0) {
-                    document.getElementById('nombreProveedorSel').textContent =
-                        lista[0].nombreProveedor;
-                }
-
-                renderCatalogo(lista);
-
-            } catch (e) {
-                console.error(e);
-                document.getElementById('cuerpoTablaProveedor').innerHTML =
-                    `<tr><td colspan="4" class="text-center text-muted py-3">
-                        <i class="fa-solid fa-circle-exclamation me-2 text-warning"></i>
-                        No se pudieron cargar los productos de este proveedor.
-                    </td></tr>`;
-            } finally {
-                document.getElementById('cargandoCatalogo').classList.add('d-none');
-            }
-        }
-
-        // =============================================
-        // Renderizar tabla del catálogo del proveedor
-        // =============================================
-        function renderCatalogo(lista) {
-            const tbody = document.getElementById('cuerpoTablaProveedor');
-            if (lista.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-3">
-                    <i class="fa-solid fa-box-open me-2"></i>
-                    Este proveedor no tiene productos registrados en el catálogo.
-                    Puedes agregar productos manualmente abajo.
-                </td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = lista.map(item => `
-                <tr id="fila-cat-${item.idProducto}">
-                    <td class="fw-bold">${item.nombreProducto}</td>
-                    <td class="text-end text-success fw-bold">
-                        $ ${fmt(item.precioUnitario)}
-                    </td>
-                    <td class="text-center">
-                        <input type="number"
-                               id="cant-${item.idProducto}"
-                               class="form-control form-control-sm text-center"
-                               min="1" value="1" style="width:80px;">
-                    </td>
-                    <td class="text-center">
-                        <button type="button"
-                                class="btn btn-sm btn-outline-success"
-                                onclick="agregarDesdeCatalogo(${item.idProducto}, '${item.nombreProducto.replace(/'/g, "\\'")}', ${item.precioUnitario})">
-                            <i class="fa-solid fa-plus"></i>
-                        </button>
-                    </td>
-                </tr>`).join('');
-        }
-
-        function agregarDesdeCatalogo(idProducto, nombreProducto, precioUnitario) {
-            const cantInput = document.getElementById(`cant-${idProducto}`);
-            const cantidad = parseInt(cantInput.value);
-            if (!cantidad || cantidad < 1) {
-                alert('La cantidad debe ser mayor a 0.'); return;
-            }
-
-            const existente = pedido.items.find(i => i.idProducto === idProducto);
-            if (existente) {
-                existente.cantidad += cantidad;
-                existente.subtotal = existente.cantidad * existente.precioUnitario;
-            } else {
-                pedido.items.push({
-                    idProducto,
-                    nombreProducto,
-                    cantidad,
-                    precioUnitario,
-                    subtotal: cantidad * precioUnitario,
-                    desdeCatalogo: true
-                });
-            }
-
-            // Resetear cantidad del catálogo
-            cantInput.value = 1;
-            renderDetalle();
-        }
-
-        let productoExtraActual = null;
-        const inputExtra = document.getElementById('inputBuscarExtra');
-        const resultadosExtra = document.getElementById('resultadosBusquedaExtra');
-
-        let debounce;
-        inputExtra.addEventListener('input', function () {
-            clearTimeout(debounce);
-            const q = this.value.trim();
-            if (q.length < 2) { resultadosExtra.style.display = 'none'; return; }
-            debounce = setTimeout(() => buscarProductoExtra(q), 300);
-        });
-
-        async function buscarProductoExtra(nombre) {
-            try {
-                const res = await fetch(
-                    `/api/productos/buscar?nombre=${encodeURIComponent(nombre)}`,
-                    { headers: { 'Accept': 'application/json' } }
-                );
-                if (!res.ok) return;
-                const lista = await res.json();
-                resultadosExtra.innerHTML = '';
-                if (lista.length === 0) {
-                    resultadosExtra.innerHTML =
-                        '<div class="list-group-item text-muted small">Sin resultados</div>';
-                } else {
-                    lista.forEach(p => {
-                        // Verificar si ya está en el catálogo del proveedor
-                        const enCatalogo = catalogoActual[p.id] !== undefined;
-                        const btn = document.createElement('button');
-                        btn.type = 'button';
-                        btn.className = 'list-group-item list-group-item-action';
-                        btn.innerHTML = `
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="fw-bold">${p.nombreProducto}</span>
-                                <span class="badge ${enCatalogo ? 'bg-success' : 'bg-secondary'} ms-2">
-                                    ${enCatalogo ? 'En catálogo' : 'Stock: ' + p.stock}
-                                </span>
-                            </div>`;
-                        btn.onclick = () => {
-                            if (enCatalogo) {
-                                // Si está en el catálogo, usa precio del catálogo
-                                productoExtraActual = {
-                                    ...p,
-                                    precioSugerido: catalogoActual[p.id].precioUnitario
-                                };
-                                document.getElementById('inputPrecioExtra').value =
-                                    productoExtraActual.precioSugerido;
-                            } else {
-                                productoExtraActual = p;
-                                document.getElementById('inputPrecioExtra').value = '';
-                            }
-                            document.getElementById('nombreProductoExtra').textContent =
-                                p.nombreProducto;
-                            document.getElementById('productoExtraSeleccionado')
-                                .classList.remove('d-none');
-                            inputExtra.value = p.nombreProducto;
-                            resultadosExtra.style.display = 'none';
-                        };
-                        resultadosExtra.appendChild(btn);
-                    });
-                }
-                resultadosExtra.style.display = 'block';
-            } catch (e) { console.error(e); }
-        }
-
-        document.addEventListener('click', e => {
-            if (!inputExtra.contains(e.target)) resultadosExtra.style.display = 'none';
-        });
-
-        function agregarProductoExtra() {
-            if (!productoExtraActual) {
-                alert('Selecciona un producto del buscador primero.'); return;
-            }
-            const cantidad = parseInt(document.getElementById('inputCantidadExtra').value);
-            const precio = parseFloat(document.getElementById('inputPrecioExtra').value);
-            if (!cantidad || cantidad < 1) { alert('La cantidad debe ser mayor a 0.'); return; }
-            if (!precio || precio <= 0) { alert('Ingresa un precio unitario.'); return; }
-
-            const existente = pedido.items.find(i => i.idProducto === productoExtraActual.id);
-            if (existente) {
-                existente.cantidad += cantidad;
-                existente.subtotal = existente.cantidad * existente.precioUnitario;
-            } else {
-                pedido.items.push({
-                    idProducto: productoExtraActual.id,
-                    nombreProducto: productoExtraActual.nombreProducto,
-                    cantidad,
-                    precioUnitario: precio,
-                    subtotal: cantidad * precio,
-                    desdeCatalogo: false
-                });
-            }
-
-            inputExtra.value = '';
-            document.getElementById('inputCantidadExtra').value = 1;
-            document.getElementById('inputPrecioExtra').value = '';
-            document.getElementById('productoExtraSeleccionado').classList.add('d-none');
-            productoExtraActual = null;
-            renderDetalle();
-        }
-
-        // =============================================
-        // RENDER DETALLE + INPUTS OCULTOS + RESUMEN
-        // =============================================
-        function renderDetalle() {
-            const tbody = document.getElementById('tablaDetallePedido');
-            const inputsDiv = document.getElementById('inputsOcultos');
-            const bloqueDetalle = document.getElementById('bloqueDetalle');
-
-            if (pedido.items.length === 0) {
-                tbody.innerHTML = `<tr id="filaVaciaDetalle">
-                    <td colspan="5" class="text-center text-muted py-3">
-                        Agrega productos desde el catálogo
-                    </td></tr>`;
-                inputsDiv.innerHTML = '';
-                bloqueDetalle.style.display = 'none';
-                actualizarResumen();
-                return;
-            }
-
-            bloqueDetalle.style.display = 'block';
-
-            tbody.innerHTML = pedido.items.map((item, idx) => `
-                <tr>
-                    <td>
-                        <span class="fw-bold">${item.nombreProducto}</span>
-                        ${item.desdeCatalogo
-                    ? '<span class="badge bg-success ms-1 small">Catálogo</span>'
-                    : '<span class="badge bg-secondary ms-1 small">Manual</span>'}
-                    </td>
-                    <td class="text-center">${item.cantidad}</td>
-                    <td class="text-end">$ ${fmt(item.precioUnitario)}</td>
-                    <td class="text-end fw-bold">$ ${fmt(item.subtotal)}</td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-outline-danger"
-                                onclick="quitarItem(${idx})">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </td>
-                </tr>`).join('');
-
-            // Inputs ocultos paralelos para el POST del controller
-            inputsDiv.innerHTML = pedido.items.map(item => `
-                <input type="hidden" name="idProducto" value="${item.idProducto}">
-                <input type="hidden" name="cantidad" value="${item.cantidad}">
-                <input type="hidden" name="precioUnitario" value="${item.precioUnitario}">
-            `).join('');
-
-            actualizarResumen();
-        }
-
-        function quitarItem(idx) {
-            pedido.items.splice(idx, 1);
-            renderDetalle();
-        }
-
-        function actualizarResumen() {
-            const total = pedido.items.reduce((acc, i) => acc + i.subtotal, 0);
-            const unidades = pedido.items.reduce((acc, i) => acc + i.cantidad, 0);
-            document.getElementById('resumenProductos').textContent = pedido.items.length;
-            document.getElementById('resumenUnidades').textContent = unidades;
-            document.getElementById('resumenTotal').textContent = '$ ' + fmt(total);
-            document.getElementById('contadorProductos').textContent =
-                pedido.items.length + ' producto' + (pedido.items.length !== 1 ? 's' : '');
-        }
-
-        function cancelar() {
-            if (confirm('¿Cancelar el pedido en curso?')) window.location.href = '/pedidos';
-        }
-
-        document.getElementById('formPedido').addEventListener('submit', function (e) {
-            if (!document.getElementById('selectProveedor').value) {
-                e.preventDefault(); alert('Selecciona un proveedor.'); return;
-            }
-            if (pedido.items.length === 0) {
-                e.preventDefault(); alert('Agrega al menos un producto al pedido.'); return;
-            }
-        });
-
-        function fmt(num) {
-            return Number(num).toLocaleString('es-CO');
-        }
-    </script>
+    <!-- //LOGICA DE PEDIDOS -->
+    <script th:src="@{/js/pedido/estado.js}"></script>
+    <script th:src="@{/js/pedido/utils.js}"></script>
+    <script th:src="@{/js/pedido/tab-1-proveedor.js}"></script>
+    <script th:src="@{/js/pedido/tab-2-producto.js}"></script>
+    <script th:src="@{/js/pedido/carrito.js}"></script>
+    <script th:src="@{/js/pedido/sincronizacion.js}"></script>
+    <script th:src="@{/js/pedido/inicializacion.js}"></script>
 </body>
 
 </html>

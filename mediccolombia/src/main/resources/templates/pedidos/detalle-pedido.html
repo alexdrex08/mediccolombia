@@ -166,7 +166,8 @@
 
                                     <div class="mb-3">
                                         <label class="form-label fw-bold small">Nuevo estado</label>
-                                        <select name="idEstadoPedido" class="form-select" required>
+                                        <select name="idEstadoPedido" class="form-select" required
+                                            th:disabled="${pedido.estadoPedido == 'Completado / Recibido'}">
                                             <option value="">Seleccionar...</option>
                                             <option th:each="e : ${estados}" th:value="${e.id}"
                                                 th:text="${e.nombreEstado}"
@@ -182,16 +183,28 @@
                                         </label>
                                         <textarea name="observacion" class="form-control" rows="2"
                                             placeholder="Ej: Mercancía verificada por almacén..."
-                                            th:text="${pedido.observacion}"></textarea>
+                                            th:text="${pedido.observacion}"
+                                            th:disabled="${pedido.estadoPedido == 'Completado / Recibido'}"></textarea>
                                     </div>
 
                                     <!-- Nota de advertencia para estados críticos -->
-                                    <div class="alert alert-warning py-2 mb-3">
+                                    <div th:if="${pedido.estadoPedido != 'Completado / Recibido'}"
+                                        class="alert alert-success py-2 mb-3">
                                         <i class="fa-solid fa-triangle-exclamation me-2"></i>
                                         <small>
                                             Al marcar como <strong>Completado/Recibido</strong> se
                                             ingresarán los productos al inventario automáticamente.
                                             Al marcar como <strong>Devuelto</strong> se descontarán.
+                                        </small>
+                                    </div>
+
+                                    <div th:if="${pedido.estadoPedido == 'Completado / Recibido'}"
+                                        class="alert alert-success py-2 mb-3">
+                                        <i class="fa-solid fa-circle-check me-2"></i>
+                                        <small>
+                                            Este pedido ya fue <strong><span
+                                                    th:text="${pedido.estadoPedido}"></span></strong>. Los productos ya
+                                            están en el inventario y el registro está cerrado.
                                         </small>
                                     </div>
 

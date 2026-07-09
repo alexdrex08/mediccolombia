@@ -64,7 +64,7 @@
                                     <p class="text-muted small mb-2">
                                         <span th:text="${totalReportes}"></span> reporte(s) generado(s)
                                     </p>
-                                    <a th:href="@{/reportes}" class="btn btn-sm btn-outline-success">
+                                    <a th:href="@{/reportes/principal}" class="btn btn-sm btn-outline-success">
                                         Ver reportes
                                     </a>
                                 </div>
@@ -169,6 +169,16 @@
                         </div>
                     </div>
 
+                    <!-- Mensajes flash -->
+                    <div th:if="${mensaje}" class="alert alert-success py-2 mb-3">
+                        <i class="fa-solid fa-circle-check me-2"></i>
+                        <span th:text="${mensaje}"></span>
+                    </div>
+                    <div th:if="${error}" class="alert alert-danger py-2 mb-3">
+                        <i class="fa-solid fa-circle-exclamation me-2"></i>
+                        <span th:text="${error}"></span>
+                    </div>
+
                     <div class="card-body">
                         <table class="table table-hover align-middle shadow-sm">
                             <thead class="table-dark">
@@ -213,15 +223,10 @@
                                         </a>
 
                                         <!-- Eliminar — solo ADMIN -->
-                                        <form th:if="${esAdmin}" th:action="@{/productos/eliminar/{id}(id=${m.id})}"
-                                            method="post" style="display:inline;"
-                                            onsubmit="return confirm('¿Eliminar «' + this.dataset.nombre + '»? Esta acción no se puede deshacer.')"
-                                            th:data-nombre="${m.nombreProducto}">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                title="Eliminar producto">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
-                                        </form>
+                                        <button th:if="${esAdmin}" type="button" class="btn btn-sm btn-outline-danger"
+                                            th:onclick="prepararEliminar([[${m.id}]], [[${m.nombreProducto}]])">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
 
                                     </td>
                                 </tr>
@@ -239,6 +244,34 @@
 
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
+
+    <!-- MODAL CONFIRMACIÓN ELIMINAR -->
+    <div class="modal fade" id="modalEliminar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title text-danger">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>Confirmar eliminación
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro de que deseas eliminar al proveedor
+                    <strong id="nombreProductoModal"></strong>?
+                    Esta acción no se puede deshacer.
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form id="formEliminar" method="post">
+                        <input type="hidden" name="_method" value="delete">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa-solid fa-trash me-1"></i>Eliminar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
             new bootstrap.Tooltip(el);
@@ -322,6 +355,12 @@
 
             render();
         })();
+        function prepararEliminar(id, nombre) {
+            document.getElementById('nombreProductoModal').textContent = nombre;
+            document.getElementById('formEliminar').action = `/productos/eliminar/${id}`;
+
+            new bootstrap.Modal(document.getElementById('modalEliminar')).show();
+        }
     </script>
 </body>
 

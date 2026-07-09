@@ -46,6 +46,7 @@ public class ProductoMapper {
                 .nombreProducto(producto.getNombreProducto())
                 .categoria(producto.getCategoria().getNombre())
                 .stock(producto.getStock())
+                .fechaExpiracion(producto.getFechaExpiracion())
                 .estadoStock(calcularEstadoStock(producto))
                 .build();                
     }

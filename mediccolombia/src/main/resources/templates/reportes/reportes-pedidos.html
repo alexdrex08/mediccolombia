@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Reportes de Pedidos - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-0">
+                            <i class="fa-solid fa-truck text-warning me-2"></i>Reportes de Pedidos y Proveedores
+                        </h2>
+                        <p class="text-muted small mt-1 mb-0">Análisis de órdenes de compra y rendimiento de
+                            proveedores.</p>
+                    </div>
+                    <span class="text-muted small">
+                        <i class="fa-regular fa-calendar me-1"></i>
+                        Actualizado: <span
+                            th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span>
+                    </span>
+                    <div>
+                        <a th:href="@{/reportes/principal}" class="btn btn-outline-secondary">
+                            <i class="fa-solid fa-arrow-left me-1"></i>Reportes
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ACCESO RÁPIDO -->
+                <div class="row g-3 mt-4">
+                    <div class="col-md-4">
+                        <a th:href="@{/reportes/inventario}" class="text-decoration-none">
+                            <div class="card border-0 shadow-sm text-center p-3 hover-shadow">
+                                <i class="fa-solid fa-cubes fa-2x text-primary mb-2"></i>
+                                <h6 class="fw-bold mb-0">Reportes de Inventario</h6>
+                                <small class="text-muted">Stock, vencimientos, producto y categoría</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a th:href="@{/reportes/general}" class="text-decoration-none">
+                            <div class="card border-0 shadow-sm text-center p-3 hover-shadow">
+                                <i class="fa-solid fa-chart-pie text-danger me-2 fa-2x mb-2"></i>
+                                <h6 class="fw-bold mb-0">Reporte general</h6>
+                                <small class="text-muted">Reporte del sistema</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a th:href="@{/reportes/ventas}" class="text-decoration-none">
+                            <div class="card border-0 shadow-sm text-center p-3 hover-shadow">
+                                <i class="fa-solid fa-receipt text-success me-2 fa-2x mb-2"></i>
+                                <h6 class="fw-bold mb-0">Reportes de Ventas</h6>
+                                <small class="text-muted">Ventas y Clientes</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show shadow-sm">
+                    <i class="fa-solid fa-circle-check me-2"></i><span th:text="${mensaje}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i><span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold mb-3 text-warning">
+                            <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Generar nuevo reporte
+                        </h6>
+                        <ul class="nav nav-tabs mb-4" role="tablist">
+                            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab"
+                                    data-bs-target="#tabPedidos" type="button"><i
+                                        class="fa-solid fa-box me-1 text-warning"></i>Pedidos</button></li>
+                            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab"
+                                    data-bs-target="#tabProveedores" type="button"><i
+                                        class="fa-solid fa-truck me-1 text-warning"></i>Proveedores</button></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="tabPedidos">
+                                <p class="text-muted small mb-3">
+                                    Órdenes de compra agrupadas por estado con productos solicitados y totales.
+                                </p>
+                                <form th:action="@{/reportes/generar}" method="post">
+                                    <input type="hidden" name="tipoReporte" value="REPORTE_PEDIDOS">
+                                    <button type="submit" class="btn btn-sm btn-outline-warning ">
+                                        <i class="fa-solid fa-play me-1"></i>Generar Reporte de Pedidos
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="tab-pane fade" id="tabProveedores">
+                                <p class="text-muted small mb-3">
+                                    Análisis por proveedor: pedidos realizados, valor total de compras y productos
+                                    suministrados.
+                                </p>
+                                <form th:action="@{/reportes/generar}" method="post">
+                                    <input type="hidden" name="tipoReporte" value="REPORTE_PROVEEDORES">
+                                    <button type="submit" class="btn btn-sm btn-outline-warning ">
+                                        <i class="fa-solid fa-play me-1"></i>Generar Reporte de Proveedores
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0 text-secondary">
+                            <i class="fa-solid fa-clock-rotate-left me-2"></i>Historial de reportes generados
+                        </h6>
+                        <span class="badge bg-secondary" th:text="${historial.size()} + ' reporte(s)'"></span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-3">#</th>
+                                        <th>Tipo</th>
+                                        <th>Fecha</th>
+                                        <th>Generado por</th>
+                                        <th>Archivo</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${historial == null or historial.isEmpty()}">
+                                        <td colspan="6" class="text-center text-muted py-4">
+                                            <i class="fa-solid fa-folder-open fa-2x mb-2 d-block text-muted"></i>
+                                            Aún no se han generado reportes de pedidos.
+                                        </td>
+                                    </tr>
+                                    <tr th:each="r : ${historial}">
+                                        <td class="ps-3 fw-bold text-muted" th:text="${r.get('id')}"></td>
+                                        <td><span class="badge bg-warning text-dark small"
+                                                th:text="${r.get('tipoReporte')}"></span></td>
+                                        <td th:text="${r.get('fechaGeneracion')}"></td>
+                                        <td th:text="${r.get('nombreUsuario')}"></td>
+                                        <td><span class="font-monospace small text-muted"
+                                                th:text="${r.get('urlResultado')}"></span></td>
+                                        <td class="text-center">
+                                            <a th:href="@{/reportes/{id}(id=${r.get('id')}, origen='pedidos')}"
+                                                class="btn btn-sm btn-outline-warning text-dark">
+                                                <i class="fa-solid fa-eye me-1"></i>Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+</body>
+
+</html>

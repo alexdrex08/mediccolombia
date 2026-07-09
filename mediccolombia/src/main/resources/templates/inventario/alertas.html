@@ -26,6 +26,14 @@
                         <i class="fa-solid fa-clock me-1"></i>
                         Última ejecución del sistema: medianoche
                     </div>
+                    <div>
+                        <button th:if="${esAdmin}" class="btn btn-warning" type="button" data-bs-toggle="modal"
+                            data-bs-target="#modalGenerarAlertas">
+
+                            <i class="fa-solid fa-bell me-2"></i>
+                            Ejecutar verificación de alertas
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Mensajes flash -->
@@ -166,15 +174,21 @@
                                             <td
                                                 th:text="${#temporals.format(alerta.fechaCreacion, 'dd/MM/yyyy HH:mm')}">
                                             </td>
-   
+
                                             <td th:if="${esAdmin}" class="text-center">
-                                                <form th:action="@{'/alertas/' + ${alerta.id} + '/eliminar'}"
-                                                    method="post" onsubmit="return confirmarEliminar()">
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                        title="Marcar como resuelta">
+                                                <div class="d-flex gap-2">
+                                                    <a th:href="@{/pedidos/nuevo}" class="btn btn-sm btn-warning"
+                                                        title="Crear pedido de reposición">
+                                                        <i class="fa-solid fa-cart-plus me-1"></i>
+                                                        Hacer pedido
+                                                    </a>
+
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                        title="Marcar como resuelta"
+                                                        th:onclick="prepararEliminar([[${alerta.id}]])">
                                                         <i class="fa-solid fa-check me-1"></i>Resolver
                                                     </button>
-                                                </form>
+                                                </div>
                                             </td>
                                         </tr>
                                         <tr th:if="${#lists.isEmpty(alertasStockBajo)}">
@@ -217,14 +231,11 @@
                                                 th:text="${#temporals.format(alerta.fechaCreacion, 'dd/MM/yyyy HH:mm')}">
                                             </td>
                                             <td th:if="${esAdmin}" class="text-center">
-                                                <form th:action="@{'/alertas/' + ${alerta.id} + '/eliminar'}"
-                                                    method="post" onsubmit="return confirmarEliminar()">
-                                                    <button type="submit"
-                                                        class="btn btn-sm btn-outline-warning text-dark"
-                                                        title="Marcar como resuelta">
-                                                        <i class="fa-solid fa-check me-1"></i>Resolver
-                                                    </button>
-                                                </form>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                    title="Marcar como resuelta"
+                                                    th:onclick="prepararEliminar([[${alerta.id}]])">
+                                                    <i class="fa-solid fa-check me-1"></i>Resolver
+                                                </button>
                                             </td>
                                         </tr>
                                         <tr th:if="${#lists.isEmpty(alertasProximasVencer)}">
@@ -269,13 +280,11 @@
                                                 th:text="${#temporals.format(alerta.fechaCreacion, 'dd/MM/yyyy HH:mm')}">
                                             </td>
                                             <td th:if="${esAdmin}" class="text-center">
-                                                <form th:action="@{'/alertas/' + ${alerta.id} + '/eliminar'}"
-                                                    method="post" onsubmit="return confirmarEliminar()">
-                                                    <button type="submit" class="btn btn-sm btn-outline-secondary"
-                                                        title="Marcar como resuelta">
-                                                        <i class="fa-solid fa-check me-1"></i>Resolver
-                                                    </button>
-                                                </form>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                    title="Marcar como resuelta"
+                                                    th:onclick="prepararEliminar([[${alerta.id}]])">
+                                                    <i class="fa-solid fa-check me-1"></i>Resolver
+                                                </button>
                                             </td>
                                         </tr>
                                         <tr th:if="${#lists.isEmpty(alertasVencidas)}">
@@ -288,16 +297,70 @@
                                 </table>
                             </div>
                         </div>
+                    </div>
+                    <div class="card shadow-sm mt-4">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="mb-0">Historial de alertas resueltas</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Producto</th>
+                                        <th>Categoría</th>
+                                        <th>Descripción</th>
+                                        <th>Ult. modificación</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
 
+                                <tbody id="tablaProductos">
+                                    <tr th:if="${#lists.isEmpty(alertasResueltas)}">
+                                        <td colspan="6" class="text-center text-muted py-4">
+                                            No hay alertas resueltas aún.
+                                        </td>
+                                    </tr>
+                                    <tr th:each="a : ${alertasResueltas}">
+                                        <td class="text-muted small" th:text="${a.id}"></td>
+                                        <td class="fw-bold" th:text="${a.nombreProducto}"></td>
+                                        <td th:text="${a.tipoAlerta}"></td>
+                                        <td th:text="${a.descripcion}" class="text-muted small"></td>
+                                        <td>
+                                            <span th:if="${a.fechaResolucion != null}"
+                                                th:text="${#temporals.format(a.fechaResolucion,'dd/MM/yyyy HH:mm')}">
+                                            </span>
+
+                                            <span th:unless="${a.fechaResolucion != null}" class="text-muted">
+                                                —
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success">
+                                                Resuelta
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <nav aria-label="Paginación de productos">
+                            <ul id="paginacion" class="pagination justify-content-center"></ul>
+                        </nav>
                     </div>
                 </div>
+
+
 
                 <!-- Nota informativa sobre el scheduler -->
                 <div class="alert alert-light border mt-4 py-2 text-center">
                     <i class="fa-solid fa-circle-info me-2 text-muted"></i>
                     <small class="text-muted">
                         Las alertas se generan automáticamente cada día a medianoche.
-                        Tras resolver una alerta, esta se elimina del registro, pero se mantendrá la información para próximos reportes. <br> Si deseas ver el historial de alertas resueltas, puedes consultar los reportes de inventario.
+                        Tras resolver una alerta, esta se elimina del registro, pero se mantendrá la información para
+                        próximos reportes. <br> Si deseas ver el historial de alertas resueltas, puedes consultar los
+                        reportes de inventario.
                     </small>
                 </div>
 
@@ -307,9 +370,85 @@
 
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
+
+    <!-- Modal confirmar desactivar alerta  -->
+    <div class="modal fade" id="modalDesactivarAlerta" tabindex="-1" aria-labelledby="modalDesactivarAlerta"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="modalDesactivarAlerta">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        Resolver alerta
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    ¿Deseas resolver la alerta actual?
+                    <br><br>
+                    <span class="text-danger fw-semibold">
+                        Si se resuelve ya no se tomará y se aplicarán sus cambios.
+                    </span>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+                        Continuar mostrando
+                    </button>
+                    <form id="formEliminar" method="post">
+                        <input type="hidden" name="_method" value="delete">
+                        <button type="submit" class="btn btn-outline-success btn-sm">
+                            <i class="fa-solid fa-check me-1"></i>Resolver
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalGenerarAlertas" tabindex="-1" aria-labelledby="modalGenerarAlertasLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title" id="modalGenerarAlertasLabel">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        Ejecutar generación de alertas
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="mb-3">
+                        ¿Estás seguro de ejecutar la verificación de alertas manualmente?
+                    </p>
+                    <div class="alert alert-info mb-0">
+                        <i class="fa-solid fa-circle-info me-2"></i>
+                        El sistema ejecuta este proceso automáticamente cada medianoche. Esta acción realizará una
+                        comprobación inmediata de productos con <strong>stock bajo</strong>, <strong>próximos a vencer</strong> y <strong><span class="text-danger">vencidos</span></strong>.
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <a th:href="@{/debug/generar-alertas}" class="btn btn-warning">
+                        <i class="fa-solid fa-play me-1"></i>
+                        Ejecutar ahora
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        function confirmarEliminar() {
-            return confirm('¿Marcar esta alerta como resuelta y eliminarla del registro?');
+        function prepararEliminar(id) {
+            new bootstrap.Modal(document.getElementById('modalDesactivarAlerta')).show();
+            document.getElementById('formEliminar').action = `/productos/alertas/${id}/eliminar`;
         }
     </script>
 </body>

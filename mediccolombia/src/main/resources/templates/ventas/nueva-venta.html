@@ -222,10 +222,97 @@
         </div>
     </div>
 
+    <!-- Modal de mensajes del sistema -->
+    <div class="modal fade" id="modalMensaje" tabindex="-1" aria-labelledby="modalMensajeTitulo" aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <div class="modal-header bg-warning text-dark">
+
+                    <h5 class="modal-title" id="modalMensajeTitulo">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        Advertencia
+                    </h5>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <p id="modalMensajeTexto" class="mb-0"></p>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button class="btn btn-primary" data-bs-dismiss="modal">
+                        Entendido
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Modal confirmar cancelar venta -->
+    <div class="modal fade" id="modalCancelarVenta" tabindex="-1" aria-labelledby="modalCancelarVentaLabel"
+        aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content border-0 shadow">
+
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="modalCancelarVentaLabel">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        Cancelar venta
+                    </h5>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    ¿Deseas cancelar la venta actual?
+
+                    <br><br>
+
+                    <span class="text-danger fw-semibold">
+                        Todos los productos agregados al carrito se perderán.
+                    </span>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Continuar editando
+                    </button>
+
+                    <button type="button" class="btn btn-danger" onclick="confirmarCancelarVenta()">
+                        <i class="fa-solid fa-trash me-2"></i>
+                        Cancelar venta
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
     <script th:replace="~{fragments/scripts :: scripts}"></script>
     <script th:inline="javascript">
         const ID_USUARIO_ACTUAL = /*[[${idUsuarioActual}]]*/ 0;
-        console.log(ID_USUARIO_ACTUAL);
 
         // =============================================
         // ESTADO CENTRAL DE LA VENTA
@@ -250,272 +337,24 @@
         // =============================================
         // BÚSQUEDA AJAX DE PRODUCTO
         // =============================================
-        let productoActual = null;
-        const inputBuscar = document.getElementById('inputBuscarProducto');
-        const resultados = document.getElementById('resultadosBusqueda');
 
-        let debounce;
-        inputBuscar.addEventListener('input', function () {
-            clearTimeout(debounce);
-            const q = this.value.trim();
-            if (q.length < 2) { resultados.style.display = 'none'; return; }
-            debounce = setTimeout(() => buscarProducto(q), 300);
-        });
+        //añadida por externo - buscar producto AJAX
 
-        async function buscarProducto(nombre) {
-            try {
-                // GET /api/productos/buscar?nombre=...
-                const res = await fetch(`/api/productos/buscar?nombre=${encodeURIComponent(nombre)}`);
-                if (!res.ok) throw new Error();
-                const lista = await res.json();
-                resultados.innerHTML = '';
-                if (lista.length === 0) {
-                    resultados.innerHTML = '<div class="list-group-item text-muted small">Sin resultados</div>';
-                } else {
-                    lista.forEach(p => {
-                        const btn = document.createElement('button');
-                        btn.type = 'button';
-                        btn.className = 'list-group-item list-group-item-action';
-                        btn.innerHTML = `
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="fw-bold">${p.nombreProducto}</span>
-                            <span class="badge ${p.stock > 0 ? 'bg-success' : 'bg-danger'} ms-2">Stock: ${p.stock}</span>
-                        </div>
-                        <small class="text-muted">${p.lote ?? ''}</small>`;
-                        btn.onclick = () => seleccionarProducto(p);
-                        resultados.appendChild(btn);
-                    });
-                }
-                resultados.style.display = 'block';
-            } catch (e) { console.error('Error buscando producto:', e); }
-        }
-
-        function seleccionarProducto(p) {
-            productoActual = p;
-            inputBuscar.value = p.nombreProducto;
-            resultados.style.display = 'none';
-            document.getElementById('nombreProductoSeleccionado').textContent = p.nombreProducto;
-            document.getElementById('stockProductoSeleccionado').textContent = p.stock;
-            document.getElementById('productoSeleccionado').classList.remove('d-none');
-        }
-
-        document.addEventListener('click', e => {
-            if (!inputBuscar.contains(e.target)) resultados.style.display = 'none';
-        });
+        //seleccionar producto - añadida por externo
 
         // =============================================
         // CARRITO
         // =============================================
-        function agregarAlCarrito() {
-            if (!productoActual) { alert('Selecciona un producto de la búsqueda primero.'); return; }
-            const cantidad = parseInt(document.getElementById('inputCantidad').value);
-            const precio = parseFloat(document.getElementById('inputPrecio').value);
 
-            if (!cantidad || cantidad < 1) { alert('La cantidad debe ser mayor a 0.'); return; }
-            if (!precio || precio <= 0) { alert('Ingresa un precio unitario válido.'); return; }
-            if (cantidad > productoActual.stock) {
-                alert(`Stock insuficiente. Disponible: ${productoActual.stock} ud`); return;
-            }
-
-            const existente = venta.items.find(i => i.idProducto === productoActual.id);
-            if (existente) {
-                existente.cantidad += cantidad;
-                existente.subtotal = existente.cantidad * existente.precioUnitario;
-            } else {
-                venta.items.push({
-                    idProducto: productoActual.id,
-                    nombreProducto: productoActual.nombreProducto,
-                    cantidad,
-                    precioUnitario: precio,
-                    subtotal: cantidad * precio
-                });
-            }
-            renderCarrito();
-            limpiarBuscador();
-        }
-
-        function renderCarrito() {
-            const tbody = document.getElementById('tablaCarrito');
-            if (venta.items.length === 0) {
-                tbody.innerHTML = `<tr id="filaVacia">
-                <td colspan="5" class="text-center text-muted py-4">
-                    <i class="fa-solid fa-box-open me-2"></i>Aún no hay productos agregados
-                </td></tr>`;
-                actualizarResumen();
-                return;
-            }
-            tbody.innerHTML = venta.items.map((item, idx) => `
-            <tr>
-                <td>${item.nombreProducto}</td>
-                <td class="text-center">${item.cantidad}</td>
-                <td class="text-end">$ ${fmt(item.precioUnitario)}</td>
-                <td class="text-end fw-bold">$ ${fmt(item.subtotal)}</td>
-                <td class="text-center">
-                    <button class="btn btn-sm btn-outline-danger" onclick="quitarItem(${idx})">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </td>
-            </tr>`).join('');
-            actualizarResumen();
-        }
-
-        function quitarItem(idx) {
-            venta.items.splice(idx, 1);
-            renderCarrito();
-        }
-
-        function actualizarResumen() {
-            const total = venta.items.reduce((acc, i) => acc + i.subtotal, 0);
-            const totalItems = venta.items.reduce((acc, i) => acc + i.cantidad, 0);
-            document.getElementById('resumenSubtotal').textContent = '$ ' + fmt(total);
-            document.getElementById('resumenTotal').textContent = '$ ' + fmt(total);
-            document.getElementById('resumenItems').textContent = totalItems;
-            document.getElementById('contadorItems').textContent = venta.items.length + ' ítems';
-        }
-
-        function limpiarBuscador() {
-            inputBuscar.value = '';
-            document.getElementById('inputCantidad').value = 1;
-            document.getElementById('inputPrecio').value = '';
-            document.getElementById('productoSeleccionado').classList.add('d-none');
-            productoActual = null;
-        }
+        //añadida por externo en carrito.js
 
         // =============================================
         // CLIENTE — AJAX
         // =============================================
-        async function buscarCliente() {
-            const doc = document.getElementById('inputDocumentoCliente').value.trim();
-            if (!doc) { alert('Ingresa un número de documento.'); return; }
-            try {
-                // GET /api/clientes/identificacion/{identificacion}
-                const res = await fetch(`/api/clientes/identificacion/${encodeURIComponent(doc)}`);
-                if (!res.ok) {
-                    // 404
-                    document.getElementById('formNuevoCliente').classList.remove('d-none');
-                    document.getElementById('clienteEncontrado').classList.add('d-none');
-                    return;
-                }
-                // ClienteResponseDTO: { id, nombreCliente, identificacion }
-                const cliente = await res.json();
-                asignarCliente(cliente);
-            } catch (e) {
-                document.getElementById('formNuevoCliente').classList.remove('d-none');
-            }
-        }
+        //añadida por externa en cliente.js
 
-        function asignarCliente(cliente) {
-            venta.cliente = { id: cliente.id, nombreCliente: cliente.nombreCliente, identificacion: cliente.identificacion };
-            document.getElementById('nombreClienteEncontrado').textContent = cliente.nombreCliente;
-            document.getElementById('docClienteEncontrado').textContent = '— ' + cliente.identificacion;
-            document.getElementById('clienteEncontrado').classList.remove('d-none');
-            document.getElementById('formNuevoCliente').classList.add('d-none');
-            document.getElementById('resumenCliente').textContent = cliente.nombreCliente;
-            document.getElementById('resumenCliente').classList.remove('text-muted', 'fst-italic');
-        }
 
-        async function guardarNuevoCliente() {
-            const nombreCliente = document.getElementById('nuevoNombreCliente').value.trim();
-            const identificacion = document.getElementById('inputDocumentoCliente').value.trim();
-
-            if (!nombreCliente) { alert('Ingresa el nombre completo del cliente.'); return; }
-            if (!identificacion) { alert('El número de documento no puede estar vacío.'); return; }
-
-            try {
-                // POST /api/clientes — body según ClienteResquestDTO: { nombreCliente, identificacion }
-                const res = await fetch('/api/clientes', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombreCliente, identificacion })
-                });
-                if (!res.ok) {
-                    const err = await res.json().catch(() => ({}));
-                    alert('Error al guardar el cliente: ' + (err.message ?? res.status));
-                    return;
-                }
-                // Respuesta: ClienteResponseDTO { id, nombreCliente, identificacion }
-                const clienteGuardado = await res.json();
-                asignarCliente(clienteGuardado);
-            } catch (e) {
-                alert('Error de conexión al guardar el cliente.');
-                console.error(e);
-            }
-        }
-
-        function limpiarCliente() {
-            venta.cliente = null;
-            document.getElementById('clienteEncontrado').classList.add('d-none');
-            document.getElementById('formNuevoCliente').classList.add('d-none');
-            document.getElementById('inputDocumentoCliente').value = '';
-            document.getElementById('nuevoNombreCliente').value = '';
-            document.getElementById('resumenCliente').textContent = 'Sin cliente asignado';
-            document.getElementById('resumenCliente').classList.add('text-muted', 'fst-italic');
-        }
-
-        // =============================================
-        // MEDIO DE PAGO Y REGISTRO FINAL
-        // =============================================
-        function mostrarMedioPago() {
-            if (venta.items.length === 0) { alert('Agrega al menos un producto.'); return; }
-            if (!venta.cliente) { alert('Asigna un cliente antes de confirmar.'); return; }
-            document.getElementById('seccionMedioPago').classList.remove('d-none');
-            document.getElementById('btnConfirmarVenta').classList.add('d-none');
-        }
-
-        function seleccionarMedioPago(tipo) {
-            venta.medioPago = tipo;
-            // Limpiar selección visual anterior
-            ['btnEfectivo', 'btnTarjeta'].forEach(id => {
-                document.getElementById(id).classList.remove('btn-primary');
-                document.getElementById(id).classList.add('btn-outline-secondary');
-            });
-            // Resaltar el seleccionado
-            const seleccionado = tipo === 'EFECTIVO' ? 'btnEfectivo' : 'btnTarjeta';
-            document.getElementById(seleccionado).classList.remove('btn-outline-secondary');
-            document.getElementById(seleccionado).classList.add('btn-primary');
-            // Mostrar botón de registrar
-            document.getElementById('btnRegistrarVenta').classList.remove('d-none');
-        }
-
-        async function registrarVenta() {
-            if (!venta.medioPago) { alert('Selecciona un medio de pago.'); return; }
-            const body = {
-                idCliente: venta.cliente.id,
-                idUsuario: ID_USUARIO_ACTUAL,
-                medioPago: venta.medioPago,
-                detalles: venta.items.map(i => ({
-                    idProducto: i.idProducto,
-                    cantidad: i.cantidad,
-                    precioUnitario: i.precioUnitario
-                }))
-            };
-
-            try {
-                const res = await fetch('/api/ventas', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                });
-                if (!res.ok) {
-                    const err = await res.json().catch(() => ({}));
-                    alert('Error al registrar la venta: ' + (err.message ?? res.status));
-                    return;
-                }
-                // VentaRegistroResponseDTO: { id, fechaVenta, nombreCliente, nombreUsuario, totalVenta, detalles }
-                const ventaGuardada = await res.json();
-                // Redirigir al detalle de la venta recién creada
-                window.location.href = '/ventas/' + ventaGuardada.id;
-            } catch (e) {
-                alert('Error de conexión al registrar la venta.');
-                console.error(e);
-            }
-        }
-
-        function limpiarTodo() {
-            if (confirm('¿Cancelar la venta en curso? Se perderán los productos del carrito.')) {
-                window.location.reload();
-            }
-        }
+        //funcion venta (REGISTRAR VENTA)
 
         // =============================================
         // UTILIDADES
@@ -523,8 +362,12 @@
         function fmt(num) {
             return Number(num).toLocaleString('es-CO');
         }
-
     </script>
+    <script th:src="@{/js/POS/ventaProducto.js}"></script>
+    <script th:src="@{/js/POS/medioPago.js}"></script>
+    <script th:src="@{/js/POS/venta.js}"></script>
+    <script th:src="@{/js/POS/cliente.js}"></script>
+    <script th:src="@{/js/POS/carrito.js}"></script>
 </body>
 
 </html>

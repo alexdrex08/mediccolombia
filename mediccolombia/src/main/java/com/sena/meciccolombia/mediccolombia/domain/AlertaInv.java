@@ -1,6 +1,5 @@
 package com.sena.meciccolombia.mediccolombia.domain;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,26 +20,31 @@ public class AlertaInv implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id_alerta")
+    @Column(name = "id_alerta")
     private Long id;
 
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
 
+    @Column(name = "fecha_resolucion")
+    private LocalDateTime fechaResolucion;
+
     @Column(name = "tipo_alerta")
     private String tipoAlerta;
 
-    @Column(name ="descripcion_alerta", length = 1000)
+    @Column(name = "descripcion_alerta", length = 1000)
     private String descripcion;
 
+    @Column(name = "is_resuelta")
+    private Boolean isResuelta = false;
+
     @ManyToOne
-    @JoinColumn(name="idProducto")
+    @JoinColumn(name = "idProducto")
     private Producto producto;
 
     @OneToMany(mappedBy = "alertaInv", cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<ReporteInv> reportes;
-
 
 }

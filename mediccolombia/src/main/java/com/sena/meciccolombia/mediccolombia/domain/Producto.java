@@ -54,6 +54,8 @@ public class Producto implements Serializable {
     @Column(name ="fecha_modificacion", nullable = false)
     private LocalDateTime fechaModificacion;
 
+    private Boolean activo = true;
+
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;

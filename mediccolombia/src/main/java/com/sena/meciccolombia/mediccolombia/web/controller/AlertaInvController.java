@@ -26,7 +26,7 @@ public class AlertaInvController {
 
     @GetMapping
     public ResponseEntity<List<AlertaInvResponseDTO>> listar() {
-        return ResponseEntity.ok(alertaInvService.listar());
+        return ResponseEntity.ok(alertaInvService.listarIsResueltaFalse());
     }
     @GetMapping("/{id}")
     public ResponseEntity<AlertaInvResponseDTO> obtenerPorID(@PathVariable Long id) {
@@ -38,7 +38,7 @@ public class AlertaInvController {
     }
     @GetMapping("/tipo/{tipoAlerta}")
     public ResponseEntity<List<AlertaInvResponseDTO>> listarPorTipoAlerta(@PathVariable String tipoAlerta) {
-        return ResponseEntity.ok(alertaInvService.listarPorTipo(tipoAlerta));
+        return ResponseEntity.ok(alertaInvService.listarPorTipoYEstado(tipoAlerta, false));
     }
     @GetMapping("/generar-alerta")
     public ResponseEntity<String> generarAlertasPrueba() {

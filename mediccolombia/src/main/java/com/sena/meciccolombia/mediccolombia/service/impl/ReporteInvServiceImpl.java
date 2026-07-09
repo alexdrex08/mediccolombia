@@ -8,6 +8,10 @@ import java.util.Map;
 import java.util.Objects;
 
 import lombok.extern.slf4j.Slf4j;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -55,6 +59,10 @@ import lombok.RequiredArgsConstructor;
 
 public class ReporteInvServiceImpl implements ReporteInvService {
 
+        private static final ObjectMapper MAPPER = new ObjectMapper()
+                        .registerModule(new JavaTimeModule())
+                        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
         private final ReporteInvDAO reporteInvDAO;
         private final UsuarioDAO usuarioDAO;
         private final FiltroBusquedaDAO filtroBusquedaDAO;
@@ -79,17 +87,24 @@ public class ReporteInvServiceImpl implements ReporteInvService {
 
                 Usuario usuario = usuarioDAO.findById(dto.getIdUsuario())
                                 .orElseThrow(() -> new ResourceNotFoundException(
-                                                "El Usuario con el ID" + dto.getIdUsuario() + " no fue encontrado"));
+                                                "El Usuario con el ID " + dto.getIdUsuario() + " no fue encontrado"));
+
                 FiltroBusqueda filtroBusqueda = null;
                 if (dto.getIdFiltroBusqueda() != null) {
                         filtroBusqueda = filtroBusquedaDAO.findById(dto.getIdFiltroBusqueda()).orElse(null);
                 }
 
                 long cantidadReal = reporteInvDAO.countByTipoReporte(dto.getTipoReporte());
-                long contador = cantidadReal + 1;
+                String urlResultado = "reporte_" + dto.getTipoReporte() + "_" + (cantidadReal + 1) + ".pdf";
 
-                String urlResultado = "reporte_" + dto.getTipoReporte() + "_" + contador + ".pdf";
                 Object contenido = generarContenido(dto);
+                
+                String contenidoJson = null;
+                try {
+                        contenidoJson = MAPPER.writeValueAsString(contenido);
+                } catch (Exception e) {
+                        log.warn("No se pudo serializar el contenido del reporte: {}", e.getMessage());
+                }
 
                 ReporteInv reporte = ReporteInv.builder()
                                 .fechaGeneracion(LocalDateTime.now())
@@ -98,7 +113,9 @@ public class ReporteInvServiceImpl implements ReporteInvService {
                                 .resultado(urlResultado)
                                 .usuario(usuario)
                                 .filtroBusqueda(filtroBusqueda)
+                                .contenidoJson(contenidoJson)
                                 .build();
+
                 ReporteInv reporteGuardado = reporteInvDAO.save(reporte);
 
                 return ReporteDetalleResponseDTO.builder()

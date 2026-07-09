@@ -1,6 +1,7 @@
 package com.sena.meciccolombia.mediccolombia.service.impl;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -80,6 +81,13 @@ public class VentaRegistroServiceImpl implements IVentaRegistroService {
                                                 + ", Stock disponible: " + producto.getStock()
                                                 + " , Cantidad solicitada: " + detalleDTO.getCantidad());
                         }
+
+                        if (producto.getFechaExpiracion().isBefore(LocalDateTime.now())) {
+                                throw new IllegalStateException(
+                                                "El producto "
+                                                                + producto.getNombreProducto()
+                                                                + " está vencido.");
+                        }
                         BigDecimal subtotal = detalleDTO.getPrecioUnitario()
                                         .multiply(BigDecimal.valueOf(detalleDTO.getCantidad()));
                         totalVenta = totalVenta.add(subtotal);
@@ -91,7 +99,7 @@ public class VentaRegistroServiceImpl implements IVentaRegistroService {
                                         .idProducto(producto.getId())
                                         .idUsuario(dto.getIdUsuario())
                                         .cantidad(detalleDTO.getCantidad())
-                                        .pickerChecker("VENTA-" +ventaGuardada.getId())
+                                        .pickerChecker("VENTA-" + ventaGuardada.getId())
                                         .idTipoMovimiento(6L)
                                         .movimiento("Salida por venta #" + ventaGuardada.getId())
                                         .build();
@@ -215,7 +223,5 @@ public class VentaRegistroServiceImpl implements IVentaRegistroService {
                                                 .build())
                                 .toList();
         }
-
-        
 
 }

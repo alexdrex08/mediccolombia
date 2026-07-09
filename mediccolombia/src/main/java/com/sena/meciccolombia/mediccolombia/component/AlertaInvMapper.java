@@ -13,6 +13,7 @@ public class AlertaInvMapper {
             .id(alerta.getId())
             .fechaCreacion(alerta.getFechaCreacion())
             .tipoAlerta(alerta.getTipoAlerta())
+            .fechaResolucion(alerta.getFechaResolucion())
             .descripcion(alerta.getDescripcion())
             .nombreProducto(alerta.getProducto().getNombreProducto())
             .build();

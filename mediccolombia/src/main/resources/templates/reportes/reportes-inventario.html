@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Reportes de Inventario - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-0">
+                            <i class="fa-solid fa-cubes  text-primary mb-2"></i> Reportes de Inventario
+                        </h2>
+                        <p class="text-muted small mt-1 mb-0">
+                            Stock general, vencimientos, por producto, por categoría y resumen general.
+                        </p>
+                    </div>
+                    <span class="text-muted small">
+                        <i class="fa-regular fa-calendar me-1"></i>
+                        Actualizado: <span
+                            th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span>
+                    </span>
+                    <div>
+                        <a th:href="@{/reportes/principal}" class="btn btn-outline-secondary">
+                            <i class="fa-solid fa-arrow-left me-1"></i>Reportes
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ACCESO RÁPIDO -->
+                <div class="row g-3 mt-4">
+                    <div class="col-md-4">
+                        <a th:href="@{/reportes/general}" class="text-decoration-none">
+                            <div class="card border-0 shadow-sm text-center p-3 hover-shadow">
+                                <i class="fa-solid fa-chart-pie text-danger me-2 fa-2x mb-2"></i>
+                                <h6 class="fw-bold mb-0">Reportes General</h6>
+                                <small class="text-muted">Reporte del sistema</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a th:href="@{/reportes/ventas}" class="text-decoration-none">
+                            <div class="card border-0 shadow-sm text-center p-3 hover-shadow">
+                                <i class="fa-solid fa-receipt text-success me-2 fa-2x mb-2"></i>
+                                <h6 class="fw-bold mb-0">Reportes de Ventas</h6>
+                                <small class="text-muted">Ventas y clientes</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a th:href="@{/reportes/pedidos}" class="text-decoration-none">
+                            <div class="card border-0 shadow-sm text-center p-3 hover-shadow">
+                                <i class="fa-solid fa-truck fa-2x text-warning mb-2"></i>
+                                <h6 class="fw-bold mb-0">Reportes de Pedidos</h6>
+                                <small class="text-muted">Pedidos y proveedores</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- MENSAJES FLASH -->
+                <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show shadow-sm">
+                    <i class="fa-solid fa-circle-check me-2"></i><span th:text="${mensaje}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i><span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- TABS DE GENERACIÓN -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold mb-3 text-primary">
+                            <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Generar nuevo reporte
+                        </h6>
+
+                        <ul class="nav nav-tabs mb-4" id="tabsInventario" role="tablist">
+                            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab"
+                                    data-bs-target="#tabStock" type="button"><i class="fa-solid fa-cubes me-1"></i>Stock
+                                    General</button></li>
+                            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab"
+                                    data-bs-target="#tabVencimientos" type="button"><i
+                                        class="fa-solid fa-calendar-xmark me-1"></i>Vencimientos</button></li>
+                            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab"
+                                    data-bs-target="#tabProducto" type="button"><i
+                                        class="fa-solid fa-pills me-1"></i>Por Producto</button></li>
+                            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab"
+                                    data-bs-target="#tabCategoria" type="button"><i class="fa-solid fa-tag me-1"></i>Por
+                                    Categoría</button></li>
+                        </ul>
+
+                        <div class="tab-content">
+
+                            <!-- STOCK -->
+                            <div class="tab-pane fade show active" id="tabStock">
+                                <p class="text-muted small mb-3">
+                                    Muestra todos los productos clasificados por su estado de stock: crítico, suficiente
+                                    y exceso.
+                                </p>
+                                <form th:action="@{/reportes/generar}" method="post">
+                                    <input type="hidden" name="tipoReporte" value="REPORTE_STOCK">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa-solid fa-play me-1"></i>Generar Reporte de Stock
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- VENCIMIENTOS -->
+                            <div class="tab-pane fade" id="tabVencimientos">
+                                <p class="text-muted small mb-3">
+                                    Lista los productos vencidos y los próximos a vencer en los siguientes 7 días.
+                                </p>
+                                <form th:action="@{/reportes/generar}" method="post">
+                                    <input type="hidden" name="tipoReporte" value="REPORTE_VENCIMIENTOS">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa-solid fa-play me-1"></i>Generar Reporte de Vencimientos
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- POR PRODUCTO -->
+                            <div class="tab-pane fade" id="tabProducto">
+                                <p class="text-muted small mb-3">
+                                    Detalle completo de un producto: stock, lote, movimientos de inventario y alertas
+                                    activas.
+                                </p>
+                                <form th:action="@{/reportes/generar}" method="post">
+                                    <input type="hidden" name="tipoReporte" value="REPORTE_PRODUCTO">
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-5">
+                                            <label class="form-label fw-semibold">Selecciona el producto <span
+                                                    class="text-danger">*</span></label>
+                                            <select class="form-select" name="idReferencia" required>
+                                                <option value="">— Selecciona un producto —</option>
+                                                <option th:each="p : ${productos}" th:value="${p.id}"
+                                                    th:text="${p.nombreProducto} + ' (stock: ' + ${p.stock} + ')'">
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa-solid fa-play me-1"></i>Generar Reporte de Producto
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- POR CATEGORÍA -->
+                            <div class="tab-pane fade" id="tabCategoria">
+                                <p class="text-muted small mb-3">
+                                    Agrupa todos los productos de una categoría con sus datos de stock y vencimiento.
+                                </p>
+                                <form th:action="@{/reportes/generar}" method="post">
+                                    <input type="hidden" name="tipoReporte" value="REPORTE_CATEGORIA">
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-5">
+                                            <label class="form-label fw-semibold">Selecciona la categoría <span
+                                                    class="text-danger">*</span></label>
+                                            <select class="form-select" name="idReferencia" required>
+                                                <option value="">— Selecciona una categoría —</option>
+                                                <option th:each="cat : ${categorias}" th:value="${cat.idCategoria}"
+                                                    th:text="${cat.nombreCategoria}">
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa-solid fa-play me-1"></i>Generar Reporte de Categoría
+                                    </button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HISTORIAL -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0 text-secondary">
+                            <i class="fa-solid fa-clock-rotate-left me-2"></i>Historial de reportes generados
+                        </h6>
+                        <span class="badge bg-secondary" th:text="${historial.size()} + ' reporte(s)'"></span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-3">#</th>
+                                        <th>Tipo</th>
+                                        <th>Asunto</th>
+                                        <th>Fecha</th>
+                                        <th>Generado por</th>
+                                        <th>Archivo</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${historial == null or historial.isEmpty()}">
+                                        <td colspan="7" class="text-center text-muted py-4">
+                                            <i class="fa-solid fa-folder-open fa-2x mb-2 d-block text-muted"></i>
+                                            Aún no se han generado reportes de inventario.
+                                        </td>
+                                    </tr>
+                                    <tr th:each="r : ${historial}">
+                                        <td class="ps-3 fw-bold text-muted" th:text="${r.get('id')}"></td>
+                                        <td>
+                                            <span class="badge bg-primary small"
+                                                th:text="${r.get('tipoReporte')}"></span>
+                                        </td>
+                                        <td class="text-muted small"
+                                            th:text="${r.get('asunto') != null ? r.get('asunto') : '—'}"></td>
+                                        <td th:text="${r.get('fechaGeneracion')}"></td>
+                                        <td th:text="${r.get('nombreUsuario')}"></td>
+                                        <td>
+                                            <span class="font-monospace small text-muted"
+                                                th:text="${r.get('urlResultado')}"></span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a th:href="@{/reportes/{id}(id=${r.get('id')}, origen='inventario')}"
+                                                class="btn btn-sm btn-outline-primary">
+                                                <i class="fa-solid fa-eye me-1"></i>Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+</body>
+
+</html>

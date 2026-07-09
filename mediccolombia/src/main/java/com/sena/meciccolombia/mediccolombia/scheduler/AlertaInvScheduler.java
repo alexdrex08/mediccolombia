@@ -50,6 +50,7 @@ public class AlertaInvScheduler {
                             " , tiene stock bajo. Stock actual:" + producto.getStock()
                             + ", stock minimo: " + producto.getStockMaximo())
                     .producto(producto)
+                    .isResuelta(false)
                     .build();
             alertaInvDAO.save(alerta);
             log.info("Alerta STOCK_BAJO generada para: {}", producto.getNombreProducto());
@@ -71,6 +72,7 @@ public class AlertaInvScheduler {
                             + " , vence el: " + producto.getFechaExpiracion()
                             + ". Stock actual: " + producto.getStock())
                     .producto(producto)
+                    .isResuelta(false)
                     .build();
             alertaInvDAO.save(alerta);
             log.info("Alerta PROXIMO_A_VENCER generada para: {}", producto.getNombreProducto());
@@ -90,6 +92,7 @@ public class AlertaInvScheduler {
                              + " , venció en la fecha: " + producto.getFechaExpiracion()
                              + ". Stock actual: " + producto.getStock())
                 .producto(producto)
+                .isResuelta(false)
                 .build();
 
             alertaInvDAO.save(alerta);

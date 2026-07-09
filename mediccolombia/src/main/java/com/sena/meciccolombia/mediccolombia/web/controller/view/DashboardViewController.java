@@ -36,8 +36,8 @@ public class DashboardViewController {
     public String dashboard(Model modelo) {
 
         int totalProductos = productoService.listarProductos().size();
-        int productosStockBajo = alertaInvService.listarPorTipo("STOCK_BAJO").size();
-        int productosVencidos = alertaInvService.listarPorTipo("PRODUCTO_VENCIDO").size();
+        int productosStockBajo = alertaInvService.listarPorTipoYEstado("STOCK_BAJO", false).size();
+        int productosVencidos = alertaInvService.listarPorTipoYEstado("PRODUCTO_VENCIDO", false).size();
         int totalProveedores = proveedorService.listar().size();
 
         modelo.addAttribute("vistaActiva", "dashboard");

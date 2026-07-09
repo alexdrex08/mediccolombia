@@ -79,8 +79,8 @@ public class InventarioViewController {
         modelo.addAttribute("fechaActualizacion", LocalDateTime.now());
         modelo.addAttribute("productos", productos);
         modelo.addAttribute("categorias", categoriaService.listarCategorias());
-        modelo.addAttribute("totalAlertas", alertaInvService.listar().size());
-        modelo.addAttribute("alertasCriticas", alertaInvService.listarPorTipo("STOCK_BAJO").size());
+        modelo.addAttribute("totalAlertas", alertaInvService.listarIsResueltaFalse().size());
+        modelo.addAttribute("alertasCriticas", alertaInvService.listarPorTipoYEstado("STOCK_BAJO", false).size());
         modelo.addAttribute("proximosAVencer", productoService.productosProximosAVencer(7).size());
         modelo.addAttribute("totalReportes", reporteInvService.listar().size());
         modelo.addAttribute("totalEntradas", movimientoProdService.listarPorSigno(1).size());
@@ -212,9 +212,9 @@ public class InventarioViewController {
 
         MyUserDetails user = (MyUserDetails) auth.getPrincipal();
 
-        List<AlertaInvResponseDTO> alertasStockBajo = alertaInvService.listarPorTipo("STOCK_BAJO");
-        List<AlertaInvResponseDTO> alertasProximasVencer = alertaInvService.listarPorTipo("PROXIMO_A_VENCER");
-        List<AlertaInvResponseDTO> alertasVencidas = alertaInvService.listarPorTipo("PRODUCTO_VENCIDO");
+        List<AlertaInvResponseDTO> alertasStockBajo = alertaInvService.listarPorTipoYEstado("STOCK_BAJO", false);
+        List<AlertaInvResponseDTO> alertasProximasVencer = alertaInvService.listarPorTipoYEstado("PROXIMO_A_VENCER", false);
+        List<AlertaInvResponseDTO> alertasVencidas = alertaInvService.listarPorTipoYEstado("PRODUCTO_VENCIDO", false);
 
         modelo.addAttribute("alertasStockBajo", alertasStockBajo);
         modelo.addAttribute("alertasProximasVencer", alertasProximasVencer);
@@ -227,6 +227,9 @@ public class InventarioViewController {
         modelo.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
         modelo.addAttribute("vistaActiva", "alertas");
 
+        List<AlertaInvResponseDTO> alertasResueltas = alertaInvService.listarIsResueltaTrue();
+        modelo.addAttribute("alertasResueltas",alertasResueltas);
+
         return "inventario/alertas";
     }
 
@@ -238,16 +241,16 @@ public class InventarioViewController {
         MyUserDetails user = (MyUserDetails) auth.getPrincipal();
         if (!"ADMIN".equals(user.getRol())) {
             redirectAttributes.addFlashAttribute("error", "No tienes permisos para eliminar alertas.");
-            return "redirect:/productos/alertas"; // ← ruta corregida
+            return "redirect:/productos/alertas"; 
         }
         try {
-            alertaInvService.eliminar(id);
-            redirectAttributes.addFlashAttribute("mensaje", "Alerta eliminada correctamente.");
+            alertaInvService.resolverAlerta(id);
+            redirectAttributes.addFlashAttribute("mensaje", "Alerta resuelta correctamente.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error",
                     "Error al eliminar la alerta: " + e.getMessage());
         }
-        return "redirect:/productos/alertas"; // ← ruta corregida
+        return "redirect:/productos/alertas";
     }
 
     // ─────────────────────────────────────────────────────────────

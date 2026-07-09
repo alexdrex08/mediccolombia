@@ -6,9 +6,10 @@ import com.sena.meciccolombia.mediccolombia.web.dto.response.AlertaInvResponseDT
 
 public interface AlertaInvService {
     AlertaInvResponseDTO obtenerPorId(Long id);
-    List<AlertaInvResponseDTO> listar();
+    List<AlertaInvResponseDTO> listarIsResueltaFalse();
+    List<AlertaInvResponseDTO> listarIsResueltaTrue();
     List<AlertaInvResponseDTO> listarPorProducto(Long idProducto);
-    List<AlertaInvResponseDTO> listarPorTipo(String tipoAlerta);
-    void eliminar(Long id);
+    List<AlertaInvResponseDTO> listarPorTipoYEstado(String tipoAlerta, Boolean isResuelta);
+    void resolverAlerta(Long id);
 
 }

@@ -13,5 +13,6 @@ public interface ReporteInvDAO extends JpaRepository<ReporteInv, Long>{
     List<ReporteInv>findByUsuarioId(Long usuarioId);
     List<ReporteInv> findByTipoReporte(String tipoReporte);
     long countByTipoReporte(String tipoReporte);
+    List<ReporteInv> findTop5ByOrderByFechaGeneracionDesc();
     
 }

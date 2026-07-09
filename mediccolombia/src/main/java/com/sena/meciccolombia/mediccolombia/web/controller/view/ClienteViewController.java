@@ -1,8 +1,13 @@
 package com.sena.meciccolombia.mediccolombia.web.controller.view;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,12 +18,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.sena.meciccolombia.mediccolombia.dao.BarrioDireccionDAO;
+import com.sena.meciccolombia.mediccolombia.dao.DetalleVentaDAO;
 import com.sena.meciccolombia.mediccolombia.dao.TipoCorreoDAO;
 import com.sena.meciccolombia.mediccolombia.dao.TipoDireccionDAO;
 import com.sena.meciccolombia.mediccolombia.dao.TipoTelefonoDAO;
+import com.sena.meciccolombia.mediccolombia.dao.VentaRegistroDAO;
+import com.sena.meciccolombia.mediccolombia.domain.DetalleVenta;
+import com.sena.meciccolombia.mediccolombia.domain.VentaRegistro;
+import com.sena.meciccolombia.mediccolombia.security.MyUserDetails;
 import com.sena.meciccolombia.mediccolombia.service.ClienteService;
+import com.sena.meciccolombia.mediccolombia.service.IVentaRegistroService;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.ClienteDetalleResponseDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.ClienteResponseDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.DetalleVentaResponseDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.VentaRegistroResponseDTO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,8 +41,11 @@ import lombok.RequiredArgsConstructor;
 public class ClienteViewController {
 
     private final ClienteService clienteService;
-    
+    private final IVentaRegistroService ventaRegitroService;
+
     private final TipoCorreoDAO tipoCorreoDAO;
+    private final DetalleVentaDAO detalleVentaDAO;
+    private final VentaRegistroDAO ventaRegistroDAO;
     private final TipoTelefonoDAO tipoTelefonoDAO;
     private final TipoDireccionDAO tipoDireccionDAO;
     private final BarrioDireccionDAO barrioDireccionDAO;
@@ -39,34 +55,64 @@ public class ClienteViewController {
     // ─────────────────────────────────────────────
     @GetMapping
     public String listarClientes(
-            @RequestParam(required = false) String busqueda,
-            Model modelo) {
+            Model modelo,
+            Authentication auth) {
 
-        List<ClienteResponseDTO> clientes;
+        List<ClienteResponseDTO> clientes = clienteService.listar();
+        List<VentaRegistroResponseDTO> detalles = ventaRegitroService.listarVentas();
 
-        if (busqueda != null && !busqueda.isBlank()) {
-            try {
-                ClienteResponseDTO encontrado = clienteService.buscarPorIdentificacion(busqueda.trim());
-                clientes = List.of(encontrado);
-                modelo.addAttribute("busquedaActiva", true);
-                modelo.addAttribute("busqueda", busqueda);
-                modelo.addAttribute("sinResultados", false);
-            } catch (Exception e) {
-                clientes = List.of();
-                modelo.addAttribute("busquedaActiva", true);
-                modelo.addAttribute("busqueda", busqueda);
-                modelo.addAttribute("sinResultados", true);
-            }
-        } else {
-            clientes = clienteService.listar();
-            modelo.addAttribute("busquedaActiva", false);
-            modelo.addAttribute("sinResultados", false);
-        }
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
 
-        modelo.addAttribute("clientes", clientes);
+        List<Map<String, Object>> clientesEnriquecidos = clientes.stream()
+                .map(cliente -> {
+                    Map<String, Object> datos = new LinkedHashMap<>();
+                    datos.put("id", cliente.getId());
+                    datos.put("nombreCliente", cliente.getNombreCliente());
+                    datos.put("identificacion", cliente.getIdentificacion());
+
+                    // Producto mas comprado
+
+                    List<VentaRegistro> ventCliente = ventaRegistroDAO
+                            .findByClienteId(cliente.getId());
+
+                    String productoMasComprado = ventCliente.stream()
+                            .flatMap(v -> v.getDetalles().stream())
+                            .map(d -> d.getProducto().getNombreProducto())
+                            .collect(Collectors.groupingBy(p -> p, Collectors.counting()))
+                            .entrySet().stream()
+                            .max(Map.Entry.comparingByValue())
+                            .map(Map.Entry::getKey)
+                            .orElse("Sin producto favorito");
+
+                    datos.put("productoMasComprado", productoMasComprado);
+                    datos.put("totalCompras", ventCliente.size());
+
+                    // Ultima compra
+                    VentaRegistro ultimaCompra = ventCliente.stream()
+                            .filter(p -> p.getFechaVenta() != null)
+                            .max(Comparator.comparing(VentaRegistro::getFechaVenta))
+                            .orElse(null);
+
+                    if (ultimaCompra != null) {
+                        datos.put("ultimaCompraId", ultimaCompra.getId());
+                        datos.put("ultimaCompraFecha", ultimaCompra.getFechaVenta());
+                        datos.put("ultimoMedioPago", ultimaCompra.getMedioPago());
+                        datos.put("ultimaCompraTotal", ultimaCompra.getTotalVenta());
+                    } else {
+                        datos.put("ultimaCompraId", null);
+                        datos.put("ultimaCompraFecha", null);
+                        datos.put("ultimoMedioPago", null);
+                        datos.put("ultimaCompraTotal", null);
+                    }
+
+                    return datos;
+                })
+                .toList();
+        modelo.addAttribute("clientes", clientesEnriquecidos);
         modelo.addAttribute("totalClientes", clienteService.listar().size());
         modelo.addAttribute("fechaActualizacion", LocalDateTime.now());
         modelo.addAttribute("vistaActiva", "clientes-lista");
+        modelo.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
         return "clientes/lista-clientes";
     }
 

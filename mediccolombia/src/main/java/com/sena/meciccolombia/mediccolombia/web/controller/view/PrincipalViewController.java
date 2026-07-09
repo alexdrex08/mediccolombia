@@ -26,7 +26,7 @@ public class PrincipalViewController {
         modelo.addAttribute("vistaActiva", "principal");
         modelo.addAttribute("totalProductos", productoService.listarProductos().size());
         modelo.addAttribute("totalProveedores", proveedorService.listar().size());
-        modelo.addAttribute("totalAlertas", alertaInvService.listar().size());
+        modelo.addAttribute("totalAlertas", alertaInvService.listarIsResueltaFalse().size());
         modelo.addAttribute("totalReportes", reporteInvService.listar().size());
 
         return "principal/principal";
