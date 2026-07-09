@@ -84,25 +84,53 @@
                                         class="fa-solid fa-truck me-1 text-warning"></i>Proveedores</button></li>
                         </ul>
                         <div class="tab-content">
+                            <!-- Tab Pedidos con fechas -->
                             <div class="tab-pane fade show active" id="tabPedidos">
                                 <p class="text-muted small mb-3">
-                                    Órdenes de compra agrupadas por estado con productos solicitados y totales.
+                                    Órdenes de compra agrupadas por estado. Filtra por período para ver
+                                    los pedidos de un mes específico.
                                 </p>
                                 <form th:action="@{/reportes/generar}" method="post">
                                     <input type="hidden" name="tipoReporte" value="REPORTE_PEDIDOS">
-                                    <button type="submit" class="btn btn-sm btn-outline-warning ">
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-semibold">Fecha inicio <span
+                                                    class="text-muted fw-normal">(opcional)</span></label>
+                                            <input type="datetime-local" class="form-control" name="fechaInicio">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-semibold">Fecha fin <span
+                                                    class="text-muted fw-normal">(opcional)</span></label>
+                                            <input type="datetime-local" class="form-control" name="fechaFin">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-info text-white">
                                         <i class="fa-solid fa-play me-1"></i>Generar Reporte de Pedidos
                                     </button>
                                 </form>
                             </div>
+
+                            <!-- Tab Proveedores con fechas -->
                             <div class="tab-pane fade" id="tabProveedores">
                                 <p class="text-muted small mb-3">
-                                    Análisis por proveedor: pedidos realizados, valor total de compras y productos
-                                    suministrados.
+                                    Análisis por proveedor. Si defines fechas, solo se contabilizan
+                                    los pedidos realizados en ese período.
                                 </p>
                                 <form th:action="@{/reportes/generar}" method="post">
                                     <input type="hidden" name="tipoReporte" value="REPORTE_PROVEEDORES">
-                                    <button type="submit" class="btn btn-sm btn-outline-warning ">
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-semibold">Fecha inicio <span
+                                                    class="text-muted fw-normal">(opcional)</span></label>
+                                            <input type="datetime-local" class="form-control" name="fechaInicio">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-semibold">Fecha fin <span
+                                                    class="text-muted fw-normal">(opcional)</span></label>
+                                            <input type="datetime-local" class="form-control" name="fechaFin">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-info text-white">
                                         <i class="fa-solid fa-play me-1"></i>Generar Reporte de Proveedores
                                     </button>
                                 </form>
@@ -125,6 +153,7 @@
                                     <tr>
                                         <th class="ps-3">#</th>
                                         <th>Tipo</th>
+                                        <th>Período</th>
                                         <th>Fecha</th>
                                         <th>Generado por</th>
                                         <th>Archivo</th>
@@ -142,6 +171,9 @@
                                         <td class="ps-3 fw-bold text-muted" th:text="${r.get('id')}"></td>
                                         <td><span class="badge bg-warning text-dark small"
                                                 th:text="${r.get('tipoReporte')}"></span></td>
+                                        <td class="text-muted small"
+                                            th:text="${r.get('periodo') != null ? r.get('periodo') : 'Sin filtro'}">
+                                        </td>
                                         <td th:text="${r.get('fechaGeneracion')}"></td>
                                         <td th:text="${r.get('nombreUsuario')}"></td>
                                         <td><span class="font-monospace small text-muted"

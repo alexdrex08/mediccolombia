@@ -83,24 +83,52 @@
                                         class="fa-solid fa-users me-1"></i>Clientes</button></li>
                         </ul>
                         <div class="tab-content">
+                            <!-- Tab Ventas con fechas -->
                             <div class="tab-pane fade show active" id="tabVentas">
                                 <p class="text-muted small mb-3">
-                                    Detalle de todas las ventas registradas: clientes, montos, productos y medios de
-                                    pago.
+                                    Detalle de ventas registradas: clientes, montos y productos.
+                                    Puedes filtrar por rango de fechas o dejar en blanco para ver todas.
                                 </p>
                                 <form th:action="@{/reportes/generar}" method="post">
                                     <input type="hidden" name="tipoReporte" value="REPORTE_VENTAS">
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-semibold">Fecha inicio <span
+                                                    class="text-muted fw-normal">(opcional)</span></label>
+                                            <input type="datetime-local" class="form-control" name="fechaInicio">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-semibold">Fecha fin <span
+                                                    class="text-muted fw-normal">(opcional)</span></label>
+                                            <input type="datetime-local" class="form-control" name="fechaFin">
+                                        </div>
+                                    </div>
                                     <button type="submit" class="btn btn-success">
                                         <i class="fa-solid fa-play me-1"></i>Generar Reporte de Ventas
                                     </button>
                                 </form>
                             </div>
+
+                            <!-- Tab Clientes con fechas -->
                             <div class="tab-pane fade" id="tabClientes">
                                 <p class="text-muted small mb-3">
-                                    Análisis de clientes: compras realizadas, total facturado y productos adquiridos.
+                                    Análisis de clientes con sus compras. Si defines fechas, solo se contabilizan
+                                    las ventas realizadas en ese período.
                                 </p>
                                 <form th:action="@{/reportes/generar}" method="post">
                                     <input type="hidden" name="tipoReporte" value="REPORTE_CLIENTES">
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-semibold">Fecha inicio <span
+                                                    class="text-muted fw-normal">(opcional)</span></label>
+                                            <input type="datetime-local" class="form-control" name="fechaInicio">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-semibold">Fecha fin <span
+                                                    class="text-muted fw-normal">(opcional)</span></label>
+                                            <input type="datetime-local" class="form-control" name="fechaFin">
+                                        </div>
+                                    </div>
                                     <button type="submit" class="btn btn-success">
                                         <i class="fa-solid fa-play me-1"></i>Generar Reporte de Clientes
                                     </button>
@@ -125,6 +153,7 @@
                                     <tr>
                                         <th class="ps-3">#</th>
                                         <th>Tipo</th>
+                                        <th>Período</th>
                                         <th>Fecha</th>
                                         <th>Generado por</th>
                                         <th>Archivo</th>
@@ -142,6 +171,9 @@
                                         <td class="ps-3 fw-bold text-muted" th:text="${r.get('id')}"></td>
                                         <td><span class="badge bg-success small"
                                                 th:text="${r.get('tipoReporte')}"></span></td>
+                                        <td class="text-muted small"
+                                            th:text="${r.get('periodo') != null ? r.get('periodo') : 'Sin filtro'}">
+                                        </td>
                                         <td th:text="${r.get('fechaGeneracion')}"></td>
                                         <td th:text="${r.get('nombreUsuario')}"></td>
                                         <td><span class="font-monospace small text-muted"

@@ -98,7 +98,16 @@ public class ReporteInvServiceImpl implements ReporteInvService {
                 String urlResultado = "reporte_" + dto.getTipoReporte() + "_" + (cantidadReal + 1) + ".pdf";
 
                 Object contenido = generarContenido(dto);
-                
+
+                if (dto.getFechaInicio() != null || dto.getFechaFin() != null) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> mapa = (Map<String, Object>) contenido;
+                        Map<String, Object> periodo = new LinkedHashMap<>();
+                        periodo.put("inicio", dto.getFechaInicio() != null ? dto.getFechaInicio().toString() : null);
+                        periodo.put("fin", dto.getFechaFin() != null ? dto.getFechaFin().toString() : null);
+                        mapa.put("periodoFiltrado", periodo);
+                }
+
                 String contenidoJson = null;
                 try {
                         contenidoJson = MAPPER.writeValueAsString(contenido);
@@ -132,12 +141,13 @@ public class ReporteInvServiceImpl implements ReporteInvService {
                 return switch (dto.getTipoReporte()) {
                         case "REPORTE_PRODUCTO" -> generarReporteProducto(dto.getIdReferencia());
                         case "REPORTE_CATEGORIA" -> generarReporteCategoria(dto.getIdReferencia());
-                        case "REPORTE_VENTAS" -> generarReporteVentas();
-                        case "REPORTE_PEDIDOS" -> generarReportePedidos();
+                        case "REPORTE_VENTAS" -> generarReporteVentas(dto.getFechaInicio(), dto.getFechaFin());
+                        case "REPORTE_PEDIDOS" -> generarReportePedidos(dto.getFechaInicio(), dto.getFechaFin());
+                        case "REPORTE_CLIENTES" -> generarReporteClientes(dto.getFechaInicio(), dto.getFechaFin());
+                        case "REPORTE_PROVEEDORES" ->
+                                generarReporteProveedores(dto.getFechaInicio(), dto.getFechaFin());
                         case "REPORTE_STOCK" -> generarReporteStock();
                         case "REPORTE_VENCIMIENTOS" -> generarReporteVencimientos();
-                        case "REPORTE_CLIENTES" -> generarReporteClientes();
-                        case "REPORTE_PROVEEDORES" -> generarReporteProveedores();
                         case "REPORTE_GENERAL" -> generarReporteGeneral();
                         default -> throw new ResourceNotFoundException(
                                         "Tipo de Reporte no reconocido" + dto.getTipoReporte());
@@ -202,103 +212,74 @@ public class ReporteInvServiceImpl implements ReporteInvService {
                 return contenido;
         }
 
-        private Map<String, Object> generarReporteVentas() {
+        private Map<String, Object> generarReporteVentas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
 
-                List<VentaRegistro> ventas = ventaRegistroDAO.findAll();
-
+                List<VentaRegistro> ventas = (fechaInicio != null && fechaFin != null)
+                                ? ventaRegistroDAO.findByFechaVentaBetween(fechaInicio, fechaFin)
+                                : ventaRegistroDAO.findAll();
                 Map<String, Object> contenido = new LinkedHashMap<>();
-
                 contenido.put("totalVentas", ventas.size());
-
                 contenido.put("montoTotalVendido",
                                 ventas.stream()
                                                 .map(VentaRegistro::getTotalVenta)
                                                 .reduce(BigDecimal.ZERO, BigDecimal::add));
-
                 contenido.put("ventas",
                                 ventas.stream()
                                                 .map(v -> {
-
                                                         Map<String, Object> ventaMap = new LinkedHashMap<>();
-
                                                         // DATOS DE LA VENTA
                                                         ventaMap.put("idVenta", v.getId());
                                                         ventaMap.put("fechaVenta", v.getFechaVenta());
                                                         ventaMap.put("totalVenta", v.getTotalVenta());
-
                                                         // CLIENTE
                                                         if (v.getCliente() != null) {
-
                                                                 Map<String, Object> clienteMap = new LinkedHashMap<>();
-
                                                                 clienteMap.put("idCliente",
                                                                                 v.getCliente().getId());
-
                                                                 clienteMap.put("nombre",
                                                                                 v.getCliente().getNombreCliente());
-
                                                                 clienteMap.put("identificacion",
                                                                                 v.getCliente().getIdentificacion());
-
                                                                 ventaMap.put("cliente", clienteMap);
                                                         }
-
                                                         // USUARIO
                                                         if (v.getUsuario() != null) {
-
                                                                 Map<String, Object> usuarioMap = new LinkedHashMap<>();
-
                                                                 usuarioMap.put("idUsuario",
                                                                                 v.getUsuario().getId());
-
                                                                 usuarioMap.put("nombre",
                                                                                 v.getUsuario().getNombre());
-
                                                                 ventaMap.put("usuario", usuarioMap);
                                                         }
-
                                                         // DETALLES
                                                         ventaMap.put("detalles",
                                                                         v.getDetalles()
                                                                                         .stream()
                                                                                         .map(d -> {
-
                                                                                                 Map<String, Object> detalleMap = new LinkedHashMap<>();
-
                                                                                                 detalleMap.put("idDetalle",
                                                                                                                 d.getId());
-
                                                                                                 detalleMap.put("cantidad",
                                                                                                                 d.getCantidad());
-
                                                                                                 detalleMap.put("precioUnitario",
                                                                                                                 d.getPrecioUnitario());
-
                                                                                                 detalleMap.put("subtotal",
                                                                                                                 d.getPrecioUnitario()
                                                                                                                                 .multiply(
                                                                                                                                                 BigDecimal.valueOf(
                                                                                                                                                                 d.getCantidad())));
-
                                                                                                 if (d.getProducto() != null) {
-
                                                                                                         Map<String, Object> productoMap = new LinkedHashMap<>();
-
                                                                                                         productoMap.put("idProducto",
                                                                                                                         d.getProducto().getId());
-
                                                                                                         productoMap.put("nombreProducto",
                                                                                                                         d.getProducto().getNombreProducto());
-
                                                                                                         productoMap.put("stockActual",
                                                                                                                         d.getProducto().getStock());
-
                                                                                                         productoMap.put("lote",
                                                                                                                         d.getProducto().getLote());
-
                                                                                                         productoMap.put("fechaExpiracion",
                                                                                                                         d.getProducto().getFechaExpiracion());
-
                                                                                                         if (d.getProducto()
                                                                                                                         .getCategoria() != null) {
                                                                                                                 productoMap.put(
@@ -307,52 +288,43 @@ public class ReporteInvServiceImpl implements ReporteInvService {
                                                                                                                                                 .getCategoria()
                                                                                                                                                 .getNombre());
                                                                                                         }
-
                                                                                                         detalleMap.put("producto",
                                                                                                                         productoMap);
                                                                                                 }
-
                                                                                                 return detalleMap;
-
                                                                                         })
                                                                                         .toList());
-
                                                         return ventaMap;
-
                                                 })
                                                 .toList());
-
                 return contenido;
         }
 
         // ===============================================================================================
-
         // REPORTE PARA PEDIDOS
         // ===============================================================================================
-
-        private Map<String, Object> generarReportePedidos() {
+        private Map<String, Object> generarReportePedidos(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
                 Map<String, Object> contenido = new LinkedHashMap<>();
 
-                List<PedidoCompra> pedidos = pedidoCompraDAO.findAll();
+                List<PedidoCompra> pedidos = (fechaInicio != null && fechaFin != null)
+                                ? pedidoCompraDAO.findByFechaPedidoBetween(fechaInicio, fechaFin)
+                                : pedidoCompraDAO.findAll();
 
                 Map<EstadoPedido, List<PedidoCompra>> pedidosPorEstado = pedidos.stream()
                                 .collect(Collectors.groupingBy(
                                                 PedidoCompra::getEstadoPedido));
                 contenido.put("totalPedidos", pedidos.size());
-
                 contenido.put(
                                 "valorTotalPedidos",
                                 pedidos.stream()
                                                 .map(PedidoCompra::getTotalPedido)
                                                 .reduce(BigDecimal.ZERO, BigDecimal::add));
-
                 contenido.put(
                                 "cantidadEstados",
                                 pedidos.stream()
                                                 .map(p -> p.getEstadoPedido().getNombreEstado())
                                                 .distinct()
                                                 .count());
-
                 List<Map<String, Object>> porEstado = pedidosPorEstado.entrySet().stream()
                                 .map(entry -> {
                                         Map<String, Object> estadoMap = new LinkedHashMap<>();
@@ -375,29 +347,22 @@ public class ReporteInvServiceImpl implements ReporteInvService {
         }
 
         private Map<String, Object> mapPedidoCompleto(PedidoCompra pedido) {
-
                 Map<String, Object> pedidoMap = new LinkedHashMap<>();
-
                 pedidoMap.put("idPedido", pedido.getId());
                 pedidoMap.put("fechaPedido", pedido.getFechaPedido());
                 pedidoMap.put("totalPedido", pedido.getTotalPedido());
                 pedidoMap.put("observacion", pedido.getObservacion());
-
                 if (pedido.getProveedor() != null) {
-
                         pedidoMap.put(
                                         "proveedor",
                                         Map.of(
                                                         "idProveedor",
                                                         pedido.getProveedor().getId(),
-
                                                         "nombre",
                                                         pedido.getProveedor().getNombreProv(),
-
                                                         "nit",
                                                         pedido.getProveedor().getNit()));
                 }
-
                 pedidoMap.put(
                                 "detalles",
                                 pedido.getDetallePedido() != null
@@ -406,102 +371,75 @@ public class ReporteInvServiceImpl implements ReporteInvService {
                                                                 .map(this::mapDetallePedido)
                                                                 .toList()
                                                 : List.of());
-
                 return pedidoMap;
         }
 
         private Map<String, Object> mapDetallePedido(DetallePedido detalle) {
-
                 Map<String, Object> detalleMap = new LinkedHashMap<>();
-
                 detalleMap.put("idDetalle", detalle.getId());
-
                 detalleMap.put("cantidad", detalle.getCantidad());
-
                 detalleMap.put("precioUnitario",
                                 detalle.getPrecioUnitario());
-
                 detalleMap.put("subtotal",
                                 detalle.getSubtotal());
-
                 Producto producto = detalle.getProducto();
-
                 if (producto != null) {
-
                         Map<String, Object> productoMap = new LinkedHashMap<>();
-
                         productoMap.put(
                                         "idProducto",
                                         producto.getId());
-
                         productoMap.put(
                                         "nombreProducto",
                                         producto.getNombreProducto());
-
                         productoMap.put(
                                         "stockActual",
                                         producto.getStock());
-
                         productoMap.put(
                                         "stockMinimo",
                                         producto.getStockMinimo());
-
                         productoMap.put(
                                         "stockMaximo",
                                         producto.getStockMaximo());
-
                         productoMap.put(
                                         "lote",
                                         producto.getLote());
-
                         productoMap.put(
                                         "fechaExpiracion",
                                         producto.getFechaExpiracion());
-
                         productoMap.put(
                                         "fechaIngreso",
                                         producto.getFechaIngreso());
-
                         productoMap.put(
                                         "fechaModificacion",
                                         producto.getFechaModificacion());
-
                         if (producto.getCategoria() != null) {
-
                                 productoMap.put(
                                                 "categoria",
                                                 producto.getCategoria().getNombre());
                         }
-
                         detalleMap.put(
                                         "producto",
                                         productoMap);
                 }
-
                 return detalleMap;
         }
 
         // ===============================================================================================
-
         // REPORTE PARA STOCKS
         // ===============================================================================================
 
         private Map<String, Object> generarReporteStock() {
                 List<Producto> todos = productoDAO.findAll();
-
                 List<Producto> critico = todos.stream()
                                 .filter(p -> p.getStock() == 0 || p.getStock() <= p.getStockMinimo())
                                 .toList();
-
                 List<Producto> normal = todos.stream()
                                 .filter(p -> p.getStock() > p.getStockMinimo()
                                                 && p.getStock() <= p.getStockMaximo())
                                 .toList();
-
                 List<Producto> exceso = todos.stream()
                                 .filter(p -> p.getStock() > p.getStockMaximo())
                                 .toList();
-
                 Map<String, Object> contenido = new LinkedHashMap<>();
                 contenido.put("totalProductos", todos.size());
                 contenido.put("critico", critico.stream().map(p -> Map.of(
@@ -519,32 +457,26 @@ public class ReporteInvServiceImpl implements ReporteInvService {
         }
 
         // ===============================================================================================
-
         // REPORTE PARA VENCIMIENTO
         // ===============================================================================================
 
         private Map<String, Object> generarReporteVencimientos() {
                 LocalDateTime ahora = LocalDateTime.now();
                 LocalDateTime limite = ahora.plusDays(7);
-
                 List<Producto> todos = productoDAO.findAll();
-
                 List<Producto> vencidos = todos.stream()
                                 .filter(p -> p.getFechaExpiracion() != null
                                                 && p.getFechaExpiracion().isBefore(ahora))
                                 .toList();
-
                 List<Producto> proximosAVencer = todos.stream()
                                 .filter(p -> p.getFechaExpiracion() != null
                                                 && p.getFechaExpiracion().isAfter(ahora)
                                                 && p.getFechaExpiracion().isBefore(limite)
                                                 && p.getStock() > 0)
                                 .toList();
-
                 Map<String, Object> contenido = new LinkedHashMap<>();
                 contenido.put("cantidadVencidos", vencidos.size());
                 contenido.put("cantidadProximosAVencer", proximosAVencer.size());
-
                 contenido.put("vencidos", vencidos.stream().map(p -> Map.of(
                                 "nombre", p.getNombreProducto(),
                                 "stock", p.getStock(),
@@ -555,15 +487,16 @@ public class ReporteInvServiceImpl implements ReporteInvService {
                                 "fechaExpiracion", p.getFechaExpiracion())).toList());
                 return contenido;
         }
-
         // ===============================================================================================
-
         // REPORTE PARA CLIENTES
         // ===============================================================================================
 
-        private Map<String, Object> generarReporteClientes() {
+        private Map<String, Object> generarReporteClientes(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
                 List<Cliente> clientes = clienteDAO.findAll();
-                List<VentaRegistro> todasLasVentas = ventaRegistroDAO.findAll();
+
+                List<VentaRegistro> todasLasVentas = (fechaInicio != null && fechaFin != null)
+                                ? ventaRegistroDAO.findByFechaVentaBetween(fechaInicio, fechaFin)
+                                : ventaRegistroDAO.findAll();
 
                 Map<Long, List<VentaRegistro>> ventasPorCliente = todasLasVentas.stream()
                                 .filter(v -> v.getCliente() != null)
@@ -803,11 +736,13 @@ public class ReporteInvServiceImpl implements ReporteInvService {
         // REPORTE PARA PROVEEDORES
         // ===============================================================================================
 
-        private Map<String, Object> generarReporteProveedores() {
+        private Map<String, Object> generarReporteProveedores(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
 
                 List<Proveedor> proveedores = proveedorDAO.findAll();
 
-                List<PedidoCompra> todosLosPedidos = pedidoCompraDAO.findAll();
+                List<PedidoCompra> todosLosPedidos = (fechaInicio != null && fechaFin != null)
+                                ? pedidoCompraDAO.findByFechaPedidoBetween(fechaInicio, fechaFin)
+                                : pedidoCompraDAO.findAll();
 
                 Map<Long, List<PedidoCompra>> pedidosPorProveedor = todosLosPedidos.stream()
                                 .filter(p -> p.getProveedor() != null)

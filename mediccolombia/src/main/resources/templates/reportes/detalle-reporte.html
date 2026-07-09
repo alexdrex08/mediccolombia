@@ -56,21 +56,37 @@
                         </div>
                     </div>
                     <div class="card-body py-3 px-4">
-                        <div class="row">
-                            <div class="col-md-4">
+                        <div class="row g-3">
+
+                            <div class="col-md-3">
                                 <span class="text-muted small text-uppercase fw-bold">Tipo de Reporte</span>
                                 <p class="fw-bold mb-0">
                                     <span class="badge bg-primary fs-6" th:text="${tipoReporte}"></span>
                                 </p>
                             </div>
-                            <div class="col-md-4">
+
+                            <div class="col-md-3">
                                 <span class="text-muted small text-uppercase fw-bold">Generado por</span>
                                 <p class="fw-bold mb-0" th:text="${nombreUsuario}"></p>
                             </div>
-                            <div class="col-md-4">
+
+                            <!-- Período filtrado — solo aparece si el reporte fue generado con fechas -->
+                            <div class="col-md-3" th:if="${periodoReporte != null}">
+                                <span class="text-muted small text-uppercase fw-bold">Período analizado</span>
+                                <p class="fw-bold mb-0 text-primary" th:text="${periodoReporte}"></p>
+                            </div>
+
+                           <!-- Si no es filtrado por fecah se muestra otra cosa -->
+                            <div class="col-md-3" th:if="${periodoReporte == null}">
+                                <span class="text-muted small text-uppercase fw-bold">Sin filtro de fecha</span>
+                                <p class="text-muted small mb-0 fst-italic">Todos los registros disponibles</p>
+                            </div>
+
+                            <div class="col-md-3">
                                 <span class="text-muted small text-uppercase fw-bold">Archivo</span>
                                 <p class="font-monospace small mb-0 text-muted" th:text="${urlResultado}"></p>
                             </div>
+
                         </div>
                     </div>
                 </div>

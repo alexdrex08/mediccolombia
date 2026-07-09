@@ -1,5 +1,7 @@
 package com.sena.meciccolombia.mediccolombia.web.dto.request;
 
+import java.time.LocalDateTime;
+
 import lombok.*;
 
 @Getter
@@ -13,5 +15,8 @@ public class ReporteInvRequestDTO {
     private Long idUsuario;
     private Long idFiltroBusqueda;
     private Long idReferencia;
+
+    private LocalDateTime fechaInicio;
+    private LocalDateTime fechaFin;
     
 }

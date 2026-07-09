@@ -193,6 +193,7 @@
                                     <tr>
                                         <th class="ps-3">#</th>
                                         <th>Tipo</th>
+                                        <th>Período</th>
                                         <th>Asunto</th>
                                         <th>Fecha</th>
                                         <th>Generado por</th>
@@ -212,6 +213,9 @@
                                         <td>
                                             <span class="badge bg-primary small"
                                                 th:text="${r.get('tipoReporte')}"></span>
+                                        </td>
+                                        <td class="text-muted small"
+                                            th:text="${r.get('periodo') != null ? r.get('periodo') : 'Sin filtro'}">
                                         </td>
                                         <td class="text-muted small"
                                             th:text="${r.get('asunto') != null ? r.get('asunto') : '—'}"></td>

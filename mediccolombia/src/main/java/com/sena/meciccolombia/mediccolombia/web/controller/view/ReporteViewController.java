@@ -1,5 +1,8 @@
 package com.sena.meciccolombia.mediccolombia.web.controller.view;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,14 +25,22 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.sena.meciccolombia.mediccolombia.dao.DetalleFiltroDAO;
+import com.sena.meciccolombia.mediccolombia.dao.FiltroBusquedaDAO;
 import com.sena.meciccolombia.mediccolombia.dao.ReporteInvDAO;
+import com.sena.meciccolombia.mediccolombia.domain.DetalleFiltro;
+import com.sena.meciccolombia.mediccolombia.domain.FiltroBusqueda;
 import com.sena.meciccolombia.mediccolombia.domain.ReporteInv;
 import com.sena.meciccolombia.mediccolombia.security.MyUserDetails;
+import com.sena.meciccolombia.mediccolombia.service.AlertaInvService;
 import com.sena.meciccolombia.mediccolombia.service.CategoriaService;
+import com.sena.meciccolombia.mediccolombia.service.IVentaRegistroService;
 import com.sena.meciccolombia.mediccolombia.service.ProductoService;
+import com.sena.meciccolombia.mediccolombia.service.ProveedorService;
 import com.sena.meciccolombia.mediccolombia.service.ReporteInvService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.ReporteInvRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.ReporteDetalleResponseDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.TotalVendidosDTO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -42,15 +53,23 @@ public class ReporteViewController {
             .registerModule(new JavaTimeModule())
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
+    private static final DateTimeFormatter FMT_INPUT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final DateTimeFormatter FMT_PERIODO = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final ReporteInvService reporteInvService;
-    private final ReporteInvDAO reporteInvDAO;
     private final ProductoService productoService;
     private final CategoriaService categoriaService;
+    private final AlertaInvService alertaInvService;
+    private final ProveedorService proveedorService;
+    private final IVentaRegistroService iVentaRegistroService;
+    private final ReporteInvDAO reporteInvDAO;
+    private final FiltroBusquedaDAO filtroBusquedaDAO;
+    private final DetalleFiltroDAO detalleFiltroDAO;
 
     @GetMapping("/principal")
     public String reportesDashboard(Model model) {
+
         model.addAttribute("vistaActiva", "reportes-dashboard");
 
         model.addAttribute("totalReportes", reporteInvDAO.count());
@@ -65,10 +84,9 @@ public class ReporteViewController {
         model.addAttribute("totalGeneral", reporteInvDAO.countByTipoReporte("REPORTE_GENERAL"));
 
         model.addAttribute("ultimosReportes", reporteInvDAO.findTop5ByOrderByFechaGeneracionDesc()
-                        .stream()
-                        .map(this::toResumenItem)
-                        .toList()
-                    );
+                .stream()
+                .map(this::toResumenItem)
+                .toList());
 
         return "reportes/reportes-dashboard";
     }
@@ -86,8 +104,23 @@ public class ReporteViewController {
 
     @GetMapping("/general")
     public String reportesGeneral(Model model) {
+        LocalDateTime inicioDia = LocalDate.now().atStartOfDay();
+        LocalDateTime finDia = LocalDate.now().atTime(23, 59, 59);
+
+        int totalProductos = productoService.listarProductos().size();
+        int totalAlertas = alertaInvService.listarIsResueltaFalse().size();
+        int totalProveedores = proveedorService.listar().size();
+        TotalVendidosDTO vendidoHoy = iVentaRegistroService.obtenerTotalVendidoEnElDia(inicioDia, finDia);
+        BigDecimal totalVendido = vendidoHoy.getTotalVenta();
+
         model.addAttribute("vistaActiva", "reportes-general");
         model.addAttribute("historial", construirHistorial("REPORTE_GENERAL"));
+
+        model.addAttribute("totalProductos", totalProductos);
+        model.addAttribute("alertasActivas", totalAlertas);
+        model.addAttribute("totalProveedores", totalProveedores);
+        model.addAttribute("totalVendidoHoy", totalVendido);
+
         return "reportes/reportes-general";
     }
 
@@ -113,17 +146,28 @@ public class ReporteViewController {
     public String generar(
             @RequestParam String tipoReporte,
             @RequestParam(required = false) Long idReferencia,
-            @RequestParam(required = false) Long idFiltroBusqueda,
+            @RequestParam(required = false) String fechaInicio,
+            @RequestParam(required = false) String fechaFin,
             Authentication auth,
             RedirectAttributes redirectAttributes) {
 
         MyUserDetails user = (MyUserDetails) auth.getPrincipal();
+
+        LocalDateTime inicio = parsearFecha(fechaInicio);
+        LocalDateTime fin = parsearFecha(fechaFin);
+
+        Long idFiltroBusqueda = null;
+        if (inicio != null || fin != null) {
+            idFiltroBusqueda = crearFiltroPeriodo(inicio, fin);
+        }
 
         ReporteInvRequestDTO dto = ReporteInvRequestDTO.builder()
                 .tipoReporte(tipoReporte)
                 .idUsuario(user.getId())
                 .idReferencia(idReferencia)
                 .idFiltroBusqueda(idFiltroBusqueda)
+                .fechaInicio(inicio)
+                .fechaFin(fin)
                 .build();
 
         try {
@@ -159,8 +203,12 @@ public class ReporteViewController {
         model.addAttribute("nombreUsuario",
                 reporte.getUsuario() != null ? reporte.getUsuario().getNombre() : "Sistema");
         model.addAttribute("urlResultado", reporte.getResultado());
-
         model.addAttribute("origen", origen != null ? origen : "inventario");
+
+        model.addAttribute("periodoReporte",
+                reporte.getFiltroBusqueda() != null
+                        ? reporte.getFiltroBusqueda().getDescripcion()
+                        : null);
 
         if (reporte.getContenidoJson() == null) {
             model.addAttribute("sinContenido", true);
@@ -250,6 +298,50 @@ public class ReporteViewController {
     // HELPERS PRIVADOS
     // ─────────────────────────────────────────────────────────────────────────
 
+    // METODO PARA PARSEAR LA FECHA
+    private LocalDateTime parsearFecha(String valor) {
+        if (valor == null || valor.isBlank())
+            return null;
+        try {
+            return LocalDateTime.parse(valor, FMT_INPUT);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // METODO PARA CREAR EL FILTROBUSQUEDA
+    private Long crearFiltroPeriodo(LocalDateTime inicio, LocalDateTime fin) {
+        String descipcion = "Período: "
+                + (inicio != null ? inicio.format(FMT_PERIODO) : "incio")
+                + " — "
+                + (fin != null ? fin.format(FMT_PERIODO) : "fin");
+
+        FiltroBusqueda filtro = FiltroBusqueda.builder()
+                .descripcion(descipcion)
+                .fechaCreacion(LocalDateTime.now())
+                .build();
+        FiltroBusqueda guardado = filtroBusquedaDAO.save(filtro);
+
+        if (inicio != null) {
+            detalleFiltroDAO.save(DetalleFiltro.builder()
+                    .campoFiltro("fechaInicio")
+                    .valorFiltro(inicio.toString())
+                    .tipoDato("DATE")
+                    .filtroBusqueda(guardado)
+                    .build());
+        }
+        if (fin != null) {
+            detalleFiltroDAO.save(DetalleFiltro.builder()
+                    .campoFiltro("FechaFin")
+                    .valorFiltro(fin.toString())
+                    .tipoDato("DATE")
+                    .filtroBusqueda(guardado)
+                    .build());
+        }
+        return guardado.getId();
+
+    }
+
     private List<Map<String, Object>> construirHistorial(String... tipos) {
         List<ReporteInv> todos = new ArrayList<>();
         for (String tipo : tipos) {
@@ -271,6 +363,8 @@ public class ReporteViewController {
         item.put("nombreUsuario", r.getUsuario() != null ? r.getUsuario().getNombre() : "—");
         item.put("urlResultado", r.getResultado());
         item.put("asunto", extraerAsunto(r));
+        item.put("periodo",
+                r.getFiltroBusqueda() != null ? r.getFiltroBusqueda().getDescripcion() : null);
         return item;
     }
 

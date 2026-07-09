@@ -14,6 +14,7 @@ public class UsuarioDetalleResponseDTO {
     private Long id;
     private String nombre;
     private String correo;
+    private String identificacion;
     private String rol;
     private List<EstadoUsuarioResponseDTO> estadoUsuario;
     

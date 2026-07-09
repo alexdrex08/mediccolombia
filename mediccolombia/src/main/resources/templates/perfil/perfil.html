@@ -113,8 +113,8 @@
                                         <p class="mb-0" th:text="${usuario.correo} ?: 'No registrado'"></p>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="fw-bold small text-muted text-uppercase">ID de usuario</label>
-                                        <p class="mb-0 text-muted">#<span th:text="${usuario.id}"></span></p>
+                                        <label class="fw-bold small text-muted text-uppercase">Documento de identificacion</label>
+                                        <p class="mb-0 text-muted">#<span th:text="${usuario.identificacion}"></span></p>
                                     </div>
                                 </div>
                             </div>
@@ -286,7 +286,7 @@
                                 <label class="form-label fw-bold">Tipo de estado</label>
                                 <select name="idTipoEstado" class="form-select" required>
                                     <option value="">Seleccionar estado...</option>
-                                    <!-- tipos de estado de los usuarios -->
+                                    
                                     <option th:each="te : ${tiposEstado}" th:value="${te.id}"
                                         th:text="${te.nombreTipo}"></option>
                                 </select>
@@ -294,7 +294,6 @@
 
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Fecha de inicio</label>
-                                <!-- fecha -->
                                 <input type="datetime-local" name="fechaInicio" class="form-control" required>
                             </div>
 

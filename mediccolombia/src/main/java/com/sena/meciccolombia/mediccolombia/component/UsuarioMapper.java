@@ -42,6 +42,7 @@ public class UsuarioMapper {
                                         .id(entity.getId())
                                         .nombre(entity.getNombre())
                                         .correo(entity.getCorreo())
+                                        .identificacion(entity.getIdentificacion())
                                         .rol(entity.getRol())
                                         .estadoUsuario(estados)
                                         .build();
