@@ -12,7 +12,8 @@
             <main class="container-fluid p-4 my-5">
 
                 <!-- ENCABEZADO -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <div
+                    class="d-flex flex-column flex-md-row justify-content-between align-items-center align-items-md-center gap-3 mb-4">
                     <div>
                         <h2 class="fw-bold text-dark mb-0">
                             <i class="fa-solid fa-user me-2 text-primary"></i>
@@ -27,16 +28,22 @@
                     </div>
                     <div class="d-flex gap-2">
                         <a th:href="@{'/clientes/' + ${cliente.id} + '/editar'}" class="btn btn-outline-primary btn-sm">
-                            <i class="fa-solid fa-pen me-1"></i> Editar
+                            <i class="fa-solid fa-pen me-0 me-sm-1"></i>
+                            <span class="d-none d-sm-inline ms-1">
+                                Editar
+                            </span>
                         </a>
                         <form th:action="@{'/clientes/' + ${cliente.id} + '/eliminar'}" method="post"
                             onsubmit="return confirm('¿Eliminar este cliente? Esta acción no se puede deshacer.')">
-                            <button type="submit" class="btn btn-outline-danger btn-sm">
-                                <i class="fa-solid fa-trash me-1"></i> Eliminar
+                            <button type="submit" class="btn btn-outline-danger btn-sm ">
+                                <i class="fa-solid fa-trash me-0 me-sm-1"></i>
+                                <span class="d-none d-sm-inline ms-1">Eliminar</span>
                             </button>
                         </form>
                         <a th:href="@{/clientes}" class="btn btn-outline-secondary btn-sm">
-                            <i class="fa-solid fa-arrow-left me-1"></i> Volver
+                            <i class="fa-solid fa-arrow-left me-0 me-sm-1"></i> <span class="d-none d-sm-inline ms-1">
+                                Volver
+                            </span>
                         </a>
                     </div>
                 </div>
@@ -106,14 +113,15 @@
                                 <span class="fw-bold">
                                     <i class="fa-solid fa-envelope me-2 text-primary"></i>Correos electrónicos
                                 </span>
-                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                <button class="btn btn-sm btn-outline-primary text-dark d-inline-flex align-items-center justify-content-center" data-bs-toggle="modal"
                                     data-bs-target="#modalCorreo">
-                                    <i class="fa-solid fa-plus me-1"></i>Agregar
+                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i> <span class="d-none d-sm-inline ms-1"></span>
                                 </button>
                             </div>
-                            <div class="card-body p-0">
-                                <div th:if="${cliente.correos != null and !cliente.correos.isEmpty()}">
-                                    <table class="table table-hover align-middle mb-0">
+                            <div class="card-body table-wrapper table-rounded">
+                                <div th:if="${cliente.correos != null and !cliente.correos.isEmpty()}"
+                                    class="table-responsive-premium">
+                                    <table class="table table-premium">
                                         <thead class="table-light">
                                             <tr>
                                                 <th>Correo</th>
@@ -137,7 +145,8 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div th:if="${cliente.correos == null or cliente.correos.isEmpty()}" class="text-center text-muted py-3">
+                                <div th:if="${cliente.correos == null or cliente.correos.isEmpty()}"
+                                    class="text-center text-muted py-3">
                                     <i class="fa-solid fa-envelope-open me-2"></i>
                                     Sin correos registrados
                                 </div>
@@ -151,14 +160,16 @@
                                 <span class="fw-bold">
                                     <i class="fa-solid fa-phone me-2 text-success"></i>Teléfonos
                                 </span>
-                                <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
+                                <button class="btn btn-sm btn-outline-success text-dark d-inline-flex align-items-center justify-content-center" data-bs-toggle="modal"
                                     data-bs-target="#modalTelefono">
-                                    <i class="fa-solid fa-plus me-1"></i>Agregar
+                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i> <span class="d-none d-sm-inline ms-1">Agregar
+                                    </span>
                                 </button>
                             </div>
-                            <div class="card-body p-0">
-                                <div th:if="${cliente.telefonos != null and !cliente.telefonos.isEmpty()}">
-                                    <table class="table table-hover align-middle mb-0">
+                            <div class="card-body table-wrapper table-rounded">
+                                <div th:if="${cliente.telefonos != null and !cliente.telefonos.isEmpty()}"
+                                    class="table-responsive-premium">
+                                    <table class="table table-premium">
                                         <thead class="table-light">
                                             <tr>
                                                 <th>Número</th>
@@ -199,14 +210,17 @@
                                 <span class="fw-bold">
                                     <i class="fa-solid fa-location-dot me-2 text-warning"></i>Direcciones
                                 </span>
-                                <button class="btn btn-sm btn-outline-warning text-dark" data-bs-toggle="modal"
-                                    data-bs-target="#modalDireccion">
-                                    <i class="fa-solid fa-plus me-1"></i>Agregar
+                                <button
+                                    class="btn btn-sm btn-outline-warning text-dark d-inline-flex align-items-center justify-content-center"
+                                    data-bs-toggle="modal" data-bs-target="#modalDireccion">
+                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i><span
+                                        class="d-none d-sm-inline ms-1">Agregar</span>
                                 </button>
                             </div>
-                            <div class="card-body p-0">
-                                <div th:if="${cliente.direcciones != null and !cliente.direcciones.isEmpty()}">
-                                    <table class="table table-hover align-middle mb-0">
+                            <div class="card-body table-wrapper table-rounded">
+                                <div th:if="${cliente.direcciones != null and !cliente.direcciones.isEmpty()}"
+                                    class="table-responsive-premium">
+                                    <table class="table table-premium">
                                         <thead class="table-light">
                                             <tr>
                                                 <th>Dirección</th>
@@ -235,7 +249,8 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div th:if="${cliente.direcciones == null or cliente.direcciones.isEmpty()}" class="text-center text-muted py-3">
+                                <div th:if="${cliente.direcciones == null or cliente.direcciones.isEmpty()}"
+                                    class="text-center text-muted py-3">
                                     <i class="fa-solid fa-map-pin me-2"></i>
                                     Sin direcciones registradas
                                 </div>
@@ -390,168 +405,13 @@
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
 
+    <script th:src="@{/js/cliente/utils.js}"></script>
+    <script th:src="@{/js/cliente/correos.js}"></script>
+    <script th:src="@{/js/cliente/telefonos.js}"></script>
+    <script th:src="@{/js/cliente/direcciones.js}"></script>
+
     <script th:inline="javascript">
         const CLIENTE_ID = /*[[${ cliente.id }]]*/ 0;
-
-        // =============================================
-        // UTILIDADES
-        // =============================================
-        function mostrarMensaje(texto, tipo = 'success') {
-            const div = document.getElementById('mensajeAjax');
-            const span = document.getElementById('textoMensajeAjax');
-            const icon = document.getElementById('iconoMensaje');
-            div.className = `alert alert-${tipo} py-2 mb-3`;
-            icon.className = tipo === 'success'
-                ? 'fa-solid fa-circle-check me-2'
-                : 'fa-solid fa-circle-exclamation me-2';
-            span.textContent = texto;
-            div.classList.remove('d-none');
-            // Ocultar después de 3 segundos
-            setTimeout(() => div.classList.add('d-none'), 3000);
-        }
-
-        function cerrarModal(id) {
-            bootstrap.Modal.getInstance(document.getElementById(id))?.hide();
-        }
-
-        async function postAPI(url, body) {
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-            if (!res.ok) {
-                const txt = await res.text();
-                throw new Error(txt || `Error ${res.status}`);
-            }
-            return res.json();
-        }
-
-        async function deleteAPI(url) {
-            const res = await fetch(url, { method: 'DELETE' });
-            if (!res.ok) throw new Error(`Error ${res.status}`);
-        }
-
-        // =============================================
-        // CORREOS
-        // POST /api/correos
-        // =============================================
-        async function agregarCorreo() {
-            const correo = document.getElementById('inputCorreo').value.trim();
-            const idTipoCorreo = document.getElementById('selectTipoCorreo').value;
-
-            if (!correo) { mostrarMensaje('Ingresa un correo electrónico.', 'danger'); return; }
-            if (!idTipoCorreo) { mostrarMensaje('Selecciona el tipo de correo.', 'danger'); return; }
-
-            try {
-                await postAPI('/api/correos', {
-                    correoElectronico: correo,
-                    idCliente: CLIENTE_ID,
-                    idProveedor: null,
-                    idTipoCorreo: parseInt(idTipoCorreo)
-                });
-                cerrarModal('modalCorreo');
-                mostrarMensaje('Correo agregado correctamente.');
-                setTimeout(() => location.reload(), 800);
-            } catch (e) {
-                mostrarMensaje('Error al agregar el correo: ' + e.message, 'danger');
-            }
-        }
-
-        // DELETE /api/correos/{id}
-        async function eliminarCorreo(id) {
-            if (!confirm('¿Eliminar este correo?')) return;
-            try {
-                await deleteAPI(`/api/correos/${id}`);
-                mostrarMensaje('Correo eliminado.');
-                setTimeout(() => location.reload(), 800);
-            } catch (e) {
-                mostrarMensaje('Error al eliminar el correo.', 'danger');
-            }
-        }
-
-        // =============================================
-        // TELÉFONOS
-        // POST /api/telefonos
-        // =============================================
-        async function agregarTelefono() {
-            const numero = document.getElementById('inputNumero').value.trim();
-            const idTipo = document.getElementById('selectTipoTelefono').value;
-            const complemento = document.getElementById('inputComplementoTel').value.trim();
-
-            if (!numero) { mostrarMensaje('Ingresa un número de teléfono.', 'danger'); return; }
-            if (!idTipo) { mostrarMensaje('Selecciona el tipo de teléfono.', 'danger'); return; }
-
-            try {
-                await postAPI('/api/telefonos', {
-                    numero,
-                    complemento: complemento || null,
-                    idCliente: CLIENTE_ID,
-                    idProveedor: null,
-                    idTipoTelefono: parseInt(idTipo)
-                });
-                cerrarModal('modalTelefono');
-                mostrarMensaje('Teléfono agregado correctamente.');
-                setTimeout(() => location.reload(), 800);
-            } catch (e) {
-                mostrarMensaje('Error al agregar el teléfono: ' + e.message, 'danger');
-            }
-        }
-
-        // DELETE /api/telefonos/{id}
-        async function eliminarTelefono(id) {
-            if (!confirm('¿Eliminar este teléfono?')) return;
-            try {
-                await deleteAPI(`/api/telefonos/${id}`);
-                mostrarMensaje('Teléfono eliminado.');
-                setTimeout(() => location.reload(), 800);
-            } catch (e) {
-                mostrarMensaje('Error al eliminar el teléfono.', 'danger');
-            }
-        }
-
-        // =============================================
-        // DIRECCIONES
-        // POST /api/direccions
-        // =============================================
-        async function agregarDireccion() {
-            const dir = document.getElementById('inputDireccion').value.trim();
-            const idBarrio = document.getElementById('selectBarrio').value;
-            const idTipo = document.getElementById('selectTipoDireccion').value;
-            const complemento = document.getElementById('inputComplementoDir').value.trim();
-
-            if (!dir) { mostrarMensaje('Ingresa una dirección.', 'danger'); return; }
-            if (!idBarrio) { mostrarMensaje('Selecciona un barrio.', 'danger'); return; }
-            if (!idTipo) { mostrarMensaje('Selecciona el tipo de dirección.', 'danger'); return; }
-
-            try {
-                await postAPI('/api/direccions', {
-                    direccion: dir,
-                    complemento: complemento || null,
-                    idCliente: CLIENTE_ID,
-                    idProveedor: null,
-                    idBarrio: parseInt(idBarrio),
-                    idTipoDireccion: parseInt(idTipo)
-                });
-                cerrarModal('modalDireccion');
-                mostrarMensaje('Dirección agregada correctamente.');
-                setTimeout(() => location.reload(), 800);
-            } catch (e) {
-                mostrarMensaje('Error al agregar la dirección: ' + e.message, 'danger');
-            }
-        }
-
-        // DELETE /api/direccions/{id}
-        async function eliminarDireccion(id) {
-            if (!confirm('¿Eliminar esta dirección?')) return;
-            try {
-                await deleteAPI(`/api/direccions/${id}`);
-                mostrarMensaje('Dirección eliminada.');
-                setTimeout(() => location.reload(), 800);
-            } catch (e) {
-                mostrarMensaje('Error al eliminar la dirección.', 'danger');
-            }
-        }
     </script>
 </body>
 

@@ -22,8 +22,9 @@
                             <strong th:text="${nombreUsuario}"></strong>
                         </p>
                     </div>
-                    <a th:href="@{/productos}" class="btn btn-outline-secondary btn-sm">
-                        <i class="fa-solid fa-arrow-left me-1"></i>Volver al inventario
+                    <a href="/productos" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span class="d-none d-sm-inline ms-1">Volver al inventario</span>
                     </a>
                 </div>
 
@@ -56,9 +57,8 @@
                                     <label for="nombreProducto" class="form-label fw-semibold">
                                         Nombre del producto <span class="text-danger">*</span>
                                     </label>
-                                    <input type="text" class="form-control" id="nombreProducto"
-                                        name="nombreProducto" placeholder="Ej: Amoxicilina 500mg"
-                                        required maxlength="100">
+                                    <input type="text" class="form-control" id="nombreProducto" name="nombreProducto"
+                                        placeholder="Ej: Amoxicilina 500mg" required maxlength="100">
                                     <div class="form-text">Nombre comercial o farmacéutico completo.</div>
                                 </div>
 
@@ -66,9 +66,8 @@
                                     <label for="lote" class="form-label fw-semibold">
                                         Número de lote <span class="text-danger">*</span>
                                     </label>
-                                    <input type="text" class="form-control" id="lote"
-                                        name="lote" placeholder="Ej: L-2024-001"
-                                        required maxlength="50">
+                                    <input type="text" class="form-control" id="lote" name="lote"
+                                        placeholder="Ej: L-2024-001" required maxlength="50">
                                     <div class="form-text">Código de trazabilidad del lote.</div>
                                 </div>
 
@@ -78,9 +77,8 @@
                                     </label>
                                     <select class="form-select" id="idCategoria" name="idCategoria" required>
                                         <option value="">Selecciona una categoría...</option>
-                                        <option th:each="cat : ${categorias}"
-                                                th:value="${cat.idCategoria}"
-                                                th:text="${cat.nombreCategoria}"></option>
+                                        <option th:each="cat : ${categorias}" th:value="${cat.idCategoria}"
+                                            th:text="${cat.nombreCategoria}"></option>
                                     </select>
                                 </div>
 
@@ -106,8 +104,8 @@
                                         <span class="input-group-text bg-light">
                                             <i class="fa-solid fa-boxes-stacked text-primary"></i>
                                         </span>
-                                        <input type="number" class="form-control" id="stock"
-                                            name="stock" placeholder="0" required min="0" step="1">
+                                        <input type="number" class="form-control" id="stock" name="stock"
+                                            placeholder="0" required min="0" step="1">
                                     </div>
                                     <div class="form-text">Unidades disponibles al ingresar.</div>
                                 </div>
@@ -120,8 +118,8 @@
                                         <span class="input-group-text bg-light">
                                             <i class="fa-solid fa-triangle-exclamation text-warning"></i>
                                         </span>
-                                        <input type="number" class="form-control" id="stockMinimo"
-                                            name="stockMinimo" placeholder="0" required min="0" step="1">
+                                        <input type="number" class="form-control" id="stockMinimo" name="stockMinimo"
+                                            placeholder="0" required min="0" step="1">
                                     </div>
                                     <div class="form-text">Umbral para generar alerta de stock bajo.</div>
                                 </div>
@@ -134,8 +132,8 @@
                                         <span class="input-group-text bg-light">
                                             <i class="fa-solid fa-arrow-up text-success"></i>
                                         </span>
-                                        <input type="number" class="form-control" id="stockMaximo"
-                                            name="stockMaximo" placeholder="0" required min="1" step="1">
+                                        <input type="number" class="form-control" id="stockMaximo" name="stockMaximo"
+                                            placeholder="0" required min="1" step="1">
                                     </div>
                                     <div class="form-text">Capacidad máxima permitida.</div>
                                 </div>
@@ -166,8 +164,8 @@
                                     <label for="fechaExpiracion" class="form-label fw-semibold">
                                         Fecha de expiración <span class="text-danger">*</span>
                                     </label>
-                                    <input type="datetime-local" class="form-control"
-                                        id="fechaExpiracion" name="fechaExpiracion" required>
+                                    <input type="datetime-local" class="form-control" id="fechaExpiracion"
+                                        name="fechaExpiracion" required>
                                     <div class="form-text">Debe ser una fecha futura.</div>
                                     <div id="feedbackFecha" class="invalid-feedback">
                                         La fecha de expiración debe ser futura.
@@ -206,14 +204,14 @@
 
     <script>
         (function () {
-            const stockInput   = document.getElementById('stock');
-            const minimoInput  = document.getElementById('stockMinimo');
-            const maximoInput  = document.getElementById('stockMaximo');
-            const fechaInput   = document.getElementById('fechaExpiracion');
-            const indicador    = document.getElementById('indicadorStock');
-            const textoRango   = document.getElementById('textoRango');
-            const diasCard     = document.getElementById('diasRestantes');
-            const textoDias    = document.getElementById('textoDiasRestantes');
+            const stockInput = document.getElementById('stock');
+            const minimoInput = document.getElementById('stockMinimo');
+            const maximoInput = document.getElementById('stockMaximo');
+            const fechaInput = document.getElementById('fechaExpiracion');
+            const indicador = document.getElementById('indicadorStock');
+            const textoRango = document.getElementById('textoRango');
+            const diasCard = document.getElementById('diasRestantes');
+            const textoDias = document.getElementById('textoDiasRestantes');
 
             // ── Indicador de rango de stock ──────────────────────────────
             function actualizarRango() {

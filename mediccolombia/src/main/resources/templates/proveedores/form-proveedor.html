@@ -13,11 +13,12 @@
 
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 class="fw-bold text-dark mb-0">
-                        <i th:class="${modoEdicion} ? 'fa-solid fa-pen me-2 text-primary' : 'fa-solid fa-plus me-2 text-success'"></i>
+                        <i
+                            th:class="${modoEdicion} ? 'fa-solid fa-pen me-2 text-primary' : 'fa-solid fa-plus me-2 text-success'"></i>
                         <span th:text="${modoEdicion} ? 'Editar Proveedor' : 'Registrar Nuevo Proveedor'"></span>
                     </h2>
                     <a th:href="@{/proveedores}" class="btn btn-outline-secondary btn-sm">
-                        <i class="fa-solid fa-arrow-left me-1"></i> Volver
+                        <i class="fa-solid fa-arrow-left me-1"></i> <span class="d-none d-sm-inline ms-1">Volver</span>
                     </a>
                 </div>
 
@@ -29,10 +30,8 @@
                             </div>
                             <div class="card-body p-4">
 
-                                <input type="hidden" id="proveedorId"
-                                       th:value="${modoEdicion} ? ${proveedor.id} : ''">
-                                <input type="hidden" id="esModoEdicion"
-                                       th:value="${modoEdicion}">
+                                <input type="hidden" id="proveedorId" th:value="${modoEdicion} ? ${proveedor.id} : ''">
+                                <input type="hidden" id="esModoEdicion" th:value="${modoEdicion}">
 
                                 <div class="mb-4">
                                     <label class="form-label fw-bold">
@@ -42,11 +41,8 @@
                                         <span class="input-group-text">
                                             <i class="fa-solid fa-building"></i>
                                         </span>
-                                        <input type="text" id="nombreProv"
-                                               class="form-control form-control-lg"
-                                               placeholder="Ej: Distribuidora Farma S.A.S"
-                                               th:value="${modoEdicion} ? ${proveedor.nombreProv} : ''"
-                                               required>
+                                        <input type="text" id="nombreProv" class="form-control"
+                                            th:value="${modoEdicion} ? ${proveedor.nombreProv} : ''" required>
                                     </div>
                                 </div>
 
@@ -58,11 +54,8 @@
                                         <span class="input-group-text">
                                             <i class="fa-solid fa-id-card"></i>
                                         </span>
-                                        <input type="text" id="nit"
-                                               class="form-control form-control-lg"
-                                               placeholder="Ej: 900123456-1"
-                                               th:value="${modoEdicion} ? ${proveedor.nit} : ''"
-                                               required>
+                                        <input type="text" id="nit" class="form-control"
+                                            th:value="${modoEdicion} ? ${proveedor.nit} : ''" required>
                                     </div>
                                     <div class="form-text">El NIT debe ser único en el sistema.</div>
                                 </div>
@@ -77,21 +70,20 @@
                                 </div>
 
                                 <div class="d-flex gap-2 mt-4">
-                                    <button type="button" id="btnGuardar"
-                                            class="btn btn-primary btn-lg flex-fill"
-                                            onclick="guardarProveedor()">
+                                    <button type="button" id="btnGuardar" class="btn btn-outline-primary  flex-fill"
+                                        onclick="guardarProveedor()">
                                         <i class="fa-solid fa-floppy-disk me-2"></i>
-                                        <span th:text="${modoEdicion} ? 'Guardar Cambios' : 'Registrar Proveedor'"></span>
+                                        <span
+                                            th:text="${modoEdicion} ? 'Guardar Cambios' : 'Registrar Proveedor'"></span>
                                     </button>
-                                    <a th:href="@{/proveedores}"
-                                       class="btn btn-outline-secondary btn-lg">Cancelar</a>
+                                    <a th:href="@{/proveedores}" class="btn btn-outline-secondary">Cancelar</a>
                                 </div>
 
                                 <div class="alert alert-info mt-4 mb-0 py-2" th:if="${modoEdicion}">
                                     <i class="fa-solid fa-circle-info me-2"></i>
                                     Para gestionar contacto y productos,
-                                    <a th:href="@{'/proveedores/' + ${proveedor.id}}"
-                                       class="alert-link">ve al detalle del proveedor</a>.
+                                    <a th:href="@{'/proveedores/' + ${proveedor.id}}" class="alert-link">ve al detalle
+                                        del proveedor</a>.
                                 </div>
 
                             </div>
@@ -105,53 +97,10 @@
 
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
+
+    <script th:src="@{/js/proveedor/guardarProveedor.js}"></script>
+
     <script>
-        async function guardarProveedor() {
-            const nombre = document.getElementById('nombreProv').value.trim();
-            const nit    = document.getElementById('nit').value.trim();
-            const id     = document.getElementById('proveedorId').value;
-            const esEdicion = document.getElementById('esModoEdicion').value === 'true';
-
-            if (!nombre || !nit) {
-                mostrarError('Completa todos los campos obligatorios.'); return;
-            }
-
-            const btn = document.getElementById('btnGuardar');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...';
-
-            try {
-                const url    = esEdicion ? `/api/proveedores/${id}` : '/api/proveedores';
-                const method = esEdicion ? 'PUT' : 'POST';
-
-                const res = await fetch(url, {
-                    method,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombreProv: nombre, nit })
-                });
-
-                if (!res.ok) {
-                    const txt = await res.text();
-                    throw new Error(txt || 'Error al guardar');
-                }
-
-                const data = await res.json();
-                mostrarExito(esEdicion
-                    ? 'Proveedor actualizado correctamente.'
-                    : 'Proveedor registrado correctamente.');
-
-                setTimeout(() => {
-                    window.location.href = `/proveedores/${data.id}`;
-                }, 1000);
-
-            } catch (e) {
-                mostrarError(e.message || 'Error inesperado.');
-                btn.disabled = false;
-                btn.innerHTML = esEdicion
-                    ? '<i class="fa-solid fa-floppy-disk me-2"></i>Guardar Cambios'
-                    : '<i class="fa-solid fa-floppy-disk me-2"></i>Registrar Proveedor';
-            }
-        }
 
         function mostrarError(msg) {
             document.getElementById('mensajeError').textContent = msg;
@@ -165,4 +114,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Nueva Proyección - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5">
+
+                <!-- ENCABEZADO -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="text-center">
+                        <h2 class="fw-bold mb-0">
+                            <i class="fa-solid fa-plus text-primary me-2"></i>Nueva Proyección
+                        </h2>
+                        <p class="text-muted small mt-1 mb-0 d-none d-sm-inline ms-1">
+                            Genera proyecciones para un período personalizado y guárdalas en la base de datos.
+                        </p>
+                    </div>
+                    <a th:href="@{/proyecciones}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-arrow-left me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Volver al historial</span>
+                    </a>
+                </div>
+
+                <!-- FLASH -->
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i><span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- FORMULARIO -->
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+
+                        <form th:action="@{/proyecciones/generar}" method="post" id="formProyeccion" novalidate>
+
+                            <!-- SECCIÓN: TIPO DE PROYECCIÓN -->
+                            <div class="card shadow-sm border-0 mb-4">
+                                <div class="card-header bg-white border-bottom py-3">
+                                    <h6 class="fw-bold mb-0 text-primary">
+                                        <i class="fa-solid fa-list-check me-2"></i>Tipo de Proyección
+                                    </h6>
+                                </div>
+                                <div class="card-body p-4">
+                                    <p class="text-muted small mb-3">
+                                        Selecciona qué tipo de análisis quieres generar para el período indicado.
+                                    </p>
+
+                                    <div class="row g-3">
+
+                                        <div class="col-md-6">
+                                            <input type="radio" class="btn-check" name="idTipoProyeccion" id="tipo1"
+                                                value="1" required>
+                                            <label class="btn btn-outline-success w-100 h-100 d-flex flex-column
+                                                        align-items-center justify-content-center py-3" for="tipo1">
+                                                <i class="fa-solid fa-arrow-trend-up fa-2x mb-2"></i>
+                                                <strong>Productos Más Vendidos</strong>
+                                                <small class="text-muted mt-1 text-center">
+                                                    Top 5 productos con mayor volumen de ventas en el período.
+                                                    Incluye estimación de pedidos (+20% histórico).
+                                                </small>
+                                            </label>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <input type="radio" class="btn-check" name="idTipoProyeccion" id="tipo2"
+                                                value="2">
+                                            <label class="btn btn-outline-danger w-100 h-100 d-flex flex-column
+                                                        align-items-center justify-content-center py-3" for="tipo2">
+                                                <i class="fa-solid fa-arrow-trend-down fa-2x mb-2"></i>
+                                                <strong>Productos Menos Vendidos</strong>
+                                                <small class="text-muted mt-1 text-center">
+                                                    Top 5 productos con menor movimiento.
+                                                    Útil para revisar stock excesivo.
+                                                </small>
+                                            </label>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <input type="radio" class="btn-check" name="idTipoProyeccion" id="tipo3"
+                                                value="3">
+                                            <label class="btn btn-outline-warning w-100 h-100 d-flex flex-column
+                                                        align-items-center justify-content-center py-3" for="tipo3">
+                                                <i class="fa-solid fa-calendar-xmark fa-2x mb-2"></i>
+                                                <strong>Retiros por Vencimiento</strong>
+                                                <small class="text-muted mt-1 text-center">
+                                                    Productos retirados del inventario por vencimiento.
+                                                    Ayuda a detectar patrones de pérdida.
+                                                </small>
+                                            </label>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <input type="radio" class="btn-check" name="idTipoProyeccion" id="tipo4"
+                                                value="4">
+                                            <label class="btn btn-outline-primary w-100 h-100 d-flex flex-column
+                                                        align-items-center justify-content-center py-3" for="tipo4">
+                                                <i class="fa-solid fa-layer-group fa-2x mb-2"></i>
+                                                <strong>Ventas por Categoría</strong>
+                                                <small class="text-muted mt-1 text-center">
+                                                    Agrupa las unidades vendidas por categoría de medicamento
+                                                    en el período seleccionado.
+                                                </small>
+                                            </label>
+                                        </div>
+
+                                    </div>
+
+                                    <div id="feedbackTipo" class="invalid-feedback d-block mt-2"
+                                        style="display:none!important;">
+                                        Debes seleccionar un tipo de proyección.
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- SECCIÓN: PERÍODO -->
+                            <div class="card shadow-sm border-0 mb-4">
+                                <div class="card-header bg-white border-bottom py-3">
+                                    <h6 class="fw-bold mb-0 text-primary">
+                                        <i class="fa-solid fa-calendar-range me-2"></i>Período a Analizar
+                                    </h6>
+                                </div>
+                                <div class="card-body p-4">
+
+                                    <!-- Accesos rápidos -->
+                                    <p class="text-muted small mb-2">Accesos rápidos:</p>
+                                    <div class="d-flex gap-2 flex-wrap mb-4">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                            id="btnMesAnterior">Mes anterior</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                            id="btnMesActual">Mes actual</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                            id="btnUltimos30">Últimos 30 días</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                            id="btnUltimos90">Últimos 90 días</button>
+                                    </div>
+
+                                    <div class="row g-4">
+                                        <div class="col-md-6">
+                                            <label for="fechaInicio" class="form-label fw-semibold">
+                                                Fecha inicio <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="datetime-local" class="form-control" id="fechaInicio"
+                                                name="fechaInicio" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="fechaFin" class="form-label fw-semibold">
+                                                Fecha fin <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="datetime-local" class="form-control" id="fechaFin"
+                                                name="fechaFin" required>
+                                        </div>
+
+                                        <!-- Preview del período -->
+                                        <div class="col-12" id="previoPeriodo" style="display:none;">
+                                            <div class="alert alert-info py-2 mb-0 small">
+                                                <i class="fa-solid fa-circle-info me-1"></i>
+                                                Período seleccionado:
+                                                <strong id="textoPeriodo"></strong>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- BOTONES -->
+                            <div class="d-flex justify-content-end gap-2">
+                                <a th:href="@{/proyecciones}" class="btn btn-outline-secondary">
+                                    <i class="fa-solid fa-xmark me-1"></i>Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary px-4" id="btnGenerar">
+                                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i>Generar Proyección
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+
+    <script th:src="@{/js/proyecciones/proyecciones.js}"></script>
+
+</body>
+
+</html>

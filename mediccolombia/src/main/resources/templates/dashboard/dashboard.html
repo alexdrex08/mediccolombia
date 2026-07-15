@@ -18,7 +18,8 @@
                     <h2 class="fw-bold text-dark mb-0"><i class="fa-solid fa-chart-line me-2 text-primary"></i>Dashboard
                         General</h2>
                     <span class="text-muted small">
-                        Actualizado: <span th:text="${#temporals.format(fechaActualizacion, 'dd/MM/yyyy HH:mm')}"></span>
+                        Actualizado: <span
+                            th:text="${#temporals.format(fechaActualizacion, 'dd/MM/yyyy HH:mm')}"></span>
                     </span>
                 </div>
 
@@ -95,36 +96,40 @@
                     <div class="card-header bg-white fw-bold">
                         <i class="fa-solid fa-clock me-2 text-secondary"></i>Últimos Movimientos de Inventario
                     </div>
-                    <div class="card-body">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Tipo</th>
-                                    <th>Producto</th>
-                                    <th>Cantidad</th>
-                                    <th>Responsable</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:if="${#lists.isEmpty(ultimosMovimientos)}">
-                                    <td colspan="5" class="text-center text-muted py-4">
-                                        Aún no se han registrado movimientos de inventario.
-                                    </td>
-                                </tr>
-                                <tr th:each="item : ${ultimosMovimientos}">
-                                    <td th:text="${#temporals.format(item.movimiento.fechaMovimiento, 'dd/MM/yyyy HH:mm')}"></td>
-                                    <td>
-                                        <span class="badge"
-                                            th:classappend="${item.entrada} ? 'bg-success' : 'bg-danger'"
-                                            th:text="${item.movimiento.tipoMovimiento}"></span>
-                                    </td>
-                                    <td th:text="${item.movimiento.nombreProducto}"></td>
-                                    <td th:text="${item.movimiento.cantidad}"></td>
-                                    <td th:text="${item.movimiento.nombreUsuario}"></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="card-body table-wrapper table-rounded">
+                        <div class="table-responsive-premium">
+                            <table class="table table-premium">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Tipo</th>
+                                        <th>Producto</th>
+                                        <th>Cantidad</th>
+                                        <th>Responsable</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${#lists.isEmpty(ultimosMovimientos)}">
+                                        <td colspan="5" class="text-center text-muted py-4">
+                                            Aún no se han registrado movimientos de inventario.
+                                        </td>
+                                    </tr>
+                                    <tr th:each="item : ${ultimosMovimientos}">
+                                        <td
+                                            th:text="${#temporals.format(item.movimiento.fechaMovimiento, 'dd/MM/yyyy HH:mm')}">
+                                        </td>
+                                        <td>
+                                            <span class="badge"
+                                                th:classappend="${item.entrada} ? 'bg-success' : 'bg-danger'"
+                                                th:text="${item.movimiento.tipoMovimiento}"></span>
+                                        </td>
+                                        <td th:text="${item.movimiento.nombreProducto}"></td>
+                                        <td th:text="${item.movimiento.cantidad}"></td>
+                                        <td th:text="${item.movimiento.nombreUsuario}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 

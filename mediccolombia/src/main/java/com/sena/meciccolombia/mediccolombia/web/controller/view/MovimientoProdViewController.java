@@ -30,7 +30,7 @@ public class MovimientoProdViewController {
         List<MovimientoProdResponseDTO> entradas = movimientoProdService.listarPorSigno(1);
 
         model.addAttribute("movimientos", entradas);
-        model.addAttribute("vistaActiva", "movimientos");
+        model.addAttribute("vistaActiva", "movimientos-entradas");
         model.addAttribute("titulo", "Entradas de Inventario");
         model.addAttribute("filtroActivo", "entradas");
 
@@ -47,7 +47,7 @@ public class MovimientoProdViewController {
         List<MovimientoProdResponseDTO> salidas = movimientoProdService.listarPorSigno(-1);
 
         model.addAttribute("movimientos", salidas);
-        model.addAttribute("vistaActiva", "movimientos");
+        model.addAttribute("vistaActiva", "movimientos-salidas");
         model.addAttribute("titulo", "Salidas de Inventario");
         model.addAttribute("filtroActivo", "salidas");
 
@@ -62,14 +62,14 @@ public class MovimientoProdViewController {
     @GetMapping("/ver-entrada/{id}")
     public String verDetalleEntrada(@PathVariable Long id, Model model) {
         model.addAttribute("movimiento", movimientoProdService.obtenerPorId(id));
-        model.addAttribute("vistaActiva", "movimientos");
+        model.addAttribute("vistaActiva", "movimientos-entradas");
         return "movimiento/detalle-movimiento-entrada";
     }
 
     @GetMapping("/ver-salida/{id}")
     public String verDetalleSalida(@PathVariable Long id, Model model) {
         model.addAttribute("movimiento", movimientoProdService.obtenerPorId(id));
-        model.addAttribute("vistaActiva", "movimientos");
+        model.addAttribute("vistaActiva", "movimientos-salidas");
         return "movimiento/detalle-movimiento-salida";
     }
 

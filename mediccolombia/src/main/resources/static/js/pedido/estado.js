@@ -17,3 +17,6 @@ let articuloActual = null;
 // Cache del catálogo del proveedor seleccionado en el Tab 1
 // se usa para evitar múltiples llamadas a la API
 let catalogoActual = {};
+
+// js/pedido/estado.js
+console.log('estado.js cargado');

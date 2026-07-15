@@ -10,24 +10,32 @@
         <div id="page-content-wrapper">
             <main class="container-fluid p-4 my-5">
 
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h2 class="fw-bold mb-0">
-                            <i class="fa-solid fa-cubes  text-primary mb-2"></i> Reportes de Inventario
-                        </h2>
-                        <p class="text-muted small mt-1 mb-0">
-                            Stock general, vencimientos, por producto, por categoría y resumen general.
-                        </p>
+                <div class="row g-2 g-md-3 mb-4">
+                    <div class="col-12">
+                        <div class="text-center">
+                            <h2 class="fw-bold mb-0">
+                                <i class="fa-solid fa-cubes text-primary me-2"></i> Reportes de Inventario
+                            </h2>
+                            <p class="text-muted small mt-1 mb-0">
+                                Stock general, vencimientos, por producto, por categoría y resumen general.
+                            </p>
+                        </div>
                     </div>
-                    <span class="text-muted small">
-                        <i class="fa-regular fa-calendar me-1"></i>
-                        Actualizado: <span
-                            th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span>
-                    </span>
-                    <div>
-                        <a th:href="@{/reportes/principal}" class="btn btn-outline-secondary">
-                            <i class="fa-solid fa-arrow-left me-1"></i>Reportes
-                        </a>
+                    <div class="col-12">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <span class="text-muted small">
+                                    <i class="fa-regular fa-calendar me-1"></i>
+                                    Actualizado: <span
+                                        th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span>
+                                </span>
+                                <div>
+                                    <a th:href="@{/reportes/principal}" class="btn btn-outline-secondary">
+                                       <i class="fa-solid fa-arrow-left me-0 me-sm-1"></i> <span class="d-none d-sm-inline ms-1">Reportes</span> 
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -72,106 +80,172 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
 
-                <!-- TABS DE GENERACIÓN -->
+                <!-- ══════════════════════════════════════════════════════
+                     TABS DE GENERACIÓN MEJORADOS
+                     ═══════════════════════════════════════════════════════ -->
                 <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-body p-4">
-                        <h6 class="fw-bold mb-3 text-primary">
-                            <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Generar nuevo reporte
-                        </h6>
+                    <div class="card-body p-0">
 
-                        <ul class="nav nav-tabs mb-4" id="tabsInventario" role="tablist">
-                            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab"
-                                    data-bs-target="#tabStock" type="button"><i class="fa-solid fa-cubes me-1"></i>Stock
-                                    General</button></li>
-                            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab"
-                                    data-bs-target="#tabVencimientos" type="button"><i
-                                        class="fa-solid fa-calendar-xmark me-1"></i>Vencimientos</button></li>
-                            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab"
-                                    data-bs-target="#tabProducto" type="button"><i
-                                        class="fa-solid fa-pills me-1"></i>Por Producto</button></li>
-                            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab"
-                                    data-bs-target="#tabCategoria" type="button"><i class="fa-solid fa-tag me-1"></i>Por
-                                    Categoría</button></li>
-                        </ul>
+                        <!-- NAV TABS MEJORADOS -->
+                        <div class="bg-light rounded-top p-2 border-bottom">
+                            <ul class="nav nav-tabs nav-fill border-0" id="tabsInventario" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="tabStock" data-bs-toggle="tab"
+                                        data-bs-target="#contenidoStock" type="button" role="tab">
+                                        <i class="fa-solid fa-cubes me-2 text-primary"></i>Stock General
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="tabVencimientos" data-bs-toggle="tab"
+                                        data-bs-target="#contenidoVencimientos" type="button" role="tab">
+                                        <i class="fa-solid fa-calendar-xmark me-2 text-danger"></i>Vencimientos
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="tabProducto" data-bs-toggle="tab"
+                                        data-bs-target="#contenidoProducto" type="button" role="tab">
+                                        <i class="fa-solid fa-pills me-2 text-success"></i>Por Producto
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="tabCategoria" data-bs-toggle="tab"
+                                        data-bs-target="#contenidoCategoria" type="button" role="tab">
+                                        <i class="fa-solid fa-tag me-2 text-info"></i>Por Categoría
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
 
-                        <div class="tab-content">
+                        <!-- CONTENIDO DE TABS MEJORADO -->
+                        <div class="tab-content p-4">
 
                             <!-- STOCK -->
-                            <div class="tab-pane fade show active" id="tabStock">
-                                <p class="text-muted small mb-3">
-                                    Muestra todos los productos clasificados por su estado de stock: crítico, suficiente
-                                    y exceso.
-                                </p>
-                                <form th:action="@{/reportes/generar}" method="post">
-                                    <input type="hidden" name="tipoReporte" value="REPORTE_STOCK">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fa-solid fa-play me-1"></i>Generar Reporte de Stock
-                                    </button>
-                                </form>
+                            <div class="tab-pane fade show active" id="contenidoStock" role="tabpanel">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold mb-2 text-primary">
+                                            <i class="fa-solid fa-cubes me-2"></i>Reporte de Stock General
+                                        </h6>
+                                        <p class="text-muted small mb-3">
+                                            Muestra todos los productos clasificados por su estado de stock: crítico,
+                                            suficiente y exceso.
+                                        </p>
+                                        <form th:action="@{/reportes/generar}" method="post">
+                                            <input type="hidden" name="tipoReporte" value="REPORTE_STOCK">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fa-solid fa-play me-1"></i>Generar Reporte de Stock
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="d-none d-md-block">
+                                        <span class="badge bg-primary bg-opacity-10 text-primary p-3">
+                                            <i class="fa-solid fa-chart-simple fa-2x"></i>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- VENCIMIENTOS -->
-                            <div class="tab-pane fade" id="tabVencimientos">
-                                <p class="text-muted small mb-3">
-                                    Lista los productos vencidos y los próximos a vencer en los siguientes 7 días.
-                                </p>
-                                <form th:action="@{/reportes/generar}" method="post">
-                                    <input type="hidden" name="tipoReporte" value="REPORTE_VENCIMIENTOS">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fa-solid fa-play me-1"></i>Generar Reporte de Vencimientos
-                                    </button>
-                                </form>
+                            <div class="tab-pane fade" id="contenidoVencimientos" role="tabpanel">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold mb-2 text-danger">
+                                            <i class="fa-solid fa-calendar-xmark me-2"></i>Reporte de Vencimientos
+                                        </h6>
+                                        <p class="text-muted small mb-3">
+                                            Lista los productos vencidos y los próximos a vencer en los siguientes 7
+                                            días.
+                                        </p>
+                                        <form th:action="@{/reportes/generar}" method="post">
+                                            <input type="hidden" name="tipoReporte" value="REPORTE_VENCIMIENTOS">
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="fa-solid fa-play me-1"></i>Generar Reporte de Vencimientos
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="d-none d-md-block">
+                                        <span class="badge bg-danger bg-opacity-10 text-danger p-3">
+                                            <i class="fa-solid fa-clock fa-2x"></i>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- POR PRODUCTO -->
-                            <div class="tab-pane fade" id="tabProducto">
-                                <p class="text-muted small mb-3">
-                                    Detalle completo de un producto: stock, lote, movimientos de inventario y alertas
-                                    activas.
-                                </p>
-                                <form th:action="@{/reportes/generar}" method="post">
-                                    <input type="hidden" name="tipoReporte" value="REPORTE_PRODUCTO">
-                                    <div class="row g-3 mb-3">
-                                        <div class="col-md-5">
-                                            <label class="form-label fw-semibold">Selecciona el producto <span
-                                                    class="text-danger">*</span></label>
-                                            <select class="form-select" name="idReferencia" required>
-                                                <option value="">— Selecciona un producto —</option>
-                                                <option th:each="p : ${productos}" th:value="${p.id}"
-                                                    th:text="${p.nombreProducto} + ' (stock: ' + ${p.stock} + ')'">
-                                                </option>
-                                            </select>
-                                        </div>
+                            <div class="tab-pane fade" id="contenidoProducto" role="tabpanel">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold mb-2 text-success">
+                                            <i class="fa-solid fa-pills me-2"></i>Reporte por Producto
+                                        </h6>
+                                        <p class="text-muted small mb-3">
+                                            Detalle completo de un producto: stock, lote, movimientos de inventario y
+                                            alertas activas.
+                                        </p>
+                                        <form th:action="@{/reportes/generar}" method="post">
+                                            <input type="hidden" name="tipoReporte" value="REPORTE_PRODUCTO">
+                                            <div class="row g-3 mb-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label fw-semibold">Selecciona el producto <span
+                                                            class="text-danger">*</span></label>
+                                                    <select class="form-select" name="idReferencia" required>
+                                                        <option value="">— Selecciona un producto —</option>
+                                                        <option th:each="p : ${productos}" th:value="${p.id}"
+                                                            th:text="${p.nombreProducto} + ' (stock: ' + ${p.stock} + ')'">
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fa-solid fa-play me-1"></i>Generar Reporte de Producto
+                                            </button>
+                                        </form>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fa-solid fa-play me-1"></i>Generar Reporte de Producto
-                                    </button>
-                                </form>
+                                    <div class="d-none d-md-block">
+                                        <span class="badge bg-success bg-opacity-10 text-success p-3">
+                                            <i class="fa-solid fa-capsules fa-2x"></i>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- POR CATEGORÍA -->
-                            <div class="tab-pane fade" id="tabCategoria">
-                                <p class="text-muted small mb-3">
-                                    Agrupa todos los productos de una categoría con sus datos de stock y vencimiento.
-                                </p>
-                                <form th:action="@{/reportes/generar}" method="post">
-                                    <input type="hidden" name="tipoReporte" value="REPORTE_CATEGORIA">
-                                    <div class="row g-3 mb-3">
-                                        <div class="col-md-5">
-                                            <label class="form-label fw-semibold">Selecciona la categoría <span
-                                                    class="text-danger">*</span></label>
-                                            <select class="form-select" name="idReferencia" required>
-                                                <option value="">— Selecciona una categoría —</option>
-                                                <option th:each="cat : ${categorias}" th:value="${cat.idCategoria}"
-                                                    th:text="${cat.nombreCategoria}">
-                                                </option>
-                                            </select>
-                                        </div>
+                            <div class="tab-pane fade" id="contenidoCategoria" role="tabpanel">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold mb-2 text-info">
+                                            <i class="fa-solid fa-tag me-2"></i>Reporte por Categoría
+                                        </h6>
+                                        <p class="text-muted small mb-3">
+                                            Agrupa todos los productos de una categoría con sus datos de stock y
+                                            vencimiento.
+                                        </p>
+                                        <form th:action="@{/reportes/generar}" method="post">
+                                            <input type="hidden" name="tipoReporte" value="REPORTE_CATEGORIA">
+                                            <div class="row g-3 mb-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label fw-semibold">Selecciona la categoría <span
+                                                            class="text-danger">*</span></label>
+                                                    <select class="form-select" name="idReferencia" required>
+                                                        <option value="">— Selecciona una categoría —</option>
+                                                        <option th:each="cat : ${categorias}"
+                                                            th:value="${cat.idCategoria}"
+                                                            th:text="${cat.nombreCategoria}">
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-info text-white">
+                                                <i class="fa-solid fa-play me-1"></i>Generar Reporte de Categoría
+                                            </button>
+                                        </form>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fa-solid fa-play me-1"></i>Generar Reporte de Categoría
-                                    </button>
-                                </form>
+                                    <div class="d-none d-md-block">
+                                        <span class="badge bg-info bg-opacity-10 text-info p-3">
+                                            <i class="fa-solid fa-layer-group fa-2x"></i>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
@@ -186,9 +260,9 @@
                         </h6>
                         <span class="badge bg-secondary" th:text="${historial.size()} + ' reporte(s)'"></span>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
+                    <div class="card-body table-wrapper table-rounded">
+                        <div class="table-responsive-premium">
+                            <table class="table table-premium">
                                 <thead class="table-light">
                                     <tr>
                                         <th class="ps-3">#</th>
@@ -203,7 +277,7 @@
                                 </thead>
                                 <tbody>
                                     <tr th:if="${historial == null or historial.isEmpty()}">
-                                        <td colspan="7" class="text-center text-muted py-4">
+                                        <td colspan="8" class="text-center text-muted py-4">
                                             <i class="fa-solid fa-folder-open fa-2x mb-2 d-block text-muted"></i>
                                             Aún no se han generado reportes de inventario.
                                         </td>
@@ -228,7 +302,7 @@
                                         <td class="text-center">
                                             <a th:href="@{/reportes/{id}(id=${r.get('id')}, origen='inventario')}"
                                                 class="btn btn-sm btn-outline-primary">
-                                                <i class="fa-solid fa-eye me-1"></i>Ver
+                                                <i class="fa-solid fa-eye me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Ver</span>
                                             </a>
                                         </td>
                                     </tr>
@@ -243,6 +317,8 @@
     </div>
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
+    <link rel="stylesheet" th:href="@{/css/reporte.css}">
+
 </body>
 
 </html>

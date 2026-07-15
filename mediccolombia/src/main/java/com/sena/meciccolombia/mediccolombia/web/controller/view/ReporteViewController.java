@@ -70,7 +70,8 @@ public class ReporteViewController {
     @GetMapping("/principal")
     public String reportesDashboard(Model model) {
 
-        model.addAttribute("vistaActiva", "reportes-dashboard");
+        model.addAttribute("vistaActiva", "reportes");
+        model.addAttribute("vistaActiva", "reportes-principal");
 
         model.addAttribute("totalReportes", reporteInvDAO.count());
         model.addAttribute("totalStock", reporteInvDAO.countByTipoReporte("REPORTE_STOCK"));
@@ -93,7 +94,7 @@ public class ReporteViewController {
 
     @GetMapping("/inventario")
     public String reportesInventario(Model model) {
-        model.addAttribute("vistaActiva", "reportes-stock");
+        model.addAttribute("vistaActiva", "reportes-inventario");
         model.addAttribute("productos", productoService.listarProductos());
         model.addAttribute("categorias", categoriaService.listarCategorias());
         model.addAttribute("historial", construirHistorial(
@@ -133,7 +134,7 @@ public class ReporteViewController {
 
     @GetMapping("/pedidos")
     public String reportesPedidos(Model model) {
-        model.addAttribute("vistaActiva", "reportes-proveedores");
+        model.addAttribute("vistaActiva", "reportes-pedidos");
         model.addAttribute("historial", construirHistorial("REPORTE_PEDIDOS", "REPORTE_PROVEEDORES"));
         return "reportes/reportes-pedidos";
     }

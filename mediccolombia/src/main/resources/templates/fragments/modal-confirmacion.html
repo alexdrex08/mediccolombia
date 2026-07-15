@@ -1,0 +1,85 @@
+<th:block  xmlns:th="http://www.thymeleaf.org">
+    <!-- MODAL DE CONFIRMACIÓN GENÉRICO REUTILIZABLE -->
+    <div th:fragment="modalConfirmacion" class="modal fade" id="modalConfirmacion" tabindex="-1"
+        aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header" id="modalConfirmacionHeader">
+                    <h5 class="modal-title" id="modalConfirmacionLabel">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        Confirmar acción
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="modalConfirmacionBody">
+                    ¿Estás seguro de realizar esta acción?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-times me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" id="btnConfirmarAccion">
+                        <i class="fa-solid fa-check me-1"></i>Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS DEL MODAL REUTILIZABLE -->
+    <script th:fragment="modalScripts">
+        // =============================================
+        // MODAL DE CONFIRMACIÓN REUTILIZABLE
+        // =============================================
+        function mostrarModalConfirmacion(titulo, mensaje, tipo = 'warning', onConfirm, textoBotonConfirmar = 'Confirmar') {
+            const header = document.getElementById('modalConfirmacionHeader');
+            const iconos = {
+                danger: 'fa-solid fa-circle-exclamation',
+                warning: 'fa-solid fa-triangle-exclamation',
+                info: 'fa-solid fa-circle-info',
+                success: 'fa-solid fa-check-circle'
+            };
+            const colores = {
+                danger: 'bg-danger text-white',
+                warning: 'bg-warning text-dark',
+                info: 'bg-info text-white',
+                success: 'bg-success text-white'
+            };
+
+            header.className = `modal-header ${colores[tipo] || 'bg-warning text-dark'}`;
+
+            document.getElementById('modalConfirmacionLabel').innerHTML = `
+            <i class="${iconos[tipo] || 'fa-solid fa-triangle-exclamation'} me-2"></i>
+            ${titulo}
+        `;
+
+            document.getElementById('modalConfirmacionBody').innerHTML = mensaje;
+
+            const btnConfirmar = document.getElementById('btnConfirmarAccion');
+            btnConfirmar.textContent = textoBotonConfirmar;
+
+            const clasesBtn = {
+                danger: 'btn-danger',
+                warning: 'btn-warning',
+                info: 'btn-info',
+                success: 'btn-success'
+            };
+            btnConfirmar.className = `btn ${clasesBtn[tipo] || 'btn-danger'} btn-sm`;
+
+            // Reemplazar el botón para evitar eventos duplicados
+            const nuevoBtn = btnConfirmar.cloneNode(true);
+            btnConfirmar.parentNode.replaceChild(nuevoBtn, btnConfirmar);
+
+            nuevoBtn.addEventListener('click', function () {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmacion'));
+                modal.hide();
+                if (typeof onConfirm === 'function') {
+                    onConfirm();
+                }
+            });
+
+            const modal = new bootstrap.Modal(document.getElementById('modalConfirmacion'));
+            modal.show();
+        }
+    </script>
+</th:block>

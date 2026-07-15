@@ -12,8 +12,8 @@
             <main class="container-fluid p-4 my-5">
 
                 <!-- ENCABEZADO -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center align-items-md-center gap-3 mb-4">
+                    <div class="text-center">
                         <h2 class="fw-bold text-dark mb-0">
                             <i class="fa-solid fa-building me-2 text-primary"></i>
                             <span th:text="${proveedor.nombreProv}"></span>
@@ -27,17 +27,17 @@
                     <div class="d-flex gap-2">
                         <a th:href="@{'/proveedores/' + ${proveedor.id} + '/editar'}"
                            class="btn btn-outline-primary btn-sm">
-                            <i class="fa-solid fa-pen me-1"></i> Editar
+                            <i class="fa-solid fa-pen me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Editar</span>
                         </a>
                         <form th:action="@{'/proveedores/' + ${proveedor.id} + '/eliminar'}"
                               method="post"
                               onsubmit="return confirm('¿Eliminar este proveedor?')">
                             <button type="submit" class="btn btn-outline-danger btn-sm">
-                                <i class="fa-solid fa-trash me-1"></i> Eliminar
+                                <i class="fa-solid fa-trash me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Eliminar</span>
                             </button>
                         </form>
                         <a th:href="@{/proveedores}" class="btn btn-outline-secondary btn-sm">
-                            <i class="fa-solid fa-arrow-left me-1"></i> Volver
+                            <i class="fa-solid fa-arrow-left me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Volver</span>
                         </a>
                     </div>
                 </div>
@@ -98,13 +98,13 @@
                                 <button class="btn btn-sm btn-outline-primary"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modalAgregarProducto">
-                                    <i class="fa-solid fa-plus me-1"></i>Agregar producto
+                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Agregar producto</span>
                                 </button>
                             </div>
-                            <div class="card-body p-0">
+                            <div class="card-body table-wrapper table-rounded">
                                 <div th:if="${productosAsignados != null and !productosAsignados.isEmpty()}">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover align-middle mb-0">
+                                    <div class="table-responsive-premium">
+                                        <table class="table table-premium">
                                             <thead class="table-light">
                                                 <tr>
                                                     <th>Producto</th>
@@ -119,10 +119,6 @@
                                                         $&nbsp;<span th:text="${#numbers.formatDecimal(dp.precioUnitario, 0, 'COMMA', 0, 'POINT')}"></span>
                                                     </td>
                                                     <td class="text-center">
-                                                        <!--
-                                                            DELETE /api/detalle-proveedor-producto/{idProveedor}/{idProducto}
-                                                            El JS construye la URL con los IDs del DTO
-                                                        -->
                                                         <button class="btn btn-sm btn-outline-danger"
                                                                 th:attr="onclick='quitarProducto(' + ${proveedor.id} + ',' + ${dp.idProducto} + ')'">
                                                             <i class="fa-solid fa-xmark"></i>
@@ -149,32 +145,34 @@
                                 </span>
                                 <button class="btn btn-sm btn-outline-primary"
                                         data-bs-toggle="modal" data-bs-target="#modalCorreo">
-                                    <i class="fa-solid fa-plus me-1"></i>Agregar
+                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Agregar</span>
                                 </button>
                             </div>
-                            <div class="card-body p-0">
+                            <div class="card-body table-wrapper table-rounded">
                                 <div th:if="${proveedor.correos != null and !proveedor.correos.isEmpty()}">
-                                    <table class="table table-hover align-middle mb-0">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Correo</th>
-                                                <th>Tipo</th>
-                                                <th class="text-center">Eliminar</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr th:each="c : ${proveedor.correos}">
-                                                <td th:text="${c.correoElectronico}"></td>
-                                                <td><span class="badge bg-primary" th:text="${c.tipoCorreo}"></span></td>
-                                                <td class="text-center">
-                                                    <button class="btn btn-sm btn-outline-danger"
-                                                            th:attr="onclick='eliminarCorreo(' + ${c.id} + ')'">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive-premium">
+                                        <table class="table table-premium">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Correo</th>
+                                                    <th>Tipo</th>
+                                                    <th class="text-center">Eliminar</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="c : ${proveedor.correos}">
+                                                    <td th:text="${c.correoElectronico}"></td>
+                                                    <td><span class="badge bg-primary" th:text="${c.tipoCorreo}"></span></td>
+                                                    <td class="text-center">
+                                                        <button class="btn btn-sm btn-outline-danger"
+                                                                th:attr="onclick='eliminarCorreo(' + ${c.id} + ')'">
+                                                            <i class="fa-solid fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                                 <div th:if="${proveedor.correos == null or proveedor.correos.isEmpty()}"
                                      class="text-center text-muted py-3">
@@ -191,34 +189,36 @@
                                 </span>
                                 <button class="btn btn-sm btn-outline-success"
                                         data-bs-toggle="modal" data-bs-target="#modalTelefono">
-                                    <i class="fa-solid fa-plus me-1"></i>Agregar
+                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Agregar</span>
                                 </button>
                             </div>
-                            <div class="card-body p-0">
+                            <div class="card-body table-wrapper table-rounded">
                                 <div th:if="${proveedor.telefonos != null and !proveedor.telefonos.isEmpty()}">
-                                    <table class="table table-hover align-middle mb-0">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Número</th>
-                                                <th>Tipo</th>
-                                                <th>Complemento</th>
-                                                <th class="text-center">Eliminar</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr th:each="t : ${proveedor.telefonos}">
-                                                <td class="fw-bold" th:text="${t.numero}"></td>
-                                                <td><span class="badge bg-success" th:text="${t.tipoTelefono}"></span></td>
-                                                <td class="text-muted small" th:text="${t.complemento} ?: '—'"></td>
-                                                <td class="text-center">
-                                                    <button class="btn btn-sm btn-outline-danger"
-                                                            th:attr="onclick='eliminarTelefono(' + ${t.id} + ')'">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive-premium">
+                                        <table class="table table-premium">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Número</th>
+                                                    <th>Tipo</th>
+                                                    <th>Complemento</th>
+                                                    <th class="text-center">Eliminar</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="t : ${proveedor.telefonos}">
+                                                    <td class="fw-bold" th:text="${t.numero}"></td>
+                                                    <td><span class="badge bg-success" th:text="${t.tipoTelefono}"></span></td>
+                                                    <td class="text-muted small" th:text="${t.complemento} ?: '—'"></td>
+                                                    <td class="text-center">
+                                                        <button class="btn btn-sm btn-outline-danger"
+                                                                th:attr="onclick='eliminarTelefono(' + ${t.id} + ')'">
+                                                            <i class="fa-solid fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                                 <div th:if="${proveedor.telefonos == null or proveedor.telefonos.isEmpty()}"
                                      class="text-center text-muted py-3">
@@ -235,34 +235,36 @@
                                 </span>
                                 <button class="btn btn-sm btn-outline-warning text-dark"
                                         data-bs-toggle="modal" data-bs-target="#modalDireccion">
-                                    <i class="fa-solid fa-plus me-1"></i>Agregar
+                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Agregar</span>
                                 </button>
                             </div>
-                            <div class="card-body p-0">
+                            <div class="card-body table-wrapper table-rounded">
                                 <div th:if="${proveedor.direcciones != null and !proveedor.direcciones.isEmpty()}">
-                                    <table class="table table-hover align-middle mb-0">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Dirección</th>
-                                                <th>Barrio</th>
-                                                <th>Tipo</th>
-                                                <th class="text-center">Eliminar</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr th:each="d : ${proveedor.direcciones}">
-                                                <td class="fw-bold" th:text="${d.direccion}"></td>
-                                                <td class="text-muted small" th:text="${d.barrio} ?: '—'"></td>
-                                                <td><span class="badge bg-warning text-dark" th:text="${d.tipoDireccion}"></span></td>
-                                                <td class="text-center">
-                                                    <button class="btn btn-sm btn-outline-danger"
-                                                            th:attr="onclick='eliminarDireccion(' + ${d.id} + ')'">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive-premium">
+                                        <table class="table table-premium">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Dirección</th>
+                                                    <th>Barrio</th>
+                                                    <th>Tipo</th>
+                                                    <th class="text-center">Eliminar</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="d : ${proveedor.direcciones}">
+                                                    <td class="fw-bold" th:text="${d.direccion}"></td>
+                                                    <td class="text-muted small" th:text="${d.barrio} ?: '—'"></td>
+                                                    <td><span class="badge bg-warning text-dark" th:text="${d.tipoDireccion}"></span></td>
+                                                    <td class="text-center">
+                                                        <button class="btn btn-sm btn-outline-danger"
+                                                                th:attr="onclick='eliminarDireccion(' + ${d.id} + ')'">
+                                                            <i class="fa-solid fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                                 <div th:if="${proveedor.direcciones == null or proveedor.direcciones.isEmpty()}"
                                      class="text-center text-muted py-3">
@@ -278,12 +280,7 @@
         </div>
     </div>
 
-    <!-- =============================================
-         MODAL — Agregar Producto al Proveedor
-         POST /api/detalle-proveedor-producto
-         Body: { idProveedor, idProducto, precioUnitario }
-         Solo muestra productos que el proveedor NO tiene aún.
-         ============================================= -->
+    <!-- MODAL — Agregar Producto -->
     <div class="modal fade" id="modalAgregarProducto" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -296,7 +293,6 @@
                 </div>
                 <div class="modal-body">
 
-                    <!-- Buscador rápido dentro del modal -->
                     <div class="input-group mb-3">
                         <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
                         <input type="text" id="filtroProductosModal" class="form-control"
@@ -487,194 +483,14 @@
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
 
+    <script th:src="@{/js/proveedor/utils.js}"></script>
+    <script th:src="@{/js/proveedor/catalogo.js}"></script>
+    <script th:src="@{/js/proveedor/correos.js}"></script>
+    <script th:src="@{/js/proveedor/telefonos.js}"></script>
+    <script th:src="@{/js/proveedor/direcciones.js}"></script>
+
     <script th:inline="javascript">
         const PROVEEDOR_ID = /*[[${proveedor.id}]]*/ 0;
-
-        // =============================================
-        // UTILIDADES
-        // =============================================
-        function mostrarMensaje(texto, tipo = 'success') {
-            const div  = document.getElementById('mensajeAjax');
-            const span = document.getElementById('textoMensajeAjax');
-            const icon = document.getElementById('iconoMensaje');
-            div.className = `alert alert-${tipo} py-2 mb-3`;
-            icon.className = tipo === 'success'
-                ? 'fa-solid fa-circle-check me-2'
-                : 'fa-solid fa-circle-exclamation me-2';
-            span.textContent = texto;
-            div.classList.remove('d-none');
-            setTimeout(() => div.classList.add('d-none'), 3000);
-        }
-
-        function cerrarModal(id) {
-            bootstrap.Modal.getInstance(document.getElementById(id))?.hide();
-        }
-
-        async function postAPI(url, body) {
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-            if (!res.ok) {
-                const txt = await res.text();
-                throw new Error(txt || `Error ${res.status}`);
-            }
-            return res.status === 204 ? null : res.json();
-        }
-
-        async function deleteAPI(url) {
-            const res = await fetch(url, { method: 'DELETE' });
-            if (!res.ok) throw new Error(`Error ${res.status}`);
-        }
-
-        // =============================================
-        // PRODUCTOS — Agregar al catálogo del proveedor
-        // POST /api/detalle-proveedor-producto
-        // Body: DetalleProveedorProductoRequestDTO
-        //   { idProveedor, idProducto, precioUnitario }
-        // =============================================
-        async function agregarProducto(idProducto) {
-            const precioInput = document.getElementById(`precio-${idProducto}`);
-            const precio = parseFloat(precioInput.value);
-
-            if (!precio || precio <= 0) {
-                mostrarMensaje('Ingresa un precio unitario válido.', 'danger');
-                precioInput.focus();
-                return;
-            }
-
-            try {
-                await postAPI('/api/detalle-proveedor-producto', {
-                    idProveedor: PROVEEDOR_ID,
-                    idProducto: idProducto,
-                    precioUnitario: precio
-                });
-                cerrarModal('modalAgregarProducto');
-                mostrarMensaje('Producto agregado al catálogo correctamente.');
-                setTimeout(() => location.reload(), 800);
-            } catch (e) {
-                mostrarMensaje('Error al agregar el producto: ' + e.message, 'danger');
-            }
-        }
-
-        // DELETE /api/detalle-proveedor-producto/{idProveedor}/{idProducto}
-        async function quitarProducto(idProveedor, idProducto) {
-            if (!confirm('¿Quitar este producto del catálogo del proveedor?')) return;
-            try {
-                await deleteAPI(`/api/detalle-proveedor-producto/${idProveedor}/${idProducto}`);
-                mostrarMensaje('Producto removido del catálogo.');
-                setTimeout(() => location.reload(), 800);
-            } catch (e) {
-                mostrarMensaje('Error al quitar el producto.', 'danger');
-            }
-        }
-
-        // Filtro en cliente para la tabla de productos disponibles
-        function filtrarProductosModal(texto) {
-            const filas = document.querySelectorAll('#tablaProductosDisponibles tbody tr[data-nombre]');
-            filas.forEach(row => {
-                const nombre = (row.dataset.nombre || '').toLowerCase();
-                row.style.display = nombre.includes(texto.toLowerCase()) ? '' : 'none';
-            });
-        }
-
-        // =============================================
-        // CORREOS
-        // =============================================
-        async function agregarCorreo() {
-            const correo   = document.getElementById('inputCorreo').value.trim();
-            const idTipo   = parseInt(document.getElementById('selectTipoCorreo').value);
-            if (!correo) { mostrarMensaje('Ingresa un correo.', 'danger'); return; }
-            if (!idTipo)  { mostrarMensaje('Selecciona el tipo.', 'danger'); return; }
-            try {
-                await postAPI('/api/correos', {
-                    correoElectronico: correo,
-                    idCliente: null,
-                    idProveedor: PROVEEDOR_ID,
-                    idTipoCorreo: idTipo
-                });
-                cerrarModal('modalCorreo');
-                mostrarMensaje('Correo agregado correctamente.');
-                setTimeout(() => location.reload(), 800);
-            } catch (e) { mostrarMensaje('Error: ' + e.message, 'danger'); }
-        }
-
-        async function eliminarCorreo(id) {
-            if (!confirm('¿Eliminar este correo?')) return;
-            try {
-                await deleteAPI(`/api/correos/${id}`);
-                mostrarMensaje('Correo eliminado.');
-                setTimeout(() => location.reload(), 800);
-            } catch (e) { mostrarMensaje('Error al eliminar.', 'danger'); }
-        }
-
-        // =============================================
-        // TELÉFONOS
-        // =============================================
-        async function agregarTelefono() {
-            const numero  = document.getElementById('inputNumero').value.trim();
-            const idTipo  = parseInt(document.getElementById('selectTipoTelefono').value);
-            const compl   = document.getElementById('inputComplementoTel').value.trim();
-            if (!numero) { mostrarMensaje('Ingresa un número.', 'danger'); return; }
-            if (!idTipo)  { mostrarMensaje('Selecciona el tipo.', 'danger'); return; }
-            try {
-                await postAPI('/api/telefonos', {
-                    numero,
-                    complemento: compl || null,
-                    idCliente: null,
-                    idProveedor: PROVEEDOR_ID,
-                    idTipoTelefono: idTipo
-                });
-                cerrarModal('modalTelefono');
-                mostrarMensaje('Teléfono agregado correctamente.');
-                setTimeout(() => location.reload(), 800);
-            } catch (e) { mostrarMensaje('Error: ' + e.message, 'danger'); }
-        }
-
-        async function eliminarTelefono(id) {
-            if (!confirm('¿Eliminar este teléfono?')) return;
-            try {
-                await deleteAPI(`/api/telefonos/${id}`);
-                mostrarMensaje('Teléfono eliminado.');
-                setTimeout(() => location.reload(), 800);
-            } catch (e) { mostrarMensaje('Error al eliminar.', 'danger'); }
-        }
-
-        // =============================================
-        // DIRECCIONES
-        // =============================================
-        async function agregarDireccion() {
-            const dir     = document.getElementById('inputDireccion').value.trim();
-            const idBarr  = parseInt(document.getElementById('selectBarrio').value);
-            const idTipo  = parseInt(document.getElementById('selectTipoDireccion').value);
-            const compl   = document.getElementById('inputComplementoDir').value.trim();
-            if (!dir)    { mostrarMensaje('Ingresa una dirección.', 'danger'); return; }
-            if (!idBarr) { mostrarMensaje('Selecciona un barrio.', 'danger'); return; }
-            if (!idTipo) { mostrarMensaje('Selecciona el tipo.', 'danger'); return; }
-            try {
-                await postAPI('/api/direccions', {
-                    direccion: dir,
-                    complemento: compl || null,
-                    idCliente: null,
-                    idProveedor: PROVEEDOR_ID,
-                    idBarrio: idBarr,
-                    idTipoDireccion: idTipo
-                });
-                cerrarModal('modalDireccion');
-                mostrarMensaje('Dirección agregada correctamente.');
-                setTimeout(() => location.reload(), 800);
-            } catch (e) { mostrarMensaje('Error: ' + e.message, 'danger'); }
-        }
-
-        async function eliminarDireccion(id) {
-            if (!confirm('¿Eliminar esta dirección?')) return;
-            try {
-                await deleteAPI(`/api/direccions/${id}`);
-                mostrarMensaje('Dirección eliminada.');
-                setTimeout(() => location.reload(), 800);
-            } catch (e) { mostrarMensaje('Error al eliminar.', 'danger'); }
-        }
     </script>
 </body>
 </html>

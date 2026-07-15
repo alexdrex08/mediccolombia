@@ -39,6 +39,9 @@ public class Usuario implements Serializable{
     @Column(name ="identificacion_usu", nullable = false)
     private String identificacion;
 
+    @Column(name = "foto_perfil")
+    private String fotoPerfil; 
+
 
     @OneToMany(mappedBy = "usuario",cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude

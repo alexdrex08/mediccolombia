@@ -46,3 +46,19 @@ id = null no aparezca; crear el ResponseDTO, modificaciones en DTOs y en los ser
 
 13-5-26 1:28 p.m - se mapeo y separó la logica de cliente y proveedor. 
 
+
+RESOLVER ERRORES VISAULES UX UI
+1. resolver vista alertas. (separar js, borrar comentarios innecesarios y optimizar codigo)     
+
+ACTUALIZACION 13-7-26 : vista de alertas implementada y corregida con nuevas funcionalidades.
+vista de productos actualizada y corregida con nuevas funcionalidades.
+vista proyecciones actualizada y corregida para las nuevas funcionalidades.
+
+2. unificar sistema de paginacion de todas las tablas. (productos, movimientos, estados, etc, etc)
+3. unificar sistema de modales de cofirmacion para todas las paginas.
+4. encapsular codigo repetitivo reutilizable en un archivo e invocarlo. 
+5. crear vistas de configuracion (usuario, sistema) y tab de usuarios. 
+
+6. APLICACION TERMINADA.
+
+

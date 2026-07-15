@@ -18,7 +18,10 @@
                         <span th:text="${modoEdicion} ? 'Editar Cliente' : 'Registrar Nuevo Cliente'"></span>
                     </h2>
                     <a th:href="@{/clientes}" class="btn btn-outline-secondary btn-sm">
-                        <i class="fa-solid fa-arrow-left me-1"></i> Volver a Clientes
+                        <i class="fa-solid fa-arrow-left me-1"></i> 
+                        <span class="d-none d-sm-inline ms-1">
+                            Volver a Clientes
+                        </span>
                     </a>
                 </div>
 
@@ -43,8 +46,7 @@
                                         <span class="input-group-text">
                                             <i class="fa-solid fa-user"></i>
                                         </span>
-                                        <input type="text" id="nombreCliente" class="form-control form-control-lg"
-                                            placeholder="Ej: Juan Carlos Pérez"
+                                        <input type="text" id="nombreCliente" class="form-control"
                                             th:value="${modoEdicion} ? ${cliente.nombreCliente} : ''" required>
                                     </div>
                                     <div class="form-text">
@@ -60,12 +62,11 @@
                                         <span class="input-group-text">
                                             <i class="fa-solid fa-id-card"></i>
                                         </span>
-                                        <input type="text" id="identificacion" class="form-control form-control-lg"
-                                            placeholder="Ej: 1234567890"
+                                        <input type="text" id="identificacion" class="form-control"
                                             th:value="${modoEdicion} ? ${cliente.identificacion} : ''" required>
                                     </div>
                                     <div class="form-text">
-                                        Cédula, NIT o pasaporte. Debe ser único en el sistema.
+                                        Cédula, NIT o pasaporte.
                                     </div>
                                 </div>
 
@@ -81,12 +82,12 @@
 
                                 <!-- Botones -->
                                 <div class="d-flex gap-2 mt-4">
-                                    <button type="button" id="btnGuardar" class="btn btn-primary btn-lg flex-fill"
+                                    <button type="button" id="btnGuardar" class="btn btn-outline-primary  flex-fill"
                                         onclick="guardarCliente()">
                                         <i class="fa-solid fa-floppy-disk me-2"></i>
                                         <span th:text="${modoEdicion} ? 'Guardar Cambios' : 'Registrar Cliente'"></span>
                                     </button>
-                                    <a th:href="@{/clientes}" class="btn btn-outline-secondary btn-lg">
+                                    <a th:href="@{/clientes}" class="btn btn-outline-secondary">
                                         Cancelar
                                     </a>
                                 </div>
@@ -111,55 +112,10 @@
 
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
+
+    <script th:src="@{/js/cliente/guardarCliente.js}"></script>
+
     <script>
-        async function guardarCliente() {
-            const nombre = document.getElementById('nombreCliente').value.trim();
-            const identificacion = document.getElementById('identificacion').value.trim();
-            const id = document.getElementById('clienteId').value;
-            const esEdicion = document.getElementById('esModoEdicion').value === 'true';
-
-            if (!nombre || !identificacion) {
-                mostrarError('Completa todos los campos obligatorios.');
-                return;
-            }
-
-            const btn = document.getElementById('btnGuardar');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...';
-
-            try {
-                const url = esEdicion ? `/api/clientes/${id}` : '/api/clientes';
-                const method = esEdicion ? 'PUT' : 'POST';
-
-                const res = await fetch(url, {
-                    method,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombreCliente: nombre, identificacion })
-                });
-
-                if (!res.ok) {
-                    const txt = await res.text();
-                    throw new Error(txt || 'Error al guardar el cliente');
-                }
-
-                const data = await res.json();
-                mostrarExito(esEdicion
-                    ? 'Cliente actualizado correctamente.'
-                    : 'Cliente registrado correctamente.');
-
-                setTimeout(() => {
-                    window.location.href = `/clientes/${data.id}`;
-                }, 1000);
-
-            } catch (e) {
-                mostrarError(e.message || 'Ocurrió un error inesperado.');
-                btn.disabled = false;
-                btn.innerHTML = esEdicion
-                    ? '<i class="fa-solid fa-floppy-disk me-2"></i>Guardar Cambios'
-                    : '<i class="fa-solid fa-floppy-disk me-2"></i>Registrar Cliente';
-            }
-        }
-
         function mostrarError(msg) {
             document.getElementById('mensajeError').textContent = msg;
             document.getElementById('alertaError').classList.remove('d-none');

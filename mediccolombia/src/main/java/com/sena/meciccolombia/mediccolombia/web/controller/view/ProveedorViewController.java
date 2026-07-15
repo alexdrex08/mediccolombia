@@ -50,9 +50,7 @@ public class ProveedorViewController {
     private final TipoDireccionDAO tipoDireccionDAO;
     private final BarrioDireccionDAO barrioDireccionDAO;
 
-    // ─────────────────────────────────────────────
-    // GET /proveedores → lista enriquecida
-    // ─────────────────────────────────────────────
+    
     @GetMapping
     public String listarProveedores(Model model,
                                     Authentication auth
@@ -109,6 +107,7 @@ public class ProveedorViewController {
         model.addAttribute("proveedores", proveedoresEnriquecidos);
         model.addAttribute("fechaActualizacion", LocalDateTime.now());
         model.addAttribute("totalProveedores", proveedores.size());
+        model.addAttribute("vistaActiva", "proveedores");
         model.addAttribute("vistaActiva", "proveedores-lista");
         model.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
 

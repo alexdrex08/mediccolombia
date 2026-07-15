@@ -32,16 +32,37 @@
                 <div class="row g-4">
 
                     <!-- =============================================
-                         COLUMNA IZQUIERDA
-                         ============================================= -->
+                        COLUMNA IZQUIERDA
+                        ============================================= -->
                     <div class="col-lg-3">
-                        <div class="card shadow-sm">
+                        <div class="card shadow-sm">    
+                            <input type="hidden" id="userIdHidden" th:value="${usuario.id}">
                             <div class="card-body text-center">
-                                <img th:src="@{/img/avatar-placeholder.webp}" class="rounded-circle mb-3" width="110"
-                                    height="110" alt="Avatar">
+
+                                <div class="position-relative d-inline-block">
+                                    <img th:src="${usuario.fotoPerfil != null ? usuario.fotoPerfil : '/img/avatar-placeholder.webp'}"
+                                        class="rounded-circle mb-3" width="110" height="110" alt="Avatar"
+                                        id="fotoPerfil">
+
+                                    <label for="inputFoto" class="position-absolute bottom-0 end-0 mb-2 me-1">
+                                        <span class="badge bg-primary rounded-circle p-2" style="cursor: pointer;">
+                                            <i class="fa-solid fa-camera fa-xs"></i>
+                                        </span>
+                                    </label>
+                                    <input type="file" id="inputFoto" accept="image/*" style="display: none;">
+                                </div>
 
                                 <h5 class="fw-bold mb-0" th:text="${usuario.nombre}">—</h5>
                                 <small class="text-muted" th:text="${usuario.rol}">—</small>
+
+                                <!-- Barra de progreso para upload -->
+                                <div id="progressBar" class="mt-2" style="display: none;">
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                            role="progressbar" style="width: 0%;" id="progressBarInner">0%</div>
+                                    </div>
+                                    <small class="text-muted" id="progressText">Subiendo...</small>
+                                </div>
 
                                 <hr>
 
@@ -64,10 +85,15 @@
 
                                 <hr>
 
-                                <a th:href="@{/auth/cambiar}"
-                                    class="btn btn-sm btn-outline-secondary w-100">
+                                <a th:href="@{/auth/cambiar}" class="btn btn-sm btn-outline-secondary w-100">
                                     <i class="fa-solid fa-lock me-1"></i> Cambiar contraseña
                                 </a>
+
+                                <!-- ✅ Botón eliminar foto - SOLO visible cuando hay foto -->
+                                <button th:if="${usuario.fotoPerfil != null}" id="btnEliminarFoto"
+                                    class="btn btn-sm btn-outline-danger w-100 mt-2">
+                                    <i class="fa-solid fa-trash-can me-1"></i> Eliminar foto
+                                </button>
                             </div>
                         </div>
 
@@ -113,8 +139,10 @@
                                         <p class="mb-0" th:text="${usuario.correo} ?: 'No registrado'"></p>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="fw-bold small text-muted text-uppercase">Documento de identificacion</label>
-                                        <p class="mb-0 text-muted">#<span th:text="${usuario.identificacion}"></span></p>
+                                        <label class="fw-bold small text-muted text-uppercase">Documento de
+                                            identificación</label>
+                                        <p class="mb-0 text-muted">#<span th:text="${usuario.identificacion}"></span>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -211,14 +239,14 @@
                                 </a>
                             </div>
                         </div>
-                        <!-- seccion para el administrador  -->
+
+                        <!-- SECCIÓN ADMIN -->
                         <div th:if="${esAdmin}" class="card shadow-sm border-warning mb-4">
                             <div
                                 class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">
                                     <i class="fa-solid fa-users-gear me-2"></i>Gestión de Usuarios
                                 </h5>
-                                
                             </div>
                             <div class="card-body p-0">
                                 <div class="table-responsive">
@@ -245,7 +273,6 @@
                                                         class="badge" th:text="${u.rol}"></span>
                                                 </td>
                                                 <td class="text-center">
-
                                                     <button class="btn btn-sm btn-outline-warning"
                                                         th:attr="data-id=${u.id}, data-nombre=${u.nombre}"
                                                         onclick="abrirModalEstado(this)">
@@ -266,7 +293,7 @@
         </div>
     </div>
 
-    <!-- seccion oculta solo para el administrador -->
+    <!-- SECCIÓN ADMIN - MODAL ESTADO -->
     <div th:if="${esAdmin}">
         <div class="modal fade" id="modalEstado" tabindex="-1" aria-labelledby="modalEstadoLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -278,25 +305,20 @@
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <!-- mapeamos los estados -->
                     <form id="formEstado" method="post" th:action="@{/perfil/usuarios/0/estado}">
-
                         <div class="modal-body">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Tipo de estado</label>
                                 <select name="idTipoEstado" class="form-select" required>
                                     <option value="">Seleccionar estado...</option>
-                                    
                                     <option th:each="te : ${tiposEstado}" th:value="${te.id}"
                                         th:text="${te.nombreTipo}"></option>
                                 </select>
                             </div>
-
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Fecha de inicio</label>
                                 <input type="datetime-local" name="fechaInicio" class="form-control" required>
                             </div>
-
                             <div class="mb-3">
                                 <label class="form-label fw-bold">
                                     Fecha de fin
@@ -307,7 +329,6 @@
                                     Dejar vacío si el estado es indefinido o activo sin fecha límite.
                                 </div>
                             </div>
-
                             <div class="mb-3">
                                 <label class="form-label fw-bold">
                                     Observación
@@ -317,7 +338,6 @@
                                     placeholder="Ej: Usuario suspendido por inactividad..."></textarea>
                             </div>
                         </div>
-
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-secondary"
                                 data-bs-dismiss="modal">Cancelar</button>
@@ -325,39 +345,61 @@
                                 <i class="fa-solid fa-floppy-disk me-1"></i>Guardar estado
                             </button>
                         </div>
-
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- MODAL DE CONFIRMACIÓN REUTILIZABLE (incluido desde fragment) -->
+    <div th:replace="~{fragments/modal-confirmacion :: modalConfirmacion}"></div>
+
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
+
+    <!-- SCRIPTS DEL MODAL REUTILIZABLE -->
+    <div th:replace="~{fragments/modal-confirmacion :: modalScripts}"></div>
 
     <script th:if="${esAdmin}">
         function abrirModalEstado(btn) {
             const id = btn.dataset.id;
             const nombre = btn.dataset.nombre;
 
-            // Mostrar nombre en el título del modal
             document.getElementById('modalNombreUsuario').textContent = nombre;
-
-
             document.getElementById('formEstado').action = `/perfil/usuarios/${id}/estado`;
-
-            //limpiar todos los cmapos
             document.getElementById('formEstado').reset();
 
             const ahora = new Date();
             const fechaLocal = ahora.toISOString().slice(0, 16);
             document.querySelector('input[name="fechaInicio"]').value = fechaLocal;
 
-            // Mostrar el modal
             new bootstrap.Modal(document.getElementById('modalEstado')).show();
         }
     </script>
 
+    <script th:src="@{/js/perfil/perfil-foto.js}"></script>
+
 </body>
+<style>
+    .position-relative .rounded-circle {
+        transition: all 0.3s ease;
+        border: 3px solid #f8f9fa;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .position-relative .rounded-circle:hover {
+        filter: brightness(0.9);
+    }
+
+    .position-relative .badge.bg-primary {
+        border: 2px solid white;
+        transition: all 0.3s ease;
+    }
+
+    .position-relative .badge.bg-primary:hover {
+        transform: scale(1.1);
+        background-color: #0b5ed7 !important;
+    }
+</style>
 
 </html>

@@ -10,22 +10,28 @@
         <div id="page-content-wrapper">
             <main class="container-fluid p-4 my-5">
 
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h2 class="fw-bold mb-0">
-                            <i class="fa-solid fa-receipt text-success me-2"></i>Reportes de Ventas
-                        </h2>
-                        <p class="text-muted small mt-1 mb-0">Historial de ventas realizadas y análisis por cliente.</p>
+                <div class="row g-2 g-md-3 mb-4">
+                    <div class="col-12">
+                        <div class="text-center">
+                            <h2 class="fw-bold mb-0">
+                                <i class="fa-solid fa-receipt text-success me-2"></i>Reportes de Ventas
+                            </h2>
+                            <p class="text-muted small mt-1 mb-0">Historial de ventas realizadas y análisis por cliente.</p>
+                        </div>
                     </div>
-                    <span class="text-muted small">
-                        <i class="fa-regular fa-calendar me-1"></i>
-                        Actualizado: <span
-                            th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span>
-                    </span>
-                    <div>
-                        <a th:href="@{/reportes/principal}" class="btn btn-outline-secondary">
-                            <i class="fa-solid fa-arrow-left me-1"></i>Reportes
-                        </a>
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="text-muted small">
+                                <i class="fa-regular fa-calendar me-1"></i>
+                                Actualizado: <span
+                                    th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span>
+                            </span>
+                            <div>
+                                <a th:href="@{/reportes/principal}" class="btn btn-outline-secondary">
+                                    <i class="fa-solid fa-arrow-left me-0 me-sm-1"></i> <span class="d-none d-sm-inline ms-1">Reportes</span> 
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -70,75 +76,108 @@
                 </div>
 
                 <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-body p-4">
-                        <h6 class="fw-bold mb-3 text-success">
-                            <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Generar nuevo reporte
-                        </h6>
-                        <ul class="nav nav-tabs mb-4" role="tablist">
-                            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab"
-                                    data-bs-target="#tabVentas" type="button"><i
-                                        class="fa-solid fa-cart-shopping me-1"></i>Ventas</button></li>
-                            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab"
-                                    data-bs-target="#tabClientes" type="button"><i
-                                        class="fa-solid fa-users me-1"></i>Clientes</button></li>
-                        </ul>
-                        <div class="tab-content">
-                            <!-- Tab Ventas con fechas -->
-                            <div class="tab-pane fade show active" id="tabVentas">
-                                <p class="text-muted small mb-3">
-                                    Detalle de ventas registradas: clientes, montos y productos.
-                                    Puedes filtrar por rango de fechas o dejar en blanco para ver todas.
-                                </p>
-                                <form th:action="@{/reportes/generar}" method="post">
-                                    <input type="hidden" name="tipoReporte" value="REPORTE_VENTAS">
-                                    <div class="row g-3 mb-3">
-                                        <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Fecha inicio <span
-                                                    class="text-muted fw-normal">(opcional)</span></label>
-                                            <input type="datetime-local" class="form-control" name="fechaInicio">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Fecha fin <span
-                                                    class="text-muted fw-normal">(opcional)</span></label>
-                                            <input type="datetime-local" class="form-control" name="fechaFin">
-                                        </div>
-                                    </div>
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fa-solid fa-play me-1"></i>Generar Reporte de Ventas
+                    <div class="card-body p-0">
+
+                        <div class="bg-light rounded-top p-2 border-bottom">
+                            <ul class="nav nav-tabs nav-fill border-0" id="tabsVentas" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="tabVentas" data-bs-toggle="tab"
+                                        data-bs-target="#contenidoVentas" type="button" role="tab">
+                                        <i class="fa-solid fa-cart-shopping me-2 text-success"></i>Ventas
                                     </button>
-                                </form>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="tabClientes" data-bs-toggle="tab"
+                                        data-bs-target="#contenidoClientes" type="button" role="tab">
+                                        <i class="fa-solid fa-users me-2 text-primary"></i>Clientes
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="tab-content p-4">
+
+                            <div class="tab-pane fade show active" id="contenidoVentas" role="tabpanel">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold mb-2 text-success">
+                                            <i class="fa-solid fa-cart-shopping me-2"></i>Reporte de Ventas
+                                        </h6>
+                                        <p class="text-muted small mb-3">
+                                            Detalle de ventas registradas: clientes, montos y productos.
+                                            Puedes filtrar por rango de fechas o dejar en blanco para ver todas.
+                                        </p>
+                                        <form th:action="@{/reportes/generar}" method="post">
+                                            <input type="hidden" name="tipoReporte" value="REPORTE_VENTAS">
+                                            <div class="row g-3 mb-3">
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-semibold">Fecha inicio <span
+                                                            class="text-muted fw-normal">(opcional)</span></label>
+                                                    <input type="datetime-local" class="form-control"
+                                                        name="fechaInicio">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-semibold">Fecha fin <span
+                                                            class="text-muted fw-normal">(opcional)</span></label>
+                                                    <input type="datetime-local" class="form-control" name="fechaFin">
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fa-solid fa-play me-1"></i>Generar Reporte de Ventas
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="d-none d-md-block">
+                                        <span class="badge bg-success bg-opacity-10 text-success p-3">
+                                            <i class="fa-solid fa-chart-simple fa-2x"></i>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
 
-                            <!-- Tab Clientes con fechas -->
-                            <div class="tab-pane fade" id="tabClientes">
-                                <p class="text-muted small mb-3">
-                                    Análisis de clientes con sus compras. Si defines fechas, solo se contabilizan
-                                    las ventas realizadas en ese período.
-                                </p>
-                                <form th:action="@{/reportes/generar}" method="post">
-                                    <input type="hidden" name="tipoReporte" value="REPORTE_CLIENTES">
-                                    <div class="row g-3 mb-3">
-                                        <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Fecha inicio <span
-                                                    class="text-muted fw-normal">(opcional)</span></label>
-                                            <input type="datetime-local" class="form-control" name="fechaInicio">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Fecha fin <span
-                                                    class="text-muted fw-normal">(opcional)</span></label>
-                                            <input type="datetime-local" class="form-control" name="fechaFin">
-                                        </div>
+                            <div class="tab-pane fade" id="contenidoClientes" role="tabpanel">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold mb-2 text-primary">
+                                            <i class="fa-solid fa-users me-2"></i>Reporte de Clientes
+                                        </h6>
+                                        <p class="text-muted small mb-3">
+                                            Análisis de clientes con sus compras. Si defines fechas, solo se
+                                            contabilizan
+                                            las ventas realizadas en ese período.
+                                        </p>
+                                        <form th:action="@{/reportes/generar}" method="post">
+                                            <input type="hidden" name="tipoReporte" value="REPORTE_CLIENTES">
+                                            <div class="row g-3 mb-3">
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-semibold">Fecha inicio <span
+                                                            class="text-muted fw-normal">(opcional)</span></label>
+                                                    <input type="datetime-local" class="form-control"
+                                                        name="fechaInicio">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-semibold">Fecha fin <span
+                                                            class="text-muted fw-normal">(opcional)</span></label>
+                                                    <input type="datetime-local" class="form-control" name="fechaFin">
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fa-solid fa-play me-1"></i>Generar Reporte de Clientes
+                                            </button>
+                                        </form>
                                     </div>
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fa-solid fa-play me-1"></i>Generar Reporte de Clientes
-                                    </button>
-                                </form>
+                                    <div class="d-none d-md-block">
+                                        <span class="badge bg-primary bg-opacity-10 text-primary p-3">
+                                            <i class="fa-solid fa-user-group fa-2x"></i>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
 
-                <!-- HISTORIAL -->
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                         <h6 class="fw-bold mb-0 text-secondary">
@@ -146,9 +185,9 @@
                         </h6>
                         <span class="badge bg-secondary" th:text="${historial.size()} + ' reporte(s)'"></span>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
+                    <div class="card-body table-wrapper table-rounded">
+                        <div class="table-responsive-premium">
+                            <table class="table table-premium table-hover align-middle">
                                 <thead class="table-light">
                                     <tr>
                                         <th class="ps-3">#</th>
@@ -162,7 +201,7 @@
                                 </thead>
                                 <tbody>
                                     <tr th:if="${historial == null or historial.isEmpty()}">
-                                        <td colspan="6" class="text-center text-muted py-4">
+                                        <td colspan="7" class="text-center text-muted py-4">
                                             <i class="fa-solid fa-folder-open fa-2x mb-2 d-block text-muted"></i>
                                             Aún no se han generado reportes de ventas.
                                         </td>
@@ -181,7 +220,7 @@
                                         <td class="text-center">
                                             <a th:href="@{/reportes/{id}(id=${r.get('id')}, origen='ventas')}"
                                                 class="btn btn-sm btn-outline-success">
-                                                <i class="fa-solid fa-eye me-1"></i>Ver
+                                                <i class="fa-solid fa-eye me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Ver</span>
                                             </a>
                                         </td>
                                     </tr>
@@ -196,6 +235,8 @@
     </div>
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
+    <link rel="stylesheet" th:href="@{/css/reporte.css}">
+
 </body>
 
 </html>

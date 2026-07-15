@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Proyecciones - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5">
+
+                <!-- ── ENCABEZADO ─────────────────────────────────────── -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="text-center">
+                        <h2 class="fw-bold mb-0">
+                            <i class="fa-solid fa-chart-line text-primary me-2"></i>Proyecciones y Análisis
+                        </h2>
+                        <p class="text-muted small mt-1 mb-0 d-none d-sm-inline ms-1">
+                            Historial de proyecciones guardadas y consultas en tiempo real.
+                        </p>
+                    </div>
+                    <a th:href="@{/proyecciones/manual}" class="btn btn-primary">
+                        <i class="fa-solid fa-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Nueva
+                            Proyección</span>
+                    </a>
+                </div>
+
+                <!-- FLASH -->
+                <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show shadow-sm">
+                    <i class="fa-solid fa-circle-check me-2"></i><span th:text="${mensaje}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i><span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- ── MÉTRICAS ───────────────────────────────────────── -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="card shadow-sm border-0 p-3 text-center h-100">
+                            <i class="fa-solid fa-database fa-2x text-primary mb-2"></i>
+                            <h6 class="fw-bold mb-1">Proyecciones guardadas</h6>
+                            <div class="fw-bold fs-3 text-primary" th:text="${totalHistorial}">0</div>
+                            <p class="text-muted small mb-0">En la base de datos</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card shadow-sm border-0 p-3 text-center h-100">
+                            <i class="fa-solid fa-truck fa-2x text-info mb-2"></i>
+                            <h6 class="fw-bold mb-1">Proveedores fiables</h6>
+                            <div class="fw-bold fs-3 text-info"
+                                th:text="${proveedoresFiables != null ? proveedoresFiables.size() : 0}">0</div>
+                            <p class="text-muted small mb-0">Con pedidos completados</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card shadow-sm border-0 p-3 text-center h-100">
+                            <i class="fa-solid fa-users fa-2x text-warning mb-2"></i>
+                            <h6 class="fw-bold mb-1">Clientes en ranking</h6>
+                            <div class="fw-bold fs-3 text-warning"
+                                th:text="${clientesFieles != null ? clientesFieles.size() : 0}">0</div>
+                            <p class="text-muted small mb-0">Con compras registradas</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card shadow-sm border-0 p-3 text-center h-100">
+                            <i class="fa-solid fa-tag fa-2x text-secondary mb-2"></i>
+                            <h6 class="fw-bold mb-1">Precios de mercado</h6>
+                            <div class="fw-bold fs-3 text-secondary"
+                                th:text="${preciosMercado != null ? preciosMercado.size() : 0}">0</div>
+                            <p class="text-muted small mb-0">Relaciones producto-proveedor</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══════════════════════════════════════════════════════
+                     TABS PRINCIPALES
+                ═══════════════════════════════════════════════════════ -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-0">
+
+                        <!-- NAV TABS -->
+                        <ul class="nav nav-tabs nav-fill border-0 bg-light rounded-top p-2" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="tabHistorial" data-bs-toggle="tab"
+                                    data-bs-target="#contenidoHistorial" type="button" role="tab">
+                                    <i class="fa-solid fa-clock-rotate-left me-2"></i>Historial
+                                    <span class="badge bg-primary ms-1" th:text="${totalHistorial}">0</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tabProveedores" data-bs-toggle="tab"
+                                    data-bs-target="#contenidoProveedores" type="button" role="tab">
+                                    <i class="fa-solid fa-truck me-2 text-info"></i>Proveedores
+                                    <span class="badge bg-info ms-1"
+                                        th:text="${proveedoresFiables != null ? proveedoresFiables.size() : 0}">0</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tabClientes" data-bs-toggle="tab"
+                                    data-bs-target="#contenidoClientes" type="button" role="tab">
+                                    <i class="fa-solid fa-users me-2 text-warning"></i>Clientes
+                                    <span class="badge bg-warning text-dark ms-1"
+                                        th:text="${clientesFieles != null ? clientesFieles.size() : 0}">0</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tabPrecios" data-bs-toggle="tab"
+                                    data-bs-target="#contenidoPrecios" type="button" role="tab">
+                                    <i class="fa-solid fa-tag me-2 text-secondary"></i>Precios
+                                    <span class="badge bg-secondary ms-1"
+                                        th:text="${preciosMercado != null ? preciosMercado.size() : 0}">0</span>
+                                </button>
+                            </li>
+                        </ul>
+
+                        <!-- CONTENIDO DE TABS -->
+                        <div class="tab-content p-4">
+
+                            <!-- ==========================================
+                                 TAB 1: HISTORIAL
+                                 ========================================== -->
+                            <div class="tab-pane fade show active" id="contenidoHistorial" role="tabpanel">
+
+                                <!-- Sin datos -->
+                                <div th:if="${historial == null or historial.isEmpty()}"
+                                    class="text-center text-muted py-5">
+                                    <i class="fa-solid fa-chart-bar fa-3x mb-3 d-block text-muted"></i>
+                                    <p class="fw-bold mb-1">Sin proyecciones guardadas todavía</p>
+                                    <p class="small mb-3">
+                                        El scheduler las genera automáticamente el día 1 de cada mes.<br>
+                                        También puedes generarlas manualmente para cualquier período.
+                                    </p>
+                                    <a th:href="@{/proyecciones/manual}" class="btn btn-primary btn-sm">
+                                        <i class="fa-solid fa-plus me-1"></i>Generar ahora
+                                    </a>
+                                </div>
+
+                                <!-- Con datos: filtros + tabla + paginación -->
+                                <div th:if="${historial != null and !historial.isEmpty()}">
+
+                                    <!-- Filtros -->
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-4">
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light">
+                                                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                                                </span>
+                                                <input type="text" id="buscarHistorial" class="form-control"
+                                                    placeholder="Buscar producto o categoría...">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select id="filtroTipo" class="form-select">
+                                                <option value="">Todos los tipos</option>
+                                                <option value="Productos Más Vendidos">Productos Más Vendidos</option>
+                                                <option value="Productos Menos Vendidos">Productos Menos Vendidos
+                                                </option>
+                                                <option value="Retiros por Vencimiento">Retiros por Vencimiento</option>
+                                                <option value="Ventas por Categoría">Ventas por Categoría</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" id="limpiarFiltros"
+                                                class="btn btn-outline-secondary w-100">
+                                                <i class="fa-solid fa-rotate-left me-1"></i>Limpiar
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tabla -->
+                                    <div class="card-body table-wrapper table-rounded">
+                                        <div class="table-responsive-premium">
+                                            <table class="table table-premium">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th class="ps-3">Tipo</th>
+                                                        <th>Producto / Categoría</th>
+                                                        <th>Período analizado</th>
+                                                        <th>Resultado</th>
+                                                        <th class="text-center">Ped. estimados</th>
+                                                        <th>Método</th>
+                                                        <th>Generado</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tablaHistorial">
+                                                    <tr th:each="p : ${historial}"
+                                                        th:attr="data-nombre=${#strings.toLowerCase(p.nombreProducto != null ? p.nombreProducto : (p.nombreCategoria != null ? p.nombreCategoria : ''))}, data-tipo=${p.tipoProyeccion}">
+                                                        <td class="ps-3">
+                                                            <span class="badge"
+                                                                th:classappend="${p.referenciaTipo == 'PRODUCTO_MAS_VENDIDO'} ? 'bg-success' :
+                                                                                    (${p.referenciaTipo == 'PRODUCTO_MENOS_VENDIDO'} ? 'bg-danger' :
+                                                                                    (${p.referenciaTipo == 'RETIRO_VENCIMIENTO'} ? 'bg-warning text-dark' : 'bg-primary'))"
+                                                                th:text="${p.tipoProyeccion}"></span>
+                                                        </td>
+                                                        <td class="fw-semibold"
+                                                            th:text="${p.nombreProducto != null ? p.nombreProducto : p.nombreCategoria}">
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge bg-light text-dark border small"
+                                                                th:if="${p.fechaInicio != null}">
+                                                                <span
+                                                                    th:text="${#temporals.format(p.fechaInicio, 'dd/MM/yy')}"></span>
+                                                                →
+                                                                <span
+                                                                    th:text="${#temporals.format(p.fechaFin, 'dd/MM/yy')}"></span>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-muted small" th:text="${p.resultadoProyeccion}">
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span
+                                                                th:if="${p.pedidosEstimados != null and p.pedidosEstimados > 0}"
+                                                                class="badge bg-success"
+                                                                th:text="${p.pedidosEstimados} + ' ud'"></span>
+                                                            <span
+                                                                th:if="${p.pedidosEstimados == null or p.pedidosEstimados == 0}"
+                                                                class="text-muted">—</span>
+                                                        </td>
+                                                        <td class="text-muted small" th:text="${p.metodoProyeccion}">
+                                                        </td>
+                                                        <td class="text-muted small"
+                                                            th:text="${#temporals.format(p.fechaGeneracion, 'dd/MM/yyyy')}">
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <!-- Paginación Historial -->
+                                    <nav class="mt-3">
+                                        <ul id="paginacionHistorial" class="pagination-premium"></ul>
+                                    </nav>
+                                </div>
+                            </div>
+
+                            <!-- ==========================================
+                            TAB 2: PROVEEDORES
+                            ========================================== -->
+                            <div class="tab-pane fade" id="contenidoProveedores" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="fw-bold text-info mb-0">
+                                        <i class="fa-solid fa-trophy me-2"></i>Ranking de Proveedores Más Fiables
+                                    </h6>
+                                    <span class="badge bg-info"
+                                        th:text="${proveedoresFiables != null ? proveedoresFiables.size() : 0} + ' proveedores'"></span>
+                                </div>
+                                <p class="text-muted small mb-3">Ranking por pedidos completados</p>
+
+                                <div th:if="${proveedoresFiables == null or proveedoresFiables.isEmpty()}"
+                                    class="text-center text-muted py-5">
+                                    <i class="fa-solid fa-truck fa-3x mb-3 d-block text-muted"></i>
+                                    <p class="fw-bold mb-1">Sin pedidos completados registrados</p>
+                                    <p class="small">Los proveedores aparecerán aquí cuando tengan pedidos completados.
+                                    </p>
+                                </div>
+
+                                <div th:if="${proveedoresFiables != null and !proveedoresFiables.isEmpty()}">
+                                    <!-- Buscador para proveedores -->
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-4">
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light">
+                                                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                                                </span>
+                                                <input type="text" id="buscarProveedores" class="form-control"
+                                                    placeholder="Buscar proveedor...">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body table-wrapper table-rounded">
+                                        <div class="table-responsive-premium">
+                                            <table class="table table-premium">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th class="ps-3" style="width:40px;">#</th>
+                                                        <th>Proveedor</th>
+                                                        <th>Pedidos</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tablaProveedores">
+                                                    <tr th:each="prov, iter : ${proveedoresFiables}"
+                                                        th:attr="data-nombre=${#strings.toLowerCase(prov.nombreProducto)}">
+                                                        <td class="ps-3">
+                                                            <span class="badge"
+                                                                th:classappend="${iter.index == 0} ? 'bg-warning text-dark' : 'bg-secondary'"
+                                                                th:text="${iter.count}"></span>
+                                                        </td>
+                                                        <td class="fw-semibold" th:text="${prov.nombreProducto}"></td>
+                                                        <td class="text-muted" th:text="${prov.resultadoProyeccion}">
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <nav class="mt-3">
+                                        <ul id="paginacionProveedores" class="pagination-premium"></ul>
+                                    </nav>
+                                </div>
+                            </div>
+
+                            <!-- ==========================================
+                            TAB 3: CLIENTES
+                            ========================================== -->
+                            <div class="tab-pane fade" id="contenidoClientes" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="fw-bold text-warning mb-0">
+                                        <i class="fa-solid fa-crown me-2"></i>Ranking de Clientes Más Fieles
+                                    </h6>
+                                    <span class="badge bg-warning text-dark"
+                                        th:text="${clientesFieles != null ? clientesFieles.size() : 0} + ' clientes'"></span>
+                                </div>
+                                <p class="text-muted small mb-3">Ranking por monto total comprado</p>
+
+                                <div th:if="${clientesFieles == null or clientesFieles.isEmpty()}"
+                                    class="text-center text-muted py-5">
+                                    <i class="fa-solid fa-users fa-3x mb-3 d-block text-muted"></i>
+                                    <p class="fw-bold mb-1">Sin ventas registradas todavía</p>
+                                    <p class="small">Los clientes aparecerán aquí cuando realicen compras.</p>
+                                </div>
+
+                                <div th:if="${clientesFieles != null and !clientesFieles.isEmpty()}">
+                                    <!-- Buscador para clientes -->
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-4">
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light">
+                                                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                                                </span>
+                                                <input type="text" id="buscarClientes" class="form-control"
+                                                    placeholder="Buscar cliente...">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body table-wrapper table-rounded">
+                                        <div class="table-responsive-premium">
+                                            <table class="table table-premium">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th class="ps-3" style="width:40px;">#</th>
+                                                        <th>Cliente</th>
+                                                        <th>Total</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tablaClientes">
+                                                    <tr th:each="cli, iter : ${clientesFieles}"
+                                                        th:attr="data-nombre=${#strings.toLowerCase(cli.nombreProducto)}">
+                                                        <td class="ps-3">
+                                                            <span class="badge"
+                                                                th:classappend="${iter.index == 0} ? 'bg-warning text-dark' : 'bg-secondary'"
+                                                                th:text="${iter.count}"></span>
+                                                        </td>
+                                                        <td class="fw-semibold" th:text="${cli.nombreProducto}"></td>
+                                                        <td class="text-success fw-bold"
+                                                            th:text="${cli.resultadoProyeccion}"></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <nav class="mt-3">
+                                        <ul id="paginacionClientes" class="pagination-premium"></ul>
+                                    </nav>
+                                </div>
+                            </div>
+
+                            <!-- ==========================================
+                            TAB 4: PRECIOS
+                            ========================================== -->
+                            <div class="tab-pane fade" id="contenidoPrecios" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="fw-bold text-secondary mb-0">
+                                        <i class="fa-solid fa-store me-2"></i>Precios de Mercado
+                                    </h6>
+                                    <span class="badge bg-secondary"
+                                        th:text="${preciosMercado != null ? preciosMercado.size() : 0} + ' registros'"></span>
+                                </div>
+                                <p class="text-muted small mb-3">Precios ofrecidos por cada proveedor por producto</p>
+
+                                <div th:if="${preciosMercado == null or preciosMercado.isEmpty()}"
+                                    class="text-center text-muted py-5">
+                                    <i class="fa-solid fa-tag fa-3x mb-3 d-block text-muted"></i>
+                                    <p class="fw-bold mb-1">Sin relaciones proveedor-producto registradas</p>
+                                    <p class="small">Los precios aparecerán aquí cuando se registren productos con
+                                        proveedores.</p>
+                                </div>
+
+                                <div th:if="${preciosMercado != null and !preciosMercado.isEmpty()}">
+                                    <!-- Buscador para precios -->
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-4">
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light">
+                                                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                                                </span>
+                                                <input type="text" id="buscarPrecios" class="form-control"
+                                                    placeholder="Buscar producto...">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body table-wrapper table-rounded">
+                                        <div class="table-responsive-premium">
+                                            <table class="table table-premium">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th class="ps-3">Producto</th>
+                                                        <th>Proveedor</th>
+                                                        <th class="text-end pe-3">Precio</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tablaPrecios">
+                                                    <tr th:each="pm : ${preciosMercado}"
+                                                        th:attr="data-nombre=${#strings.toLowerCase(pm.nombreProducto)}">
+                                                        <td class="ps-3 fw-semibold" th:text="${pm.nombreProducto}">
+                                                        </td>
+                                                        <td class="text-muted" th:text="${pm.nombreCategoria}"></td>
+                                                        <td class="text-end pe-3 fw-bold text-success"
+                                                            th:text="${pm.resultadoProyeccion}"></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <nav class="mt-3">
+                                        <ul id="paginacionPrecios" class="pagination-premium"</ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+
+    <link rel="stylesheet" th:href="@{/css/paginacion.css}">
+
+    <script th:src="@{/js/general/paginacion.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Historial
+            inicializarPaginacionYBusqueda({
+                tablaId: 'tablaHistorial',
+                paginacionId: 'paginacionHistorial',
+                inputId: 'buscarHistorial',
+                filtrosSelect: [
+                    { id: 'filtroTipo', attr: 'tipo' }
+                ],
+                btnLimpiarId: 'limpiarFiltros',
+                filasPorPagina: 5
+            });
+
+            // Proveedores
+            inicializarPaginacionYBusqueda({
+                tablaId: 'tablaProveedores',
+                inputId: 'buscarProveedores',
+                paginacionId: 'paginacionProveedores'
+            });
+
+            // Clientes
+            inicializarPaginacionYBusqueda({
+                tablaId: 'tablaClientes',
+                inputId: 'buscarClientes',
+                paginacionId: 'paginacionClientes'
+            });
+
+            // Precios
+            inicializarPaginacionYBusqueda({
+                tablaId: 'tablaPrecios',
+                inputId: 'buscarPrecios',
+                paginacionId: 'paginacionPrecios'
+            });
+        })
+    </script>
+
+</body>
+
+</html>

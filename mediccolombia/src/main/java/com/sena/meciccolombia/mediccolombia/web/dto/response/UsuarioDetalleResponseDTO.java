@@ -16,6 +16,7 @@ public class UsuarioDetalleResponseDTO {
     private String correo;
     private String identificacion;
     private String rol;
+    private String fotoPerfil;
     private List<EstadoUsuarioResponseDTO> estadoUsuario;
     
 }

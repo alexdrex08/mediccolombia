@@ -20,7 +20,7 @@
                         <p class="text-muted small mb-0">Gestión de órdenes de compra a proveedores</p>
                     </div>
                     <a th:href="@{/pedidos/nuevo}" class="btn btn-primary">
-                        <i class="fa-solid fa-plus me-1"></i> Nuevo Pedido
+                        <i class="fa-solid fa-plus me-0 me-sm-1"></i> <span class="d-none d-sm-inline ms-1">Nuevo Pedido</span>
                     </a>
                 </div>
 
@@ -89,7 +89,10 @@
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <button class="btn btn-outline-secondary w-100" onclick="limpiarFiltros()">
+                                <input type="date" id="filtroFecha" class="form-control" placeholder="Fecha">
+                            </div>
+                            <div class="col-md-3">
+                                <button id="limpiarFiltros" class="btn btn-outline-secondary w-100">
                                     <i class="fa-solid fa-rotate-left me-1"></i>Limpiar
                                 </button>
                             </div>
@@ -102,12 +105,12 @@
                     <div class="card-header bg-white fw-bold">
                         <i class="fa-solid fa-list me-2 text-secondary"></i>Pedidos registrados
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="table-dark">
+                    <div class="card-body table-wrapper table-rounded">
+                        <div class="table-responsive-premium">
+                            <table class="table table-premium">
+                                <thead class="table-light">
                                     <tr>
-                                        <th># Pedido</th>
+                                        <th class="ps-3"># Pedido</th>
                                         <th>Proveedor</th>
                                         <th>Fecha</th>
                                         <th class="text-center">Estado</th>
@@ -117,12 +120,18 @@
                                 </thead>
                                 <tbody id="tablaPedidos">
                                     <tr th:each="p : ${pedidos}" th:if="${pedidos != null and !#lists.isEmpty(pedidos)}"
-                                        th:attr="data-proveedor=${p.nombreProveedor}, data-estado=${p.estadoPedido}">
+                                        th:attr="data-nombre=${#strings.toLowerCase(p.nombreProveedor)}, 
+                                                data-estado=${p.estadoPedido},
+                                                data-fecha=${#temporals.format(p.fechaPedido, 'yyyy-MM-dd')}">
                                         <td class="fw-bold">#<span th:text="${p.id}"></span></td>
                                         <td th:text="${p.nombreProveedor}"></td>
-                                        <td th:text="${#temporals.format(p.fechaPedido, 'dd/MM/yyyy HH:mm')}"></td>
+                                        <td>
+                                            <span
+                                            th:text="${#temporals.format(p.fechaPedido, 'dd/MM/yyyy HH:mm')}"
+                                            class="badge bg-light text-dark border small">
+                                            </span>
+                                        </td>
                                         <td class="text-center">
-
                                             <span
                                                 th:classappend="
                                                 ${p.estadoPedido == 'Completado / Recibido'} ? 'bg-success' :
@@ -152,7 +161,7 @@
                     </div>
                     <div class="card-footer bg-white">
                         <nav>
-                            <ul id="paginacion" class="pagination justify-content-center mb-0"></ul>
+                            <ul id="paginacion" class="pagination-premium"></ul>
                         </nav>
                     </div>
                 </div>
@@ -163,54 +172,37 @@
 
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
+
+    <script th:src="@{/js/general/paginacion.js}"></script>
+
+    <link rel="stylesheet" th:href="@{/css/paginacion.css}">
+
     <script>
-        const filtroBuscar = document.getElementById('filtroBuscar');
-        const filtroEstado = document.getElementById('filtroEstado');
-        [filtroBuscar, filtroEstado].forEach(el => el.addEventListener('input', filtrar));
+        document.addEventListener('DOMContentLoaded', function () {
+            inicializarPaginacionYBusqueda({
+                tablaId: 'tablaPedidos',
+                paginacionId: 'paginacion',
+                inputId: 'filtroBuscar',   
+                filtrosSelect: [
+                    { id: 'filtroEstado', attr: 'estado' }
+                ],
+                btnLimpiarId: 'limpiarFiltros',
+                inputsAdicional: ['filtroFecha'],      
+                inputsLimpiar: ['filtroFecha'],
+                filasPorPagina: 5,
+                filtroAdicional: function (fila) {
+                    const fechaSeleccionada = document.getElementById('filtroFecha').value;
+                    const fechaFila = fila.dataset.fecha;
+                    if (fechaSeleccionada && fechaFila) {
+                        return fechaFila === fechaSeleccionada;
+                    }
+                    return true;
+                }
+            });
 
-        function filtrar() {
-            const texto = filtroBuscar.value.toLowerCase();
-            const estado = filtroEstado.value;
-            const filas = document.querySelectorAll('#tablaPedidos tr[data-proveedor]');
-            filas.forEach(row => {
-                const prov = (row.dataset.proveedor || '').toLowerCase();
-                const est = row.dataset.estado || '';
-                row.style.display =
-                    prov.includes(texto) && (estado === '' || est === estado)
-                        ? '' : 'none';
-            });
-            paginar();
-        }
-
-        const filasPorPagina = 10;
-        function paginar() {
-            const filas = Array.from(document.querySelectorAll('#tablaPedidos tr[data-proveedor]'))
-                .filter(r => r.style.display !== 'none');
-            const pag = document.getElementById('paginacion');
-            pag.innerHTML = '';
-            const totalPag = Math.ceil(filas.length / filasPorPagina);
-            for (let i = 1; i <= totalPag; i++) {
-                pag.innerHTML += `<li class="page-item"><a class="page-link" onclick="irPag(${i})">${i}</a></li>`;
-            }
-            irPag(1);
-        }
-        function irPag(num) {
-            const filas = Array.from(document.querySelectorAll('#tablaPedidos tr[data-proveedor]'))
-                .filter(r => r.style.display !== 'none');
-            filas.forEach((r, i) => {
-                r.style.display = (i >= (num - 1) * filasPorPagina && i < num * filasPorPagina) ? '' : 'none';
-            });
-            document.querySelectorAll('#paginacion .page-item').forEach((li, idx) => {
-                li.classList.toggle('active', idx + 1 === num);
-            });
-        }
-        function limpiarFiltros() {
-            filtroBuscar.value = '';
-            filtroEstado.value = '';
-            filtrar();
-        }
-        paginar();
+        });
     </script>
+
 </body>
 
 </html>

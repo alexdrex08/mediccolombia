@@ -68,3 +68,172 @@
                padding-bottom: 4rem;
            }
        }
+
+       /* ─── ESTILOS MODERNOS PARA EL SIDEBAR ─── */
+
+/* Base de los items */
+.list-group-item.bg-dark {
+    background-color: transparent !important;
+    color: #adb5bd !important;
+    border: none !important;
+    border-radius: 8px !important;
+    margin: 2px 8px !important;
+    padding: 10px 16px !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative;
+    font-weight: 400;
+}
+
+/* Íconos por defecto */
+.list-group-item.bg-dark .fa-solid,
+.list-group-item.bg-dark .fa-regular {
+    color: #6c757d;
+    transition: all 0.3s ease;
+    width: 20px;
+    text-align: center;
+}
+
+/* ─── HOVER (más suave y limpio) ─── */
+.list-group-item.bg-dark:hover:not(.active) {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    color: #ffffff !important;
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+
+/* NUEVOS ESTILOS PARA LA PROPIEDAD ACTIVE-DAD */
+
+.list-group-item.bg-dark:hover:not(.active) .fa-solid,
+.list-group-item.bg-dark:hover:not(.active) .fa-regular {
+    color: #0d6efd !important;
+    transform: scale(1.1);
+}
+
+
+.list-group-item.bg-dark.active-dad {
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    transform: translateX(0px);
+}
+
+
+.list-group-item.bg-dark.active-dad .fa-solid,
+.list-group-item.bg-dark.active-dad .fa-regular {
+    color: #0d6efd !important;
+    transform: scale(1.05);
+}
+
+/* PROPIEDADES PARA LOS SUBMENIS ACTIVE */
+
+
+.collapse.ms-3 .list-group-item {
+    padding: 8px 16px 8px 40px !important;
+    font-size: 0.9rem;
+    margin: 1px 8px !important;
+}
+
+.collapse.ms-3 .list-group-item:hover:not(.active) {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    transform: translateX(6px);
+}
+
+.collapse.ms-3 .list-group-item.active {
+    background: rgba(13, 110, 253, 0.10) !important;
+    border-left: 3px solid #0d6efd !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.08);
+}
+
+.collapse.ms-3 .list-group-item .fa-solid,
+.collapse.ms-3 .list-group-item .fa-regular {
+    font-size: 0.85rem;
+    width: 18px;
+}
+
+.list-group-item.bg-dark.text-secondary.small {
+    color: #6c757d !important;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    padding: 8px 16px !important;
+    margin: 8px 8px 4px !important;
+    background: transparent !important;
+    border: none !important;
+    font-size: 0.65rem !important;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.list-group-item .fa-caret-up {
+    transition: transform 0.3s ease;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.list-group-item.active .fa-caret-up {
+    color: #0d6efd;
+}
+
+.list-group-item .fa-caret-up.fa-flip-vertical {
+    transform: rotate(0deg) !important;
+}
+
+.list-group-item:not(.collapsed) .fa-caret-up.fa-flip-vertical {
+    transform: rotate(180deg) !important;
+}
+
+/* Efecto de luz al pasar el mouse */
+.list-group-item.bg-dark:hover:not(.active)::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.03), transparent 70%);
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+    .list-group-item.bg-dark {
+        padding: 8px 12px !important;
+        margin: 1px 4px !important;
+        font-size: 0.9rem;
+    }
+    
+    .collapse.ms-3 .list-group-item {
+        padding: 6px 12px 6px 32px !important;
+        font-size: 0.85rem;
+    }
+}
+
+/* ─── ANIMACIÓN DE ENTRADA ─── */
+.list-group-item {
+    animation: fadeInSidebar 0.3s ease forwards;
+    opacity: 0;
+}
+
+@keyframes fadeInSidebar {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Retraso escalonado para cada item */
+.list-group-item:nth-child(1) { animation-delay: 0.05s; }
+.list-group-item:nth-child(2) { animation-delay: 0.10s; }
+.list-group-item:nth-child(3) { animation-delay: 0.15s; }
+.list-group-item:nth-child(4) { animation-delay: 0.20s; }
+.list-group-item:nth-child(5) { animation-delay: 0.25s; }
+.list-group-item:nth-child(6) { animation-delay: 0.30s; }
+.list-group-item:nth-child(7) { animation-delay: 0.35s; }
+.list-group-item:nth-child(8) { animation-delay: 0.40s; }
+.list-group-item:nth-child(9) { animation-delay: 0.45s; }

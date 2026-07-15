@@ -11,7 +11,7 @@
             <main class="container-fluid p-4 my-5">
 
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
+                    <div class="text-center">
                         <h2 class="fw-bold mb-0"><i class="fa-solid fa-arrow-down text-warning fs-1 me-3"></i>
                             Salidas de Inventario</h2>
                         <p class="text-muted">Gestión y seguimiento de productos despachados, vendidos o ajustados</p>
@@ -81,45 +81,50 @@
                 </div>
 
                 <div class="card shadow-sm border-0">
-                    <div class="card-body">
+                    <div class="card-body table-wrapper table-rounded">
                         <h5 class="fw-bold mb-3">Listado de Salidas</h5>
-
-                        <table class="table table-hover align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Código</th>
-                                    <th>Fecha</th>
-                                    <th>Producto</th>
-                                    <th>Cantidad</th>
-                                    <th>Responsable</th>
-                                    <th>Tipo</th>
-                                    <th class="text-center">Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tablaMovimientos">
-                                <tr th:if="${#lists.isEmpty(movimientos)}">
-                                    <td colspan="7" class="text-center text-muted py-4">
-                                        Aún no se han registrado salidas de inventario.
-                                    </td>
-                                </tr>
-                                <tr th:each="m : ${movimientos}"
-                                    th:attr="data-fecha=${#temporals.format(m.fechaMovimiento, 'yyyy-MM-dd')}, data-producto=${m.nombreProducto}, data-tipo=${m.tipoMovimiento}">
-                                    <td th:text="${m.pickerChecker}"></td>
-                                    <td th:text="${#temporals.format(m.fechaMovimiento, 'dd/MM/yyyy HH:mm')}"></td>
-                                    <td th:text="${m.nombreProducto}"></td>
-                                    <td th:text="${m.cantidad}"></td>
-                                    <td th:text="${m.nombreUsuario}"></td>
-                                    <td><span class="badge bg-danger" th:text="${m.tipoMovimiento}"></span></td>
-                                    <td class="text-center">
-                                        <a th:href="@{/movimientos/ver-salida/{id}(id=${m.id})}" class="btn btn-sm btn-outline-primary">
-                                            <i class="fa-solid fa-eye"></i></a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="table-responsive-premium">
+                            <table class="table table-premium">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-3">Código</th>
+                                        <th>Fecha</th>
+                                        <th>Producto</th>
+                                        <th>Cantidad</th>
+                                        <th>Responsable</th>
+                                        <th>Tipo</th>
+                                        <th class="text-center">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaMovimientos">
+                                    <tr th:if="${#lists.isEmpty(movimientos)}">
+                                        <td colspan="7" class="text-center text-muted py-4">
+                                            Aún no se han registrado salidas de inventario.
+                                        </td>
+                                    </tr>
+                                    <tr th:each="m : ${movimientos}"
+                                        th:attr="data-fecha=${#temporals.format(m.fechaMovimiento, 'yyyy-MM-dd')}, data-producto=${m.nombreProducto}, data-tipo=${m.tipoMovimiento}">
+                                        <td class="fw-semibold" th:text="${m.pickerChecker}"></td>
+                                        <td>
+                                            <span th:text="${#temporals.format(m.fechaMovimiento, 'dd/MM/yyyy HH:mm')}"
+                                                class="badge bg-light text-dark border small"></span>
+                                        </td>
+                                        <td class="fw-semibold" th:text="${m.nombreProducto}"></td>
+                                        <td th:text="${m.cantidad}"></td>
+                                        <td class="fw-semibold" th:text="${m.nombreUsuario}"></td>
+                                        <td><span class="badge bg-danger" th:text="${m.tipoMovimiento}"></span></td>
+                                        <td class="text-center">
+                                            <a th:href="@{/movimientos/ver-salida/{id}(id=${m.id})}"
+                                                class="btn btn-sm btn-outline-primary">
+                                                <i class="fa-solid fa-eye"></i></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
                         <nav aria-label="Paginación de salidas" class="mt-3">
-                            <ul id="paginacion" class="pagination justify-content-end"></ul>
+                            <ul id="paginacion" class="pagination-premium"></ul>
                         </nav>
                     </div>
                 </div>
@@ -129,19 +134,18 @@
     </div>
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
-    <script>
-        (function () {
-            const filasPorPagina = 5;
-            const filas = Array.from(document.querySelectorAll('#tablaMovimientos tr[data-producto]'));
 
-            const fechaDesde = document.getElementById('fechaDesde');
-            const fechaHasta = document.getElementById('fechaHasta');
+    <link rel="stylesheet" th:href="@{/css/paginacion.css}">
+
+    <script th:src="@{/js/general/paginacion.js}"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // ── Poblar selects ──
+            const filas = Array.from(document.querySelectorAll('#tablaMovimientos tr[data-producto]'));
             const selectProducto = document.getElementById('filtroProducto');
             const selectTipo = document.getElementById('filtroTipo');
-            const contenedorPaginacion = document.getElementById('paginacion');
-            const btnLimpiar = document.getElementById('limpiarFiltros');
-
-            let paginaActual = 1;
 
             function poblarSelect(select, valores) {
                 [...new Set(valores)].sort().forEach(valor => {
@@ -152,87 +156,34 @@
                 });
             }
 
-            poblarSelect(selectProducto, filas.map(f => f.dataset.producto));
-            poblarSelect(selectTipo, filas.map(f => f.dataset.tipo));
-
-            function filasFiltradas() {
-                const desde = fechaDesde.value;
-                const hasta = fechaHasta.value;
-                const producto = selectProducto.value;
-                const tipo = selectTipo.value;
-
-                return filas.filter(fila => {
-                    const coincideDesde = desde === '' || fila.dataset.fecha >= desde;
-                    const coincideHasta = hasta === '' || fila.dataset.fecha <= hasta;
-                    const coincideProducto = producto === '' || fila.dataset.producto === producto;
-                    const coincideTipo = tipo === '' || fila.dataset.tipo === tipo;
-                    return coincideDesde && coincideHasta && coincideProducto && coincideTipo;
-                });
+            if (filas.length > 0) {
+                poblarSelect(selectProducto, filas.map(f => f.dataset.producto));
+                poblarSelect(selectTipo, filas.map(f => f.dataset.tipo));
             }
 
-            function render() {
-                const visibles = filasFiltradas();
-                const totalPaginas = Math.max(1, Math.ceil(visibles.length / filasPorPagina));
-                if (paginaActual > totalPaginas) paginaActual = totalPaginas;
-
-                filas.forEach(fila => fila.style.display = 'none');
-                visibles
-                    .slice((paginaActual - 1) * filasPorPagina, paginaActual * filasPorPagina)
-                    .forEach(fila => fila.style.display = '');
-
-                renderPaginacion(totalPaginas, visibles.length);
-            }
-
-            function renderPaginacion(totalPaginas, totalFilas) {
-                contenedorPaginacion.innerHTML = '';
-
-                if (totalFilas === 0) {
-                    contenedorPaginacion.innerHTML =
-                        '<li class="page-item disabled"><span class="page-link">Sin resultados</span></li>';
-                    return;
+            // ── paginación ──
+            inicializarPaginacionYBusqueda({
+                tablaId: 'tablaMovimientos',
+                paginacionId: 'paginacion',
+                filtrosSelect: [
+                    { id: 'filtroProducto', attr: 'producto' },
+                    { id: 'filtroTipo', attr: 'tipo' }
+                ],
+                btnLimpiarId: 'limpiarFiltros',
+                inputsAdicional: ['fechaDesde', 'fechaHasta'],
+                inputsLimpiar: ['fechaDesde', 'fechaHasta'],
+                filasPorPagina: 5,
+                filtroAdicional: function (fila) {
+                    const desde = document.getElementById('fechaDesde').value;
+                    const hasta = document.getElementById('fechaHasta').value;
+                    const fechaFila = fila.dataset.fecha;
+                    if (desde && fechaFila < desde) return false;
+                    if (hasta && fechaFila > hasta) return false;
+                    return true;
                 }
-
-                const crearItem = (texto, pagina, deshabilitado, activo) => {
-                    const li = document.createElement('li');
-                    li.className = 'page-item' + (deshabilitado ? ' disabled' : '') + (activo ? ' active' : '');
-                    const a = document.createElement('a');
-                    a.className = 'page-link';
-                    a.href = '#';
-                    a.textContent = texto;
-                    a.addEventListener('click', e => {
-                        e.preventDefault();
-                        if (!deshabilitado) {
-                            paginaActual = pagina;
-                            render();
-                        }
-                    });
-                    li.appendChild(a);
-                    return li;
-                };
-
-                contenedorPaginacion.appendChild(crearItem('Anterior', paginaActual - 1, paginaActual === 1, false));
-                for (let i = 1; i <= totalPaginas; i++) {
-                    contenedorPaginacion.appendChild(crearItem(String(i), i, false, i === paginaActual));
-                }
-                contenedorPaginacion.appendChild(
-                    crearItem('Siguiente', paginaActual + 1, paginaActual === totalPaginas, false));
-            }
-
-            fechaDesde.addEventListener('change', () => { paginaActual = 1; render(); });
-            fechaHasta.addEventListener('change', () => { paginaActual = 1; render(); });
-            selectProducto.addEventListener('change', () => { paginaActual = 1; render(); });
-            selectTipo.addEventListener('change', () => { paginaActual = 1; render(); });
-            btnLimpiar.addEventListener('click', () => {
-                fechaDesde.value = '';
-                fechaHasta.value = '';
-                selectProducto.value = '';
-                selectTipo.value = '';
-                paginaActual = 1;
-                render();
             });
 
-            render();
-        })();
+        });
     </script>
 </body>
 

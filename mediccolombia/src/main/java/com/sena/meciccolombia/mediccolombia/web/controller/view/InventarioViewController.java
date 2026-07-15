@@ -75,6 +75,7 @@ public class InventarioViewController {
                 .min(Comparator.comparing(ProductoResumenDTO::getStock))
                 .orElse(null);
 
+        modelo.addAttribute("vistaActiva", "inventario");
         modelo.addAttribute("vistaActiva", "inventario-lista");
         modelo.addAttribute("fechaActualizacion", LocalDateTime.now());
         modelo.addAttribute("productos", productos);
@@ -264,7 +265,7 @@ public class InventarioViewController {
 
         modelo.addAttribute("categorias", categoriaService.listarCategorias());
         modelo.addAttribute("nombreUsuario", user.getNombre());
-        modelo.addAttribute("vistaActiva", "inventario-lista");
+        modelo.addAttribute("vistaActiva", "inventario-nuevo");
 
         return "inventario/crear-producto";
     }
