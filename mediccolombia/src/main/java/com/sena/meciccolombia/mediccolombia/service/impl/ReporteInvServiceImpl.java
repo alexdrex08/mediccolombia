@@ -46,6 +46,7 @@ import com.sena.meciccolombia.mediccolombia.domain.Telefono;
 import com.sena.meciccolombia.mediccolombia.domain.Usuario;
 import com.sena.meciccolombia.mediccolombia.domain.VentaRegistro;
 import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
+import com.sena.meciccolombia.mediccolombia.service.ConfiguracionSistemaService;
 import com.sena.meciccolombia.mediccolombia.service.ReporteInvService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.ReporteInvRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.ReporteDetalleResponseDTO;
@@ -76,6 +77,8 @@ public class ReporteInvServiceImpl implements ReporteInvService {
         private final ClienteDAO clienteDAO;
         private final ProveedorDAO proveedorDAO;
         private final ReporteInvMapper reporteInvMapper;
+
+        private final ConfiguracionSistemaService configuracionService;
 
         @Override
         @Transactional
@@ -462,7 +465,8 @@ public class ReporteInvServiceImpl implements ReporteInvService {
 
         private Map<String, Object> generarReporteVencimientos() {
                 LocalDateTime ahora = LocalDateTime.now();
-                LocalDateTime limite = ahora.plusDays(7);
+                int diasProximo = leerConfigInt("dias_proximo_vencer", 30);
+                LocalDateTime limite = ahora.plusDays(diasProximo);
                 List<Producto> todos = productoDAO.findAll();
                 List<Producto> vencidos = todos.stream()
                                 .filter(p -> p.getFechaExpiracion() != null
@@ -1302,6 +1306,15 @@ public class ReporteInvServiceImpl implements ReporteInvService {
                 return reporteInvDAO.findByTipoReporte(tipoReporte).stream()
                                 .map(reporteInvMapper::toResponseDTO)
                                 .toList();
+        }
+
+        private int leerConfigInt(String clave, int fallback) {
+                try {
+                        String valor = configuracionService.obtenerValor(clave);
+                        return (valor != null && !valor.isBlank()) ? Integer.parseInt(valor.trim()) : fallback;
+                } catch (Exception e) {
+                        return fallback;
+                }
         }
 
 }

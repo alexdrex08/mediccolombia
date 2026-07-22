@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Mi Configuración - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5">
+
+                <!-- ENCABEZADO -->
+                <div
+                    class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-0">
+                            <i class="fa-solid fa-user-gear text-primary me-2"></i>Mi Configuración
+                        </h2>
+                        <p class="text-muted small mt-1 mb-0">
+                            Preferencias personales y seguridad de tu cuenta.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FLASH (contraseña) -->
+                <div th:if="${mensajeContrasena}" class="alert alert-success alert-dismissible fade show shadow-sm">
+                    <i class="fa-solid fa-circle-check me-2"></i>
+                    <span th:text="${mensajeContrasena}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${errorContrasena}" class="alert alert-danger alert-dismissible fade show shadow-sm">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    <span th:text="${errorContrasena}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <div class="row g-4">
+
+                    <!-- COLUMNA IZQUIERDA -->
+                    <div class="col-lg-7">
+
+                        <!-- INFORMACIÓN DE LA CUENTA (TABLA PREMIUM) -->
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-header bg-white border-bottom py-3">
+                                <h6 class="fw-bold mb-0">
+                                    <i class="fa-solid fa-id-card text-primary me-2"></i>
+                                    Información de la cuenta
+                                </h6>
+                            </div>
+                            <div class="card-body table-wrapper table-rounded">
+                                <div class="table-responsive-premium">
+                                    <table class="table table-premium align-middle mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <th class="ps-4" style="width:180px;">Nombre completo</th>
+                                                <td th:text="${nombre}"></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="ps-4">Correo electrónico</th>
+                                                <td th:text="${correo}"></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="ps-4">Identificación</th>
+                                                <td><code class="font-monospace" th:text="${identificacion}"></code>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="ps-4">Rol</th>
+                                                <td>
+                                                    <span class="badge fs-6"
+                                                        th:classappend="${rol == 'ADMIN'}        ? 'bg-danger' :
+                                                                         (${rol == 'FARMACEUTICO'} ? 'bg-primary' : 'bg-secondary')"
+                                                        th:text="${rol}"></span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CAMBIAR CONTRASEÑA -->
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-header bg-white border-bottom py-3">
+                                <h6 class="fw-bold mb-0">
+                                    <i class="fa-solid fa-lock text-warning me-2"></i>Cambiar contraseña
+                                </h6>
+                            </div>
+                            <div class="card-body p-4">
+                                <form th:action="@{/configuracion/perfil/cambiar-contrasena}" method="post"
+                                    id="formContrasena">
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">
+                                            Contraseña actual <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="password" class="form-control" name="contrasenaActual" required
+                                            placeholder="Tu contraseña actual">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">
+                                            Nueva contraseña <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="password" class="form-control" name="nuevaContrasena"
+                                            id="nuevaContrasena" required minlength="8"
+                                            placeholder="Mínimo 8 caracteres">
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label fw-semibold">
+                                            Confirmar contraseña <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="password" class="form-control" name="confirmarContrasena"
+                                            id="confirmarContrasena" required placeholder="Repite la nueva contraseña">
+                                        <div id="feedbackConfirmar" class="text-danger small mt-1"
+                                            style="display:none;">
+                                            Las contraseñas no coinciden.
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-warning text-dark fw-bold">
+                                        <i class="fa-solid fa-key me-1"></i>Cambiar contraseña
+                                    </button>
+
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- COLUMNA DERECHA -->
+                    <div class="col-lg-5">
+
+                        <!-- PREFERENCIAS DEL USUARIO (formulario) -->
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-header bg-white border-bottom py-3">
+                                <h6 class="fw-bold mb-0">
+                                    <i class="fa-solid fa-sliders text-info me-2"></i>Preferencias personales
+                                </h6>
+                            </div>
+                            <div class="card-body p-4">
+                                <form th:action="@{/configuracion/perfil}" method="post" id="formPreferencias">
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Tema</label>
+                                        <select name="tema" class="form-select">
+                                            <option value="claro" th:selected="${preferencias.get('tema') == 'claro'}">
+                                                Claro</option>
+                                            <option value="oscuro"
+                                                th:selected="${preferencias.get('tema') == 'oscuro'}">Oscuro</option>
+                                            <option value="auto" th:selected="${preferencias.get('tema') == 'auto'}">
+                                                Automático</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Idioma</label>
+                                        <select name="idioma" class="form-select">
+                                            <option value="es" th:selected="${preferencias.get('idioma') == 'es'}">
+                                                Español</option>
+                                            <option value="en" th:selected="${preferencias.get('idioma') == 'en'}">
+                                                Inglés</option>
+                                        </select>
+                                    </div>
+
+                            
+                                    <div class="mb-3 form-check form-switch">
+                                        <input type="hidden" name="notificaciones" value="false">
+                                        <input type="checkbox" class="form-check-input" id="notificaciones"
+                                            name="notificaciones" value="true"
+                                            th:checked="${preferencias.get('notificaciones') == 'true'}">
+                                        <label class="form-check-label fw-semibold" for="notificaciones">
+                                            <i class="fa-regular fa-bell me-1"></i> Recibir notificaciones
+                                        </label>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-info text-white w-100">
+                                        <i class="fa-solid fa-floppy-disk me-1"></i>Guardar preferencias
+                                    </button>
+                                </form>
+
+                                <div th:if="${mensaje}" class="alert alert-success mt-3 py-2 small">
+                                    <i class="fa-solid fa-circle-check me-1"></i>
+                                    <span th:text="${mensaje}"></span>
+                                </div>
+                                <div th:if="${error}" class="alert alert-danger mt-3 py-2 small">
+                                    <i class="fa-solid fa-circle-exclamation me-1"></i>
+                                    <span th:text="${error}"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- INFO DEL SISTEMA -->
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-white border-bottom py-3">
+                                <h6 class="fw-bold mb-0">
+                                    <i class="fa-solid fa-circle-info text-secondary me-2"></i>
+                                    Sobre el sistema
+                                </h6>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between py-2 border-bottom">
+                                    <span class="text-muted small">Sistema</span>
+                                    <strong class="small" th:text="${nombreSistema}"></strong>
+                                </div>
+                                <div class="d-flex justify-content-between py-2 border-bottom">
+                                    <span class="text-muted small">Empresa</span>
+                                    <strong class="small" th:text="${nombreEmpresa}"></strong>
+                                </div>
+                                <div class="d-flex justify-content-between py-2">
+                                    <span class="text-muted small">Parámetros del sistema</span>
+                                    <a th:href="@{/configuracion/sistema}" class="btn btn-sm btn-outline-secondary">
+                                        Ver sistema
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+
+    <script>
+        (function () {
+            // Validación de contraseñas en tiempo real
+            const nueva = document.getElementById('nuevaContrasena');
+            const confirmar = document.getElementById('confirmarContrasena');
+            const feedback = document.getElementById('feedbackConfirmar');
+
+            function verificar() {
+                const coincide = nueva.value === confirmar.value;
+                feedback.style.display = (confirmar.value && !coincide) ? '' : 'none';
+                confirmar.classList.toggle('is-invalid', confirmar.value.length > 0 && !coincide);
+                confirmar.classList.toggle('is-valid', confirmar.value.length > 0 && coincide);
+            }
+            nueva.addEventListener('input', verificar);
+            confirmar.addEventListener('input', verificar);
+
+            document.getElementById('formContrasena').addEventListener('submit', function (e) {
+                if (nueva.value !== confirmar.value) {
+                    e.preventDefault();
+                    feedback.style.display = '';
+                }
+            });
+        })();
+    </script>
+
+</body>
+
+</html>

@@ -44,7 +44,8 @@ public class VentaViewController {
     // GET /ventas  →  historial de ventas
     // ─────────────────────────────────────────────
     @GetMapping
-    public String historialVentas(Model model) {
+    public String historialVentas(Model model, Authentication auth) {
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
 
         // Lista completa de ventas
         List<VentaRegistroResponseDTO> ventas = ventaRegistroService.listarVentas();
@@ -65,6 +66,7 @@ public class VentaViewController {
                         + " (" + masVendidos.get(0).getTotalUnidadesVendidas() + " ud)";
         model.addAttribute("masVendido", nombreMasVendido);
 
+        model.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
         model.addAttribute("vistaActiva", "ventas-lista");
         return "ventas/historial-ventas";
     }

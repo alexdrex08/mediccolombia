@@ -28,6 +28,7 @@ import com.sena.meciccolombia.mediccolombia.domain.Producto;
 import com.sena.meciccolombia.mediccolombia.domain.Proyecciones;
 import com.sena.meciccolombia.mediccolombia.domain.TipoProyeccion;
 import com.sena.meciccolombia.mediccolombia.domain.VentaRegistro;
+import com.sena.meciccolombia.mediccolombia.service.ConfiguracionSistemaService;
 import com.sena.meciccolombia.mediccolombia.service.ProyeccionesService;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.ProyeccionesResponseDTO;
 
@@ -43,6 +44,8 @@ public class ProyeccionesServiceImpl implements ProyeccionesService {
         private final PedidoCompraDAO pedidoCompraDAO;
         private final DetalleProveedorProductoDAO detalleProveedorProductoDAO;
         private final ProyeccionesMapper proyeccionesMapper;
+
+        private final ConfiguracionSistemaService configuracionService;
 
         private final TipoProyeccionDAO tipoProyeccionDAO;
         private final MetodoProyeccionDAO metodoProyeccionDAO;
@@ -193,7 +196,9 @@ public class ProyeccionesServiceImpl implements ProyeccionesService {
                                                         .filter(dp -> dp.getProducto().getId().equals(producto.getId()))
                                                         .mapToInt(DetallePedido::getCantidad)
                                                         .sum();
-                                        int pedidosEstimados = (int) (totalPedidoHistorico * 1.20);
+                                        int porcentaje = leerConfigInt("porcentaje_estimacion_pedidos", 20);
+                                        int pedidosEstimados = (int) (totalPedidoHistorico
+                                                        * (1.0 + porcentaje / 100.0));
 
                                         proyeccionesDAO.save(Proyecciones.builder()
                                                         .tipoProyeccion(tipo)
@@ -284,5 +289,14 @@ public class ProyeccionesServiceImpl implements ProyeccionesService {
                                                 .fechaFin(fin)
                                                 .unidadMedida("unidades")
                                                 .build()));
+        }
+
+        private int leerConfigInt(String clave, int fallback) {
+                try {
+                        String valor = configuracionService.obtenerValor(clave);
+                        return (valor != null && !valor.isBlank()) ? Integer.parseInt(valor.trim()) : fallback;
+                } catch (NumberFormatException e) {
+                        return fallback;
+                }
         }
 }

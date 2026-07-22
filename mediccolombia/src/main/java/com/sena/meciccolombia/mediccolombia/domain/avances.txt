@@ -59,6 +59,8 @@ vista proyecciones actualizada y corregida para las nuevas funcionalidades.
 4. encapsular codigo repetitivo reutilizable en un archivo e invocarlo. 
 5. crear vistas de configuracion (usuario, sistema) y tab de usuarios. 
 
+ultimos detalles: imagenes en la ubicacion correcta y graficos. (libreria)
+
 6. APLICACION TERMINADA.
 
 

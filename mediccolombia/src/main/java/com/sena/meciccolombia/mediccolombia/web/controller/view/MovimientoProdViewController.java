@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.sena.meciccolombia.mediccolombia.security.MyUserDetails;
 import com.sena.meciccolombia.mediccolombia.service.MovimientoProdService;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.MovimientoProdResponseDTO;
 
@@ -26,9 +28,11 @@ public class MovimientoProdViewController {
     }
 
     @GetMapping("/entradas")
-    public String listarEntradas(Model model) {
+    public String listarEntradas(Model model, Authentication auth) {
         List<MovimientoProdResponseDTO> entradas = movimientoProdService.listarPorSigno(1);
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
 
+        model.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
         model.addAttribute("movimientos", entradas);
         model.addAttribute("vistaActiva", "movimientos-entradas");
         model.addAttribute("titulo", "Entradas de Inventario");
@@ -43,9 +47,11 @@ public class MovimientoProdViewController {
     }
 
     @GetMapping("/salidas")
-    public String listarSalidas(Model model) {
+    public String listarSalidas(Model model, Authentication auth) {
         List<MovimientoProdResponseDTO> salidas = movimientoProdService.listarPorSigno(-1);
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
 
+        model.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
         model.addAttribute("movimientos", salidas);
         model.addAttribute("vistaActiva", "movimientos-salidas");
         model.addAttribute("titulo", "Salidas de Inventario");

@@ -5,12 +5,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.sena.meciccolombia.mediccolombia.security.MyUserDetails;
 import com.sena.meciccolombia.mediccolombia.service.AlertaInvService;
+import com.sena.meciccolombia.mediccolombia.service.ConfiguracionSistemaService;
 import com.sena.meciccolombia.mediccolombia.service.MovimientoProdService;
 import com.sena.meciccolombia.mediccolombia.service.ProductoService;
 import com.sena.meciccolombia.mediccolombia.service.ProveedorService;
@@ -25,15 +28,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DashboardViewController {
 
-    private static final int LIMITE_ULTIMOS_MOVIMIENTOS = 5;
-
     private final ProductoService productoService;
     private final ProveedorService proveedorService;
+    private final ConfiguracionSistemaService configuracionService;
     private final MovimientoProdService movimientoProdService;
     private final AlertaInvService alertaInvService;
 
     @GetMapping
-    public String dashboard(Model modelo) {
+    public String dashboard(Model modelo, Authentication auth) {
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
 
         int totalProductos = productoService.listarProductos().size();
         int productosStockBajo = alertaInvService.listarPorTipoYEstado("STOCK_BAJO", false).size();
@@ -41,12 +44,15 @@ public class DashboardViewController {
         int totalProveedores = proveedorService.listar().size();
 
         modelo.addAttribute("vistaActiva", "dashboard");
+        modelo.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
+
         modelo.addAttribute("fechaActualizacion", LocalDateTime.now());
         modelo.addAttribute("totalProductos", totalProductos);
         modelo.addAttribute("productosStockBajo", productosStockBajo);
         modelo.addAttribute("productosVencidos", productosVencidos);
         modelo.addAttribute("totalProveedores", totalProveedores);
-        modelo.addAttribute("ultimosMovimientos", obtenerUltimosMovimientos());
+        int limite = leerConfigInt("filas_dashboard", 5);
+        modelo.addAttribute("ultimosMovimientos", obtenerUltimosMovimientos(limite));
 
         if (productosVencidos > 0) {
             modelo.addAttribute("recomendacion",
@@ -67,7 +73,7 @@ public class DashboardViewController {
         return "dashboard/dashboard";
     }
 
-    private List<MovimientoDashboardItem> obtenerUltimosMovimientos() {
+    private List<MovimientoDashboardItem> obtenerUltimosMovimientos(int limite) {
 
         Stream<MovimientoDashboardItem> entradas = movimientoProdService.listarPorSigno(1).stream()
                 .map(m -> new MovimientoDashboardItem(m, true));
@@ -79,7 +85,7 @@ public class DashboardViewController {
                 .sorted(Comparator.comparing(
                         (MovimientoDashboardItem item) -> item.getMovimiento().getFechaMovimiento())
                         .reversed())
-                .limit(LIMITE_ULTIMOS_MOVIMIENTOS)
+                .limit(limite)
                 .toList();
     }
 
@@ -89,4 +95,13 @@ public class DashboardViewController {
         private final MovimientoProdResponseDTO movimiento;
         private final boolean entrada;
     }
+
+    private int leerConfigInt(String clave, int fallback) {
+    try {
+        String valor = configuracionService.obtenerValor(clave);
+        return (valor != null && !valor.isBlank()) ? Integer.parseInt(valor.trim()) : fallback;
+    } catch (NumberFormatException e) {
+        return fallback;
+    }
+}
 }

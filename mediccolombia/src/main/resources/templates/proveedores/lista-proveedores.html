@@ -12,7 +12,8 @@
             <main class="container-fluid p-4 my-5">
 
                 <!-- ENCABEZADO -->
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center align-items-md-center gap-3 mb-4">
+                <div
+                    class="d-flex flex-column flex-md-row justify-content-between align-items-center align-items-md-center gap-3 mb-4">
                     <h2 class="fw-bold text-dark mb-0">
                         <i class="fa-solid fa-truck me-2 text-primary"></i>Gestión de Proveedores
                     </h2>
@@ -70,7 +71,6 @@
                     </div>
                 </div>
 
-
                 <!-- Mensajes flash -->
                 <div th:if="${mensaje}" class="alert alert-success py-2 mb-3">
                     <i class="fa-solid fa-circle-check me-2"></i>
@@ -81,117 +81,121 @@
                     <span th:text="${error}"></span>
                 </div>
 
-                <!-- LISTA DE PROVEEDORES — tarjetas tipo resumen -->
+                <!-- LISTA DE PROVEEDORES — tarjetas tipo resumen CON PAGINACIÓN -->
                 <div th:if="${proveedores != null and !proveedores.isEmpty()}">
-                    <div th:each="prov : ${proveedores}" class="card shadow-sm border-0 mb-3 proveedor-card"
-                        th:attr="data-nombre=${prov.nombreProv}, data-nit=${prov.nit}">
+                    <div id="contenedorProveedores">
+                        <div th:each="prov : ${proveedores}" class="card shadow-sm border-0 mb-3 proveedor-card"
+                            th:attr="data-nombre=${#strings.toLowerCase(prov.nombreProv)}, data-nit=${#strings.toLowerCase(prov.nit)}">
 
-                        <div class="card-body p-0">
-                            <div class="row g-0 align-items-stretch">
+                            <div class="card-body p-0">
+                                <div class="row g-0 align-items-stretch">
 
-                                <!-- ── COLUMNA 1: Identidad del proveedor ── -->
-                                <div class="col-12 col-md-3 border-end p-4">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="rounded-circle bg-primary bg-opacity-10
-                                                    d-flex align-items-center justify-content-center me-3"
-                                            style="width:44px; height:44px; flex-shrink:0;">
-                                            <i class="fa-solid fa-building text-primary"></i>
+                                    <!-- ── COLUMNA 1: Identidad del proveedor ── -->
+                                    <div class="col-12 col-md-3 border-end p-4">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="rounded-circle bg-primary bg-opacity-10
+                                                        d-flex align-items-center justify-content-center me-3"
+                                                style="width:44px; height:44px; flex-shrink:0;">
+                                                <i class="fa-solid fa-building text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-0" th:text="${prov.nombreProv}"></h6>
+                                                <small class="text-muted">NIT: <span
+                                                        th:text="${prov.nit}"></span></small>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h6 class="fw-bold mb-0" th:text="${prov.nombreProv}"></h6>
-                                            <small class="text-muted">NIT: <span th:text="${prov.nit}"></span></small>
+                                        <div class="mt-2">
+                                            <span class="badge bg-info text-dark me-1">
+                                                <i class="fa-solid fa-tag me-1"></i>
+                                                <span th:text="${prov.categoriaPrincipal}"></span>
+                                            </span>
+                                            <span class="badge bg-light text-dark border">
+                                                <i class="fa-solid fa-boxes-stacked me-1"></i>
+                                                <span th:text="${prov.totalProductos}"></span> producto(s)
+                                            </span>
                                         </div>
                                     </div>
-                                    <div class="mt-2">
-                                        <!-- Categoría principal calculada en el controller -->
-                                        <span class="badge bg-info text-dark me-1">
-                                            <i class="fa-solid fa-tag me-1"></i>
-                                            <span th:text="${prov.categoriaPrincipal}"></span>
-                                        </span>
-                                        <span class="badge bg-light text-dark border">
-                                            <i class="fa-solid fa-boxes-stacked me-1"></i>
-                                            <span th:text="${prov.totalProductos}"></span> producto(s)
-                                        </span>
+
+                                    <!-- ── COLUMNA 2: Último pedido ── -->
+                                    <div class="col-12 col-md-6 p-4">
+                                        <p class="text-muted small text-uppercase fw-bold mb-2">
+                                            <i class="fa-solid fa-clock-rotate-left me-1"></i>Último pedido
+                                        </p>
+
+                                        <div th:if="${prov.ultimoPedidoId != null}">
+                                            <div class="row g-2">
+                                                <div class="col-6 col-md-3">
+                                                    <p class="text-muted small mb-0">N° Pedido</p>
+                                                    <p class="fw-bold mb-0">
+                                                        #<span th:text="${prov.ultimoPedidoId}"></span>
+                                                    </p>
+                                                </div>
+                                                <div class="col-6 col-md-3">
+                                                    <p class="text-muted small mb-0">Fecha</p>
+                                                    <p class="fw-bold mb-0 small"
+                                                        th:text="${#temporals.format(prov.ultimoPedidoFecha, 'dd/MM/yyyy')}">
+                                                    </p>
+                                                </div>
+                                                <div class="col-6 col-md-3">
+                                                    <p class="text-muted small mb-0">Estado</p>
+                                                    <span
+                                                        th:classappend="
+                                                        ${prov.ultimoPedidoEstado == 'Completado/Recibido'} ? 'bg-success' :
+                                                        (${prov.ultimoPedidoEstado == 'Cancelado' or
+                                                           prov.ultimoPedidoEstado == 'Rechazado' or
+                                                           prov.ultimoPedidoEstado == 'Devuelto'} ? 'bg-danger' : 'bg-warning text-dark')"
+                                                        class="badge small" th:text="${prov.ultimoPedidoEstado}"></span>
+                                                </div>
+                                                <div class="col-6 col-md-3 text-center">
+                                                    <p class="text-muted small mb-0">Total</p>
+                                                    <p class="fw-bold mb-0 text-success small">
+                                                        $&nbsp;<span
+                                                            th:text="${#numbers.formatDecimal(prov.ultimoPedidoTotal, 0, 'COMMA', 0, 'POINT')}"></span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3">
+                                                <a th:href="@{'/pedidos/' + ${prov.ultimoPedidoId}}"
+                                                    class="btn btn-sm btn-outline-secondary">
+                                                    <i class="fa-solid fa-arrow-right me-1"></i>
+                                                    Ver detalle del pedido
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div th:if="${prov.ultimoPedidoId == null}" class="text-muted small fst-italic">
+                                            <i class="fa-solid fa-inbox me-1"></i>
+                                            Sin pedidos registrados aún
+                                        </div>
                                     </div>
+
+                                    <!-- ── COLUMNA 3: Acciones ── -->
+                                    <div class="col-12 col-md-3 p-4 d-flex flex-column
+                                                justify-content-center align-items-end gap-2
+                                                border-start">
+                                        <a th:href="@{'/proveedores/' + ${prov.id}}"
+                                            class="btn btn-outline-primary btn-sm w-100">
+                                            <i class="fa-solid fa-eye me-1"></i> Ver detalle
+                                        </a>
+                                        <a th:href="@{'/proveedores/' + ${prov.id} + '/editar'}"
+                                            class="btn btn-outline-secondary btn-sm w-100">
+                                            <i class="fa-solid fa-pen me-1"></i> Editar
+                                        </a>
+                                        <button th:if="${esAdmin}" type="button" class="btn btn-sm btn-outline-danger"
+                                            th:onclick="prepararEliminar([[${prov.id}]], [[${prov.nombreProv}]])">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
+
                                 </div>
-
-                                <!-- ── COLUMNA 2: Último pedido ── -->
-                                <div class="col-12 col-md-6 p-4">
-                                    <p class="text-muted small text-uppercase fw-bold mb-2">
-                                        <i class="fa-solid fa-clock-rotate-left me-1"></i>Último pedido
-                                    </p>
-
-                                    <!-- Con pedido -->
-                                    <div th:if="${prov.ultimoPedidoId != null}">
-                                        <div class="row g-2">
-                                            <div class="col-6 col-md-3">
-                                                <p class="text-muted small mb-0">N° Pedido</p>
-                                                <p class="fw-bold mb-0">
-                                                    #<span th:text="${prov.ultimoPedidoId}"></span>
-                                                </p>
-                                            </div>
-                                            <div class="col-6 col-md-3">
-                                                <p class="text-muted small mb-0">Fecha</p>
-                                                <p class="fw-bold mb-0 small"
-                                                    th:text="${#temporals.format(prov.ultimoPedidoFecha, 'dd/MM/yyyy')}">
-                                                </p>
-                                            </div>
-                                            <div class="col-6 col-md-3">
-                                                <p class="text-muted small mb-0">Estado</p>
-                                                <span
-                                                    th:classappend="
-                                                    ${prov.ultimoPedidoEstado == 'Completado/Recibido'} ? 'bg-success' :
-                                                    (${prov.ultimoPedidoEstado == 'Cancelado' or
-                                                       prov.ultimoPedidoEstado == 'Rechazado' or
-                                                       prov.ultimoPedidoEstado == 'Devuelto'} ? 'bg-danger' : 'bg-warning text-dark')"
-                                                    class="badge small" th:text="${prov.ultimoPedidoEstado}"></span>
-                                            </div>
-                                            <div class="col-6 col-md-3">
-                                                <p class="text-muted small mb-0">Total</p>
-                                                <p class="fw-bold mb-0 text-success small">
-                                                    $&nbsp;<span
-                                                        th:text="${#numbers.formatDecimal(prov.ultimoPedidoTotal, 0, 'COMMA', 0, 'POINT')}"></span>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <!-- Botón al detalle del pedido -->
-                                        <div class="mt-3">
-                                            <a th:href="@{'/pedidos/' + ${prov.ultimoPedidoId}}"
-                                                class="btn btn-sm btn-outline-secondary">
-                                                <i class="fa-solid fa-arrow-right me-1"></i>
-                                                Ver detalle del pedido
-                                            </a>
-                                        </div>
-                                    </div>
-
-                                    <!-- Sin pedidos -->
-                                    <div th:if="${prov.ultimoPedidoId == null}" class="text-muted small fst-italic">
-                                        <i class="fa-solid fa-inbox me-1"></i>
-                                        Sin pedidos registrados aún
-                                    </div>
-                                </div>
-
-                                <!-- ── COLUMNA 3: Acciones ── -->
-                                <div class="col-12 col-md-3 p-4 d-flex flex-column
-                                            justify-content-center align-items-end gap-2
-                                            border-start">
-                                    <a th:href="@{'/proveedores/' + ${prov.id}}"
-                                        class="btn btn-outline-primary btn-sm w-100">
-                                        <i class="fa-solid fa-eye me-1"></i> Ver detalle
-                                    </a>
-                                    <a th:href="@{'/proveedores/' + ${prov.id} + '/editar'}"
-                                        class="btn btn-outline-secondary btn-sm w-100">
-                                        <i class="fa-solid fa-pen me-1"></i> Editar
-                                    </a>
-                                    <button th:if="${esAdmin}" type="button" class="btn btn-sm btn-outline-danger"
-                                        th:onclick="prepararEliminar([[${prov.id}]], [[${prov.nombreProv}]])">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </div>
-
                             </div>
                         </div>
                     </div>
+
+                    <!-- PAGINACIÓN -->
+                    <nav aria-label="Paginación de proveedores">
+                        <ul id="paginacionProveedores" class="pagination-premium"></ul>
+                    </nav>
                 </div>
 
                 <!-- Sin proveedores -->
@@ -206,6 +210,10 @@
 
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
+
+    <link rel="stylesheet" th:href="@{/css/paginacion.css}">
+
+    <script th:src="@{/js/general/paginacion.js}"></script>
 
     <!-- MODAL CONFIRMACIÓN ELIMINAR -->
     <div class="modal fade" id="modalEliminar" tabindex="-1">
@@ -234,22 +242,27 @@
             </div>
         </div>
     </div>
+
     <script>
         function prepararEliminar(id, nombre) {
             document.getElementById('nombreProveedorModal').textContent = nombre;
             document.getElementById('formEliminar').action = `/proveedores/${id}/eliminar`;
-
             new bootstrap.Modal(document.getElementById('modalEliminar')).show();
         }
-
-        // Filtro en cliente sobre las tarjetas
-        document.getElementById('filtroBuscar').addEventListener('input', function () {
-            const texto = this.value.toLowerCase();
-            document.querySelectorAll('.proveedor-card').forEach(card => {
-                const nombre = (card.dataset.nombre || '').toLowerCase();
-                const nit = (card.dataset.nit || '').toLowerCase();
-                card.style.display =
-                    nombre.includes(texto) || nit.includes(texto) ? '' : 'none';
+        document.addEventListener('DOMContentLoaded', function () {
+            inicializarPaginacionYBusqueda({
+                tablaId: 'contenedorProveedores',
+                paginacionId: 'paginacionProveedores',
+                inputId: 'filtroBuscar',
+                selectorItem: '.proveedor-card',
+                filasPorPagina: getFilasPorPagina(),
+                filtroAdicional: function (tarjeta) {
+                    const texto = document.getElementById('filtroBuscar').value.trim().toLowerCase();
+                    if (!texto) return true;
+                    const nombre = tarjeta.dataset.nombre || '';
+                    const nit = tarjeta.dataset.nit || '';
+                    return nombre.includes(texto) || nit.includes(texto);
+                }
             });
         });
     </script>

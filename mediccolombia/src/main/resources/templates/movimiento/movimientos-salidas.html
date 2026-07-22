@@ -172,7 +172,7 @@
                 btnLimpiarId: 'limpiarFiltros',
                 inputsAdicional: ['fechaDesde', 'fechaHasta'],
                 inputsLimpiar: ['fechaDesde', 'fechaHasta'],
-                filasPorPagina: 5,
+                filasPorPagina: getFilasPorPagina(),
                 filtroAdicional: function (fila) {
                     const desde = document.getElementById('fechaDesde').value;
                     const hasta = document.getElementById('fechaHasta').value;

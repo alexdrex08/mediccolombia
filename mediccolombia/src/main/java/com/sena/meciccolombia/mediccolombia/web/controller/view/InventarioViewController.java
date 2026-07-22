@@ -20,12 +20,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.sena.meciccolombia.mediccolombia.security.MyUserDetails;
 import com.sena.meciccolombia.mediccolombia.service.AlertaInvService;
 import com.sena.meciccolombia.mediccolombia.service.CategoriaService;
+import com.sena.meciccolombia.mediccolombia.service.ConfiguracionSistemaService;
 import com.sena.meciccolombia.mediccolombia.service.MovimientoProdService;
 import com.sena.meciccolombia.mediccolombia.service.ProductoService;
 import com.sena.meciccolombia.mediccolombia.service.ReporteInvService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.ProductoCreateRequestDto;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.ProductoUpdateRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.AlertaInvResponseDTO;
+import com.sena.meciccolombia.mediccolombia.web.dto.response.CategoriaDetalleDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoDetalleDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoHistorialDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoResumenDTO;
@@ -60,6 +62,9 @@ public class InventarioViewController {
     @Autowired
     private DetallePedidoDAO detallePedidoDAO;
 
+    @Autowired
+    private ConfiguracionSistemaService configuracionService;
+
     // ─────────────────────────────────────────────────────────────
     // LISTADO DE PRODUCTOS
     // ─────────────────────────────────────────────────────────────
@@ -82,7 +87,8 @@ public class InventarioViewController {
         modelo.addAttribute("categorias", categoriaService.listarCategorias());
         modelo.addAttribute("totalAlertas", alertaInvService.listarIsResueltaFalse().size());
         modelo.addAttribute("alertasCriticas", alertaInvService.listarPorTipoYEstado("STOCK_BAJO", false).size());
-        modelo.addAttribute("proximosAVencer", productoService.productosProximosAVencer(7).size());
+        int diasAlerta = leerConfigInt("dias_alerta_vencimiento", 7);
+        modelo.addAttribute("proximosAVencer", productoService.productosProximosAVencer(diasAlerta).size());
         modelo.addAttribute("totalReportes", reporteInvService.listar().size());
         modelo.addAttribute("totalEntradas", movimientoProdService.listarPorSigno(1).size());
         modelo.addAttribute("totalSalidas", movimientoProdService.listarPorSigno(-1).size());
@@ -137,7 +143,7 @@ public class InventarioViewController {
         return "inventario/producto-detalle";
     }
 
-    // ─── editarProducto GET  ─────────────
+    // ─── editarProducto GET ─────────────
     @GetMapping("/editar/{idProducto}")
     public String editarProducto(@PathVariable Long idProducto, Model modelo, Authentication auth) {
         MyUserDetails user = (MyUserDetails) auth.getPrincipal();
@@ -214,7 +220,8 @@ public class InventarioViewController {
         MyUserDetails user = (MyUserDetails) auth.getPrincipal();
 
         List<AlertaInvResponseDTO> alertasStockBajo = alertaInvService.listarPorTipoYEstado("STOCK_BAJO", false);
-        List<AlertaInvResponseDTO> alertasProximasVencer = alertaInvService.listarPorTipoYEstado("PROXIMO_A_VENCER", false);
+        List<AlertaInvResponseDTO> alertasProximasVencer = alertaInvService.listarPorTipoYEstado("PROXIMO_A_VENCER",
+                false);
         List<AlertaInvResponseDTO> alertasVencidas = alertaInvService.listarPorTipoYEstado("PRODUCTO_VENCIDO", false);
 
         modelo.addAttribute("alertasStockBajo", alertasStockBajo);
@@ -229,7 +236,7 @@ public class InventarioViewController {
         modelo.addAttribute("vistaActiva", "alertas");
 
         List<AlertaInvResponseDTO> alertasResueltas = alertaInvService.listarIsResueltaTrue();
-        modelo.addAttribute("alertasResueltas",alertasResueltas);
+        modelo.addAttribute("alertasResueltas", alertasResueltas);
 
         return "inventario/alertas";
     }
@@ -237,12 +244,13 @@ public class InventarioViewController {
     @PostMapping("/alertas/{id}/eliminar")
     public String eliminarAlerta(@PathVariable Long id,
             Authentication auth,
+            Model model,
             RedirectAttributes redirectAttributes) {
 
         MyUserDetails user = (MyUserDetails) auth.getPrincipal();
         if (!"ADMIN".equals(user.getRol())) {
             redirectAttributes.addFlashAttribute("error", "No tienes permisos para eliminar alertas.");
-            return "redirect:/productos/alertas"; 
+            return "redirect:/productos/alertas";
         }
         try {
             alertaInvService.resolverAlerta(id);
@@ -251,6 +259,7 @@ public class InventarioViewController {
             redirectAttributes.addFlashAttribute("error",
                     "Error al eliminar la alerta: " + e.getMessage());
         }
+        model.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
         return "redirect:/productos/alertas";
     }
 
@@ -259,13 +268,22 @@ public class InventarioViewController {
     // ─────────────────────────────────────────────────────────────
 
     @GetMapping("/nuevo")
-    public String nuevoProducto(Model modelo, Authentication auth) {
+    public String nuevoProducto(Model model, Authentication auth) {
 
-        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
+        List<CategoriaDetalleDTO> categorias = categoriaService.listarCategorias();
+        model.addAttribute("categorias", categorias);
 
-        modelo.addAttribute("categorias", categoriaService.listarCategorias());
-        modelo.addAttribute("nombreUsuario", user.getNombre());
-        modelo.addAttribute("vistaActiva", "inventario-nuevo");
+        model.addAttribute("stockMinimoDefault", leerConfigInt("stock_minimo_default", 10));
+        model.addAttribute("stockMaximoDefault", leerConfigInt("stock_maximo_default", 100));
+        model.addAttribute("vistaActiva", "inventario-nuevo");
+
+        if (auth != null && auth.isAuthenticated()) {
+            MyUserDetails user = (MyUserDetails) auth.getPrincipal();
+
+            model.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
+            model.addAttribute("usuarioId", user.getId());
+            model.addAttribute("nombreUsuario", user.getNombre());
+        }
 
         return "inventario/crear-producto";
     }
@@ -307,5 +325,14 @@ public class InventarioViewController {
         }
 
         return "redirect:/productos";
+    }
+
+    private int leerConfigInt(String clave, int fallback) {
+        try {
+            String valor = configuracionService.obtenerValor(clave);
+            return (valor != null && !valor.isBlank()) ? Integer.parseInt(valor.trim()) : fallback;
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
     }
 }

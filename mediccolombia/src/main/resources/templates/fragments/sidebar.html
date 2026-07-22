@@ -1,4 +1,4 @@
-<div th:fragment="menu" class="bg-dark text-white border-end d-flex flex-column justify-content-between"
+<div th:fragment="menu" class="bg-dark text-white d-flex flex-column justify-content-between"
     id="sidebar-wrapper" style="min-height:100vh;">
 
     <div>
@@ -63,15 +63,14 @@
                 <i class="fa-solid fa-cash-register me-2"></i> Ventas
                 <i class="fa-solid fa-caret-up fa-flip-vertical float-end"></i>
             </a>
-            <div class="collapse ms-3" id="collapseVentas" 
+            <div class="collapse ms-3" id="collapseVentas"
                 th:classappend="${vistaActiva == 'ventas' or vistaActiva == 'ventas-nueva' or vistaActiva == 'ventas-lista' or vistaActiva == 'clientes-lista' or vistaActiva == 'clientes-nuevo'} ? 'show' : ''">
                 <a th:href="@{/ventas/nueva-venta}"
                     class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
                     th:classappend="${vistaActiva == 'ventas-nueva'} ? 'active' : ''">
                     <i class="fa-solid fa-cart-plus me-2"></i> Nueva Venta (POS)
                 </a>
-                <a th:href="@{/ventas}"
-                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                <a th:href="@{/ventas}" class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
                     th:classappend="${vistaActiva == 'ventas-lista'} ? 'active' : ''">
                     <i class="fa-solid fa-clock-rotate-left me-2"></i> Historial de Ventas
                 </a>
@@ -79,8 +78,7 @@
                 <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase"
                     style="font-size:0.7rem; letter-spacing:0.05em;">Clientes</span>
 
-                <a th:href="@{/clientes}"
-                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                <a th:href="@{/clientes}" class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
                     th:classappend="${vistaActiva == 'clientes-lista'} ? 'active' : ''">
                     <i class="fa-solid fa-users me-2"></i> Ver Clientes
                 </a>
@@ -115,8 +113,7 @@
                 </a>
                 <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase"
                     style="font-size:0.7rem; letter-spacing:0.05em;">Pedidos</span>
-                <a th:href="@{/pedidos}"
-                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                <a th:href="@{/pedidos}" class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
                     th:classappend="${vistaActiva == 'pedidos-lista'} ? 'active' : ''">
                     <i class="fa-solid fa-list me-2"></i> Ver Pedidos
                 </a>
@@ -196,12 +193,11 @@
             </a>
             <div class="collapse ms-3" id="collapseUsuarios"
                 th:classappend="${vistaActiva == 'usuarios' or vistaActiva == 'usuarios-lista' or vistaActiva == 'usuarios-nuevo'} ? 'show' : ''">
-                <a th:href="@{/usuarios}"
-                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                <a th:href="@{/usuarios}" class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
                     th:classappend="${vistaActiva == 'usuarios-lista'} ? 'active' : ''">
                     <i class="fa-solid fa-users me-2"></i> Ver Usuarios
                 </a>
-                <a th:href="@{/usuarios/nuevo}"
+                <a th:if="${esAdmin}" th:href="@{/usuarios/nuevo}"
                     class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
                     th:classappend="${vistaActiva == 'usuarios-nuevo'} ? 'active' : ''">
                     <i class="fa-solid fa-user-plus me-2"></i> Registrar Usuario
@@ -211,15 +207,15 @@
             <!-- CONFIGURACIÓN -->
             <a href="#collapseConfig" class="list-group-item list-group-item-action bg-dark text-white p-4"
                 data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseConfig"
-                th:classappend="${vistaActiva == 'configuracion' or vistaActiva == 'configuracion-params'} ? 'active-dad' : ''">
+                th:classappend="${vistaActiva == 'configuracion' or vistaActiva == 'configuracion-sistema'} ? 'active-dad' : ''">
                 <i class="fa-solid fa-gear me-2"></i> Configuración
                 <i class="fa-solid fa-caret-up fa-flip-vertical float-end"></i>
             </a>
             <div class="collapse ms-3" id="collapseConfig"
                 th:classappend="${vistaActiva == 'configuracion' or vistaActiva == 'configuracion-params'} ? 'show' : ''">
-                <a th:href="@{/configuracion}"
+                <a th:href="@{/configuracion/sistema}"
                     class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
-                    th:classappend="${vistaActiva == 'configuracion-params'} ? 'active' : ''">
+                    th:classappend="${vistaActiva == 'configuracion'} ? 'active' : ''">
                     <i class="fa-solid fa-sliders me-2"></i> Parámetros del Sistema
                 </a>
             </div>
@@ -229,7 +225,9 @@
 
     <div class="text-center mt-auto border-top border-secondary p-3 menu-img">
         <img th:src="@{/img/logo_prototipo.png}" alt="Logo" class="img-fluid mb-2" style="max-width:80px;">
-        <p class="small text-secondary fst-italic m-0">"Control y confianza en cada registro"</p>
+        <p class="small text-secondary fst-italic m-0">
+            "<span th:text="${sloganEmpresa}">Control y confianza en cada registro</span>"
+        </p>
     </div>
 
 </div>

@@ -17,22 +17,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
-
 @RestController
 @RequestMapping("/api/movimiento_prod")
 @RequiredArgsConstructor
 public class MovimientoProdController {
 
     private final MovimientoProdService movimientoProdService;
+
     @GetMapping
     public ResponseEntity<List<MovimientoProdResponseDTO>> listarMovimientos() {
         List<MovimientoProdResponseDTO> movientos = movimientoProdService.listar();
         return ResponseEntity.ok(movientos);
     }
+
     @PostMapping
     public ResponseEntity<MovimientoProdResponseDTO> crear(@RequestBody MovimientoProdRequestDTO dto) {
-      return ResponseEntity.ok(movimientoProdService.registrarMovimiento(dto));
+        return ResponseEntity.ok(movimientoProdService.registrarMovimiento(dto));
     }
 
     @GetMapping("/{idProducto}/producto")
@@ -44,12 +44,17 @@ public class MovimientoProdController {
     public ResponseEntity<List<MovimientoProdResponseDTO>> buscarPorUsuario(@PathVariable Long idUsuario) {
         return ResponseEntity.ok(movimientoProdService.listarPorUsuario(idUsuario));
     }
+
     @GetMapping("/{idTipoMovimiento}/tipo_movimiento")
-    public ResponseEntity<List<MovimientoProdResponseDTO>> buscarPorTipoMovimiento(@PathVariable Long idTipoMovimiento) {
+    public ResponseEntity<List<MovimientoProdResponseDTO>> buscarPorTipoMovimiento(
+            @PathVariable Long idTipoMovimiento) {
         return ResponseEntity.ok(movimientoProdService.listarPorTipoMovimiento(idTipoMovimiento));
     }
-    
-    
-    
-    
+
+    @GetMapping("/signo/{signo}")
+    public ResponseEntity<List<MovimientoProdResponseDTO>> listarPorSigno(
+            @PathVariable int signo) {
+        return ResponseEntity.ok(movimientoProdService.listarPorSigno(signo));
+    }
+
 }

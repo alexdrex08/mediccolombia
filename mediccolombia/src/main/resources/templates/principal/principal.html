@@ -10,9 +10,8 @@
         <div class="page-content-wrapper">
             <main class="container-fluid py-5 px-4" id="inicio-container">
 
-                <!-- SALUDO INICIAL AL USUARIO -->
                 <section class="text-center mb-5">
-                    <h1 class="fw-bold display-5 text-primary mb-3">¡Bienvenido a <span class="text-dark">Asuras
+                    <h1 class="fw-bold display-5 text-primary mb-3">¡Bienvenido <strong th:text="${usuario}" class="text-dark"></strong> a <span class="text-dark">Asuras
                             Col</span>!
                     </h1>
                     <p class="lead text-muted">
@@ -21,7 +20,6 @@
                     </p>
                 </section>
 
-                <!-- INTRODUCCION Y BIENVENIDA AL SITIO -->
                 <section class="row justify-content-center mb-5">
                     <div class="col-lg-8">
                         <div class="card border-0 shadow-sm bg-light p-4">
@@ -101,7 +99,6 @@
                     </div>
                 </section>
 
-                <!-- BLOQUE DE INFORMACIÓN Y MISIÓN DE LA APLICACION -->
                 <section class="row align-items-center my-5">
                     <div class="col-md-6 mb-4 mb-md-0">
                         <img th:src="@{/img/ref.jpeg}" alt="Vista previa del sistema"

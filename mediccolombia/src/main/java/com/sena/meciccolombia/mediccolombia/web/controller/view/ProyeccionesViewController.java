@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.sena.meciccolombia.mediccolombia.security.MyUserDetails;
 import com.sena.meciccolombia.mediccolombia.service.ProyeccionesService;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.ProyeccionesResponseDTO;
 
@@ -26,7 +28,8 @@ public class ProyeccionesViewController {
     private ProyeccionesService proyeccionesService;
 
     @GetMapping
-    public String verProyecciones(Model model) {
+    public String verProyecciones(Model model, Authentication auth) {
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
 
         List<ProyeccionesResponseDTO> historial = proyeccionesService.listar();
 
@@ -34,6 +37,7 @@ public class ProyeccionesViewController {
         int totalMasVendidos = proyeccionesService.listarPorTipo(1L).size();
 
         model.addAttribute("vistaActiva", "proyecciones");
+        model.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
         model.addAttribute("historial", historial);
         model.addAttribute("totalHistorial", totalHistorial);
         model.addAttribute("totalMasVendidos", totalMasVendidos);
@@ -48,7 +52,10 @@ public class ProyeccionesViewController {
 
 
     @GetMapping("/manual")
-    public String verFormularioManual(Model model) {
+    public String verFormularioManual(Model model, Authentication auth) {
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
+
+        model.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
         model.addAttribute("vistaActiva", "proyecciones-manual");
         return "proyecciones/nueva-proyeccion";
     }

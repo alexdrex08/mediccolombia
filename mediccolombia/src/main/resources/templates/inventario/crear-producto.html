@@ -119,7 +119,8 @@
                                             <i class="fa-solid fa-triangle-exclamation text-warning"></i>
                                         </span>
                                         <input type="number" class="form-control" id="stockMinimo" name="stockMinimo"
-                                            placeholder="0" required min="0" step="1">
+                                            required min="0" step="1" th:value="${stockMinimoDefault}"
+                                            th:placeholder="${stockMinimoDefault}">
                                     </div>
                                     <div class="form-text">Umbral para generar alerta de stock bajo.</div>
                                 </div>
@@ -133,7 +134,8 @@
                                             <i class="fa-solid fa-arrow-up text-success"></i>
                                         </span>
                                         <input type="number" class="form-control" id="stockMaximo" name="stockMaximo"
-                                            placeholder="0" required min="1" step="1">
+                                            required min="1" step="1" th:value="${stockMaximoDefault}"
+                                            th:placeholder="${stockMaximoDefault}">
                                     </div>
                                     <div class="form-text">Capacidad máxima permitida.</div>
                                 </div>

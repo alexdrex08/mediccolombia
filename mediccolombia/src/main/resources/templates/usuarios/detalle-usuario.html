@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Detalle de Usuario - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5">
+
+                <!-- ENCABEZADO -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-0">
+                            <i class="fa-solid fa-user text-primary me-2"></i>Detalle de Usuario
+                        </h2>
+                        <p class="text-muted small mt-1 mb-0" th:text="${usuario.nombre}"></p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a th:if="${esAdmin}" th:href="@{/usuarios/{id}/editar(id=${usuario.id})}"
+                            class="btn btn-outline-secondary btn-sm">
+                            <i class="fa-solid fa-pen me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Editar</span>
+                        </a>
+                        <a th:href="@{/usuarios}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fa-solid fa-arrow-left me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Volver</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- FLASH -->
+                <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show shadow-sm">
+                    <i class="fa-solid fa-circle-check me-2"></i><span th:text="${mensaje}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i><span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- MÉTRICAS -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <div class="card shadow-sm border-0 p-3 text-center h-100">
+                            <i class="fa-solid fa-clock-rotate-left fa-2x text-primary mb-2"></i>
+                            <div class="fw-bold fs-3 text-primary" th:text="${totalMovimientos}"></div>
+                            <p class="text-muted small mb-0">Movimientos registrados</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card shadow-sm border-0 p-3 text-center h-100">
+                            <i class="fa-solid fa-receipt fa-2x text-success mb-2"></i>
+                            <div class="fw-bold fs-3 text-success" th:text="${totalVentas}"></div>
+                            <p class="text-muted small mb-0">Ventas procesadas</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card shadow-sm border-0 p-3 text-center h-100">
+                            <i class="fa-solid fa-circle-user fa-2x text-secondary mb-2"></i>
+                            <div class="fw-bold fs-5 mt-1">
+                                <span class="badge fs-6" th:classappend="${usuario.rol == 'ADMIN'} ? 'bg-danger' :
+                                                 (${usuario.rol == 'FARMACEUTICO'} ? 'bg-primary' : 'bg-secondary')"
+                                    th:text="${usuario.rol}"></span>
+                            </div>
+                            <p class="text-muted small mb-0 mt-1">Rol del sistema</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+
+                    <!-- COLUMNA IZQUIERDA -->
+                    <div class="col-lg-6">
+
+                        <!-- Información general -->
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-header bg-white border-bottom py-3">
+                                <h6 class="fw-bold mb-0">
+                                    <i class="fa-solid fa-id-card text-primary me-2"></i>
+                                    Información general
+                                </h6>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <p class="text-muted small mb-1 text-uppercase fw-bold">Nombre completo</p>
+                                        <p class="fw-bold mb-0 fs-6" th:text="${usuario.nombre}"></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="text-muted small mb-1 text-uppercase fw-bold">Correo</p>
+                                        <p class="mb-0" th:text="${usuario.correo}"></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="text-muted small mb-1 text-uppercase fw-bold">Rol</p>
+                                        <span class="badge"
+                                            th:classappend="${usuario.rol == 'ADMIN'} ? 'bg-danger' :
+                                                         (${usuario.rol == 'FARMACEUTICO'} ? 'bg-primary' : 'bg-secondary')"
+                                            th:text="${usuario.rol}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Historial de estados -->
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between">
+                                <h6 class="fw-bold mb-0">
+                                    <i class="fa-solid fa-timeline text-warning me-2"></i>
+                                    Historial de estados
+                                </h6>
+                                <span class="badge bg-secondary"
+                                    th:text="${#lists.size(usuario.estadoUsuario)} + ' estado(s)'"></span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div th:if="${usuario.estadoUsuario == null or usuario.estadoUsuario.isEmpty()}"
+                                    class="text-center text-muted py-4 small">
+                                    Sin historial de estados.
+                                </div>
+                                <table th:unless="${usuario.estadoUsuario == null or usuario.estadoUsuario.isEmpty()}"
+                                    class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="ps-3">Estado</th>
+                                            <th>Desde</th>
+                                            <th>Hasta</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="e : ${usuario.estadoUsuario}">
+                                            <td class="ps-3">
+                                                <span class="badge"
+                                                    th:classappend="${#strings.toLowerCase(e.tipoEstado).contains('activ')} ? 'bg-success' : 'bg-secondary'"
+                                                    th:text="${e.tipoEstado}"></span>
+                                            </td>
+                                            <td class="small text-muted"
+                                                th:text="${e.fechaInicio != null} ? ${#temporals.format(e.fechaInicio, 'dd/MM/yyyy')} : '—'">
+                                            </td>
+                                            <td class="small text-muted"
+                                                th:text="${e.fechaFin != null} ? ${#temporals.format(e.fechaFin, 'dd/MM/yyyy')} : 'Actual'">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Cambiar estado (solo ADMIN) -->
+                        <div th:if="${esAdmin}" class="card shadow-sm border-0">
+                            <div class="card-header bg-white border-bottom py-3">
+                                <h6 class="fw-bold mb-0">
+                                    <i class="fa-solid fa-arrows-rotate text-info me-2"></i>
+                                    Cambiar estado
+                                </h6>
+                            </div>
+                            <div class="card-body p-4">
+                                <form th:action="@{/usuarios/{id}/estado(id=${usuario.id})}" method="post">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">
+                                                Nuevo estado <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="idTipoEstado" class="form-select" required>
+                                                <option value="">Selecciona...</option>
+                                                <option th:each="te : ${tiposEstado}" th:value="${te.id}"
+                                                    th:text="${te.nombreTipo}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Fecha inicio</label>
+                                            <input type="datetime-local" class="form-control" name="fechaInicio"
+                                                th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd''T''HH:mm')}">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">
+                                                Observación
+                                            </label>
+                                            <input type="text" class="form-control" name="observacion"
+                                                placeholder="Motivo del cambio de estado...">
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-info text-white">
+                                                <i class="fa-solid fa-floppy-disk me-1"></i>
+                                                Registrar cambio
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- COLUMNA DERECHA: Actividad reciente -->
+                    <div class="col-lg-6">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between">
+                                <h6 class="fw-bold mb-0">
+                                    <i class="fa-solid fa-bolt text-warning me-2"></i>
+                                    Actividad reciente
+                                </h6>
+                                <span class="badge bg-primary"
+                                    th:text="${totalMovimientos} + ' movimiento(s) total'"></span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div th:if="${actividadReciente == null or actividadReciente.isEmpty()}"
+                                    class="text-center text-muted py-5 small">
+                                    <i class="fa-solid fa-inbox fa-2x mb-2 d-block text-muted"></i>
+                                    Sin actividad registrada todavía.
+                                </div>
+                                <table th:unless="${actividadReciente == null or actividadReciente.isEmpty()}"
+                                    class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="ps-3">Fecha</th>
+                                            <th>Producto</th>
+                                            <th>Tipo</th>
+                                            <th class="text-center">Cant.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="m : ${actividadReciente}">
+                                            <td class="ps-3 small text-nowrap" th:text="${m.fechaMovimiento != null} ?
+                                                ${#temporals.format(m.fechaMovimiento, 'dd/MM/yyyy HH:mm')} : '—'">
+                                            </td>
+                                            <td class="small fw-semibold" th:text="${m.nombreProducto}"></td>
+                                            <td>
+                                                <span class="badge bg-secondary small"
+                                                    th:text="${m.tipoMovimiento}"></span>
+                                            </td>
+                                            <td class="text-center fw-bold" th:text="${m.cantidad}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div th:if="${totalMovimientos > actividadReciente.size()}"
+                                class="card-footer bg-transparent text-center py-2">
+                                <small class="text-muted">
+                                    Mostrando los últimos
+                                    <strong th:text="${actividadReciente.size()}"></strong>
+                                    de
+                                    <strong th:text="${totalMovimientos}"></strong>
+                                    movimientos
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </main>
+        </div>
+    </div>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+</body>
+
+</html>

@@ -2,7 +2,21 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
     <script th:src="@{/js/main.js}"></script>
     <script th:src="@{/js/menu.js}"></script>
     <script th:src="@{/js/mostrarMensaje.js}"></script>
+    <script th:src="@{/js/tema.js}"></script>
+
+
+    <script th:inline="javascript">
+        window.MC_CONFIG = {
+            itemsPorPagina: /*[[${ itemsPorPagina?: 5 }]]*/0,
+            filasDashboard: /*[[${ filasDashboard?: 5 }]]*/0,
+            nombreEmpresa: /*[[${ nombreEmpresa?: 'Asuras Col' }]]*/ null,
+            version: /*[[${ versionSistema?: '1.0.0' }]]*/ null
+        };
+    </script>
 </div>

@@ -293,11 +293,11 @@
                 paginacionId: 'paginacion',
                 inputId: 'buscarNombre',
                 filtrosSelect: [
-                    { id: 'filtroCategoria', attr: 'categoria' },
+                    { id: 'filtroCategoria', attr: 'tipo' },
                     { id: 'filtroEstado', attr: 'estado' }
                 ],
                 btnLimpiarId: 'limpiarFiltros',
-                filasPorPagina: 5
+                filasPorPagina: getFilasPorPagina()
             });
         });
 

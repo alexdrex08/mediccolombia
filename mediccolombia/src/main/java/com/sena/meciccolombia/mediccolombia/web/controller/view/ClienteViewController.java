@@ -120,7 +120,10 @@ public class ClienteViewController {
     // GET /clientes/nuevo
     // ─────────────────────────────────────────────
     @GetMapping("/nuevo")
-    public String nuevoCliente(Model modelo) {
+    public String nuevoCliente(Model modelo, Authentication auth) {
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
+
+        modelo.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
         modelo.addAttribute("modoEdicion", false);
         modelo.addAttribute("vistaActiva", "clientes-nuevo");
         return "clientes/form-cliente";

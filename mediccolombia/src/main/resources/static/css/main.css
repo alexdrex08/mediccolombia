@@ -59,3 +59,55 @@ section.bg-dark {
     cursor: pointer;
 }
 
+.fixed-top-mobile {
+    position: relative;
+}
+
+@media (max-width: 991.98px) {
+    .fixed-top-mobile {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1030;
+        width: 100%;
+    }
+
+    #page-content-wrapper,
+    .container-fluid.py-3,
+    main.container-fluid {
+        padding-top: 70px !important;
+    }
+    #sidebar-wrapper {
+        margin-top: 60px;
+    }
+}
+
+@media (max-width: 576px) {
+    #page-content-wrapper,
+    .container-fluid.py-3,
+    main.container-fluid {
+        padding-top: 70px !important;
+    }
+    #sidebar-wrapper {
+        margin-top: 70px !important;
+    }
+}
+
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .navbar-nav .nav-link .nav-text {
+        display: none !important;
+    }
+    .navbar-nav .nav-link i {
+        
+        font-size: 1.2rem;
+    }
+
+    .navbar-nav .dropdown-toggle .nav-text {
+        display: none !important;
+    }
+    .navbar-nav .dropdown-toggle::after {
+        margin-left: 0.255em;
+    }
+}

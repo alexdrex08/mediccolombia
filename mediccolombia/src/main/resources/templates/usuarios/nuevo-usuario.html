@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Nuevo Usuario - MedicColombia')}"></head>
+
+<body class="toggled">
+    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="d-flex" id="wrapper">
+        <div th:replace="~{fragments/sidebar :: menu}"></div>
+        <div id="page-content-wrapper">
+            <main class="container-fluid p-4 my-5">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-0">
+                            <i class="fa-solid fa-user-plus text-primary me-2"
+                                th:classappend="${modoEdicion} ? 'fa-user-pen' : 'fa-user-plus'"></i>
+                            <span th:text="${modoEdicion} ? 'Editar Usuario' : 'Nuevo Usuario'"></span>
+                        </h2>
+                        <p class="text-muted small mt-1 mb-0" th:text="${modoEdicion} ? 'Modifica los datos del usuario seleccionado.' :
+                                 'Completa el formulario para registrar un nuevo usuario en el sistema.'">
+                        </p>
+                    </div>
+                    <a th:href="@{/usuarios}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-arrow-left me-0 me-sm-1"></i> <span class="d-none d-sm-inline ms-1">Volver</span>
+                    </a>
+                </div>
+
+                <!-- FLASH -->
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i><span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+
+                        <!-- SECCIÓN 1: Datos personales -->
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-header bg-white border-bottom py-3">
+                                <h6 class="fw-bold mb-0 text-primary">
+                                    <i class="fa-solid fa-id-card me-2"></i>Datos personales
+                                </h6>
+                            </div>
+                            <div class="card-body p-4">
+
+                                <form th:action="${modoEdicion}
+                                        ? @{/usuarios/{id}/actualizar(id=${usuario.id})}
+                                        : @{/usuarios}" method="post" id="formUsuario" novalidate>
+
+                                    <div class="row g-4">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">
+                                                Nombre completo <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text" class="form-control" name="nombre" required
+                                                maxlength="100" placeholder="Nombre completo"
+                                                th:value="${modoEdicion ? usuario.nombre : ''}">
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">
+                                                Identificación <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text" class="form-control" name="identificacion"
+                                                th:readonly="${modoEdicion}"
+                                                th:classappend="${modoEdicion} ? 'bg-light' : ''" required
+                                                maxlength="20" placeholder="Número de documento"
+                                                th:value="${modoEdicion ? usuario.identificacion : ''}">
+                                            <div th:if="${modoEdicion}" class="form-text text-muted">
+                                                La identificación no puede modificarse.
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">
+                                                Correo electrónico <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="email" class="form-control" name="correo" required
+                                                placeholder="usuario@correo.com"
+                                                th:value="${modoEdicion ? usuario.correo : ''}">
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">
+                                                Rol <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="rol" class="form-select" required>
+                                                <option value="">Selecciona un rol...</option>
+                                                <option value="ADMIN"
+                                                    th:selected="${modoEdicion and usuario.rol == 'ADMIN'}">
+                                                    ADMIN
+                                                </option>
+                                                <option value="EMPLEADO"
+                                                    th:selected="${modoEdicion and usuario.rol == 'EMPLEADO'}">
+                                                    EMPLEADO
+                                                </option>
+                                                <option value="FARMACEUTICO"
+                                                    th:selected="${modoEdicion and usuario.rol == 'FARMACEUTICO'}">
+                                                    FARMACEUTICO
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Contraseña solo en creación -->
+                                        <div class="col-md-6" th:unless="${modoEdicion}">
+                                            <label class="form-label fw-semibold">
+                                                Contraseña inicial
+                                            </label>
+                                            <input type="password" class="form-control" name="contrasena" minlength="8"
+                                                placeholder="Mínimo 8 caracteres (default: 12345678)">
+                                            <div class="form-text">
+                                                Si no se especifica, se usará
+                                                <code>12345678</code> como contraseña inicial.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Botones si es edición -->
+                                    <div th:if="${modoEdicion}" class="d-flex justify-content-end gap-2 mt-4">
+                                        <a th:href="@{/usuarios/{id}(id=${usuario.id})}"
+                                            class="btn btn-outline-secondary">
+                                            <i class="fa-solid fa-xmark me-1"></i>Cancelar
+                                        </a>
+                                        <button type="submit" class="btn btn-primary px-4">
+                                            <i class="fa-solid fa-floppy-disk me-1"></i>Guardar cambios
+                                        </button>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- SECCIÓN 2: Estado inicial — solo en creación -->
+                        <div th:unless="${modoEdicion}" class="card shadow-sm border-0 mb-4">
+                            <div class="card-header bg-white border-bottom py-3">
+                                <h6 class="fw-bold mb-0 text-success">
+                                    <i class="fa-solid fa-circle-check me-2"></i>
+                                    Estado inicial del usuario
+                                </h6>
+                            </div>
+                            <div class="card-body p-4">
+                                <p class="text-muted small mb-3">
+                                    Todo usuario debe tener un estado al ser creado.
+                                </p>
+
+                                <!-- El form continúa del bloque anterior (mismo form) -->
+                                <div class="row g-4" id="bloqueEstado">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            Estado inicial <span class="text-danger">*</span>
+                                        </label>
+                                        <select name="idTipoEstado" form="formUsuario" class="form-select" required>
+                                            <option value="">Selecciona un estado...</option>
+                                            <option th:each="te : ${tiposEstado}" th:value="${te.id}"
+                                                th:text="${te.nombreTipo}"
+                                                th:selected="${#strings.toLowerCase(te.nombreTipo).contains('activ')}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Observación</label>
+                                        <input type="text" class="form-control" name="observacion" form="formUsuario"
+                                            placeholder="Ej: Alta en el sistema"
+                                            value="Estado inicial al crear el usuario">
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end gap-2 mt-4">
+                                    <a th:href="@{/usuarios}" class="btn btn-outline-secondary">
+                                        <i class="fa-solid fa-xmark me-1"></i>Cancelar
+                                    </a>
+                                    <button type="submit" form="formUsuario" class="btn btn-primary px-4">
+                                        <i class="fa-solid fa-user-plus me-1"></i>Crear usuario
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: scripts}"></script>
+    <script>
+        document.getElementById('formUsuario').addEventListener('submit', function (e) {
+            let valido = true;
+            this.querySelectorAll('[required]').forEach(campo => {
+                if (!campo.value.trim()) {
+                    campo.classList.add('is-invalid');
+                    valido = false;
+                } else {
+                    campo.classList.remove('is-invalid');
+                }
+            });
+            if (!valido) {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+    </script>
+</body>
+
+</html>

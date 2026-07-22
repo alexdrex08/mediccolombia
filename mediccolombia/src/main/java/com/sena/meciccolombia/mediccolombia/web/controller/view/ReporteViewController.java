@@ -68,11 +68,13 @@ public class ReporteViewController {
     private final DetalleFiltroDAO detalleFiltroDAO;
 
     @GetMapping("/principal")
-    public String reportesDashboard(Model model) {
+    public String reportesDashboard(Model model, Authentication auth) {
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
 
         model.addAttribute("vistaActiva", "reportes");
         model.addAttribute("vistaActiva", "reportes-principal");
 
+        model.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
         model.addAttribute("totalReportes", reporteInvDAO.count());
         model.addAttribute("totalStock", reporteInvDAO.countByTipoReporte("REPORTE_STOCK"));
         model.addAttribute("totalVencimientos", reporteInvDAO.countByTipoReporte("REPORTE_VENCIMIENTOS"));
@@ -93,7 +95,10 @@ public class ReporteViewController {
     }
 
     @GetMapping("/inventario")
-    public String reportesInventario(Model model) {
+    public String reportesInventario(Model model, Authentication auth) {
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
+
+        model.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
         model.addAttribute("vistaActiva", "reportes-inventario");
         model.addAttribute("productos", productoService.listarProductos());
         model.addAttribute("categorias", categoriaService.listarCategorias());
@@ -104,7 +109,9 @@ public class ReporteViewController {
     }
 
     @GetMapping("/general")
-    public String reportesGeneral(Model model) {
+    public String reportesGeneral(Model model, Authentication auth) {
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
+
         LocalDateTime inicioDia = LocalDate.now().atStartOfDay();
         LocalDateTime finDia = LocalDate.now().atTime(23, 59, 59);
 
@@ -114,6 +121,7 @@ public class ReporteViewController {
         TotalVendidosDTO vendidoHoy = iVentaRegistroService.obtenerTotalVendidoEnElDia(inicioDia, finDia);
         BigDecimal totalVendido = vendidoHoy.getTotalVenta();
 
+        model.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
         model.addAttribute("vistaActiva", "reportes-general");
         model.addAttribute("historial", construirHistorial("REPORTE_GENERAL"));
 
@@ -126,14 +134,20 @@ public class ReporteViewController {
     }
 
     @GetMapping("/ventas")
-    public String reportesVentas(Model model) {
+    public String reportesVentas(Model model, Authentication auth) {
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
+
+        model.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
         model.addAttribute("vistaActiva", "reportes-ventas");
         model.addAttribute("historial", construirHistorial("REPORTE_VENTAS", "REPORTE_CLIENTES"));
         return "reportes/reportes-ventas";
     }
 
     @GetMapping("/pedidos")
-    public String reportesPedidos(Model model) {
+    public String reportesPedidos(Model model, Authentication auth) {
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
+
+        model.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
         model.addAttribute("vistaActiva", "reportes-pedidos");
         model.addAttribute("historial", construirHistorial("REPORTE_PEDIDOS", "REPORTE_PROVEEDORES"));
         return "reportes/reportes-pedidos";

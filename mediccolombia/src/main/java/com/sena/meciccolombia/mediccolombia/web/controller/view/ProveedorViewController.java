@@ -118,7 +118,10 @@ public class ProveedorViewController {
     // GET /proveedores/nuevo
     // ─────────────────────────────────────────────
     @GetMapping("/nuevo")
-    public String nuevoProveedor(Model model) {
+    public String nuevoProveedor(Model model, Authentication auth) {
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
+
+        model.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
         model.addAttribute("modoEdicion", false);
         model.addAttribute("vistaActiva", "proveedores-nuevo");
         return "proveedores/form-proveedor";

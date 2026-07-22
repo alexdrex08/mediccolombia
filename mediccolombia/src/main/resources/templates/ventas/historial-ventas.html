@@ -186,7 +186,7 @@
                 btnLimpiarId: 'limpiarFiltros',
                 inputsAdicional: ['filtroFecha'], 
                 inputsLimpiar: ['filtroFecha'],  
-                filasPorPagina: 5,
+                filasPorPagina: getFilasPorPagina(),
                 filtroAdicional: function (fila) {
                     const fechaSeleccionada = document.getElementById('filtroFecha').value;
                     const fechaFila = fila.dataset.fecha; 
