@@ -71,6 +71,7 @@ section.bg-dark {
         right: 0;
         z-index: 1030;
         width: 100%;
+        height: 10%;
     }
 
     #page-content-wrapper,
@@ -95,7 +96,7 @@ section.bg-dark {
 }
 
 
-@media (min-width: 768px) and (max-width: 1024px) {
+@media (min-width: 992px) and (max-width: 1090px) {
     .navbar-nav .nav-link .nav-text {
         display: none !important;
     }
