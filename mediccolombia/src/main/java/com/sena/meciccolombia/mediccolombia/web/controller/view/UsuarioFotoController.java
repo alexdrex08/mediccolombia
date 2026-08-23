@@ -3,6 +3,7 @@ package com.sena.meciccolombia.mediccolombia.web.controller.view;
 import java.io.File;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -29,8 +30,10 @@ public class UsuarioFotoController {
     private final UsuarioService usuarioService;
     private final UsuarioDAO usuarioDAO;
 
-    // ✅ Guardar en una carpeta 'uploads' en la raíz del proyecto
-private static final String CARPETA_UPLOADS = System.getProperty("user.dir") + "/uploads/perfil/";
+    @Value("${app.upload.dir}")
+    private String uploadDir;
+
+    private static final String CARPETA_PERFIL = "perfil" + File.separator;
 
     @PostMapping("/{id}/foto")
     public ResponseEntity<?> subirFoto(
@@ -73,13 +76,14 @@ private static final String CARPETA_UPLOADS = System.getProperty("user.dir") + "
                     .substring(archivo.getOriginalFilename().lastIndexOf("."));
             String nombreArchivo = "perfil_" + id + "_" + System.currentTimeMillis() + extension;
 
-            File directorio = new File(CARPETA_UPLOADS);
+            String carpetaUploads = uploadDir + CARPETA_PERFIL;
+            File directorio = new File(carpetaUploads);
             if (!directorio.exists()) {
                 directorio.mkdirs();
             }
 
             // Guardar archivo
-            File archivoDestino = new File(CARPETA_UPLOADS + nombreArchivo);
+            File archivoDestino = new File(carpetaUploads + nombreArchivo);
             archivo.transferTo(archivoDestino);
 
             // Guardar ruta en la base de datos

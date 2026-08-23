@@ -10,14 +10,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 
-//Esta clase nos sirve para poder decirle a la aplicacion qie rutas estan habilitadas o no
-//para x o y usuario que este logeado dentro de la aplicacion
+// Esta clase nos sirve para poder decirle a la aplicacion qie rutas estan
+// habilitadas o no
+// para x o y usuario que este logeado dentro de la aplicacion
 public class SecurityConfig {
 
     private final UsuarioSecurityService usuarioSecurityService;
@@ -41,6 +43,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 // Rutas de autenticación — sin login requerido
+                                "/",
                                 "/auth/login",
                                 "/auth/register",
                                 "/auth/recuperar",

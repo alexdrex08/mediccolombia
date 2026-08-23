@@ -153,13 +153,12 @@
 
                                     <div class="mb-3">
                                         <label class="form-label fw-semibold">Tema</label>
-                                        <select name="tema" id="selectTema" class="form-select">
-                                            <option value="claro" th:selected="${preferencias.get('tema') == 'claro'}">
-                                                Claro</option>
-                                            <option value="oscuro"
-                                                th:selected="${preferencias.get('tema') == 'oscuro'}">Oscuro</option>
-                                            <option value="auto" th:selected="${preferencias.get('tema') == 'auto'}">
-                                                Automático</option>
+                                        <select id="selectTema" data-tema-select
+                                            onchange="MedicolombiaTheme.preview(this.value)" class="form-select">
+                                            <option value="claro" th:selected="${preferencias['tema'] == 'claro'}">Claro
+                                            </option>
+                                            <option value="oscuro" th:selected="${preferencias['tema'] == 'oscuro'}">
+                                                Oscuro</option>
                                         </select>
                                     </div>
 
@@ -183,8 +182,8 @@
                                         </label>
                                     </div>
 
-                                    <button type="submit" class="btn btn-info text-white w-100">
-                                        <i class="fa-solid fa-floppy-disk me-1"></i>Guardar preferencias
+                                    <button type="button" class="btn btn-info text-white w-100" onclick="guardarPreferencias()">
+                                        Guardar cambios
                                     </button>
                                 </form>
 
@@ -237,6 +236,19 @@
 
     <script th:src="@{/js/configuracion/validarContrasena.js}"></script>
     <script th:src="@{/js/configuracion/mensajeTema.js}"></script>
+
+    <script>
+        async function guardarPreferencias() {
+            const tema = document.getElementById('selectTema').value;
+
+            // 1. Guardar en BD vía backend
+            await MedicolombiaTheme.guardar(tema);
+
+            // 2. Enviar el formulario completo con los demás campos
+            document.getElementById('formPreferencias').submit();
+        }
+    </script>
+
 </body>
 
 </html>
