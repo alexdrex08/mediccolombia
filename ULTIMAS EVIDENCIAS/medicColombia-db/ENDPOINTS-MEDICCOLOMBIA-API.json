@@ -1,0 +1,919 @@
+[
+  {
+    "title": "1. Alertas de Inventario — /api/alertas",
+    "endpoints": [
+      {
+        "method": "GET",
+        "route": "/api/alertas",
+        "desc": "Listar alertas activas (isResuelta = false)",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/alertas/{id}",
+        "desc": "Obtener alerta por ID",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/alertas/producto/{idProducto}",
+        "desc": "Alertas de un producto",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/alertas/tipo/{tipoAlerta}",
+        "desc": "Alertas por tipo (STOCK_BAJO, PROXIMO_A_VENCER, PRODUCTO_VENCIDO)",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/alertas/generar-alerta",
+        "desc": "Disparar scheduler manualmente (pruebas)",
+        "body": null
+      }
+    ]
+  },
+  {
+    "title": "2. Barrios de Dirección — /api/barrio_direccions",
+    "endpoints": [
+      {
+        "method": "POST",
+        "route": "/api/barrio_direccions",
+        "desc": "Crear barrio",
+        "body": [
+          ["nombreBarrio", "String", "Ej: \"El Centro\""]
+        ]
+      },
+      {
+        "method": "PUT",
+        "route": "/api/barrio_direccions/{id}",
+        "desc": "Actualizar barrio",
+        "body": [
+          ["nombreBarrio", "String", "Nuevo nombre del barrio"]
+        ]
+      },
+      {
+        "method": "DELETE",
+        "route": "/api/barrio_direccions/{id}",
+        "desc": "Eliminar barrio",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/barrio_direccions/{id}",
+        "desc": "Obtener barrio por ID",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/barrio_direccions",
+        "desc": "Listar todos los barrios",
+        "body": null
+      }
+    ]
+  },
+  {
+    "title": "3. Categorías — /api/categorias",
+    "endpoints": [
+      {
+        "method": "POST",
+        "route": "/api/categorias",
+        "desc": "Crear categoría",
+        "body": [
+          ["nombreCategoria", "String", "Ej: \"Antibióticos\""],
+          ["descripcion", "String", "Descripción de la categoría"]
+        ]
+      },
+      {
+        "method": "PUT",
+        "route": "/api/categorias/{id}",
+        "desc": "Actualizar categoría",
+        "body": [
+          ["nombreCategoria", "String", "Nuevo nombre"],
+          ["descripcion", "String", "Nueva descripción"]
+        ]
+      },
+      {
+        "method": "DELETE",
+        "route": "/api/categorias/{id}",
+        "desc": "Eliminar categoría",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/categorias",
+        "desc": "Listar todas las categorías",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/categorias/{id}",
+        "desc": "Obtener categoría por ID",
+        "body": null
+      }
+    ]
+  },
+  {
+    "title": "4. Clientes — /api/clientes",
+    "endpoints": [
+      {
+        "method": "POST",
+        "route": "/api/clientes",
+        "desc": "Crear cliente",
+        "body": [
+          ["nombreCliente", "String", "Ej: \"Juan Pérez\""],
+          ["identificacion", "String", "Número de documento. Ej: \"1048223513\""]
+        ]
+      },
+      {
+        "method": "PUT",
+        "route": "/api/clientes/{id}",
+        "desc": "Actualizar cliente",
+        "body": [
+          ["nombreCliente", "String", "Nuevo nombre"],
+          ["identificacion", "String", "Nueva identificación"]
+        ]
+      },
+      {
+        "method": "DELETE",
+        "route": "/api/clientes/{id}",
+        "desc": "Eliminar cliente",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/clientes/{id}",
+        "desc": "Obtener cliente básico por ID",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/clientes",
+        "desc": "Listar todos los clientes",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/clientes/identificacion/{identificacion}",
+        "desc": "Buscar cliente por número de documento",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/clientes/{id}/detalle",
+        "desc": "Obtener cliente con correos, teléfonos y direcciones",
+        "body": null
+      }
+    ]
+  },
+  {
+    "title": "5. Correos — /api/correos",
+    "endpoints": [
+      {
+        "method": "POST",
+        "route": "/api/correos",
+        "desc": "Agregar correo a cliente o proveedor",
+        "body": [
+          ["correoElectronico", "String", "Ej: \"cliente@gmail.com\""],
+          ["idCliente", "Long (nullable)", "ID del cliente. Null si es de proveedor"],
+          ["idProveedor", "Long (nullable)", "ID del proveedor. Null si es de cliente"],
+          ["idTipoCorreo", "Long", "ID del tipo de correo (Personal, Corporativo…)"]
+        ]
+      },
+      {
+        "method": "PUT",
+        "route": "/api/correos/{id}",
+        "desc": "Actualizar correo",
+        "body": [
+          ["correoElectronico", "String", "Nuevo correo"],
+          ["idTipoCorreo", "Long", "Nuevo tipo"]
+        ]
+      },
+      {
+        "method": "DELETE",
+        "route": "/api/correos/{id}",
+        "desc": "Eliminar correo",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/correos/{id}",
+        "desc": "Obtener correo por ID",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/correos",
+        "desc": "Listar todos los correos",
+        "body": null
+      }
+    ]
+  },
+  {
+    "title": "6. Teléfonos — /api/telefonos",
+    "endpoints": [
+      {
+        "method": "POST",
+        "route": "/api/telefonos",
+        "desc": "Agregar teléfono",
+        "body": [
+          ["numero", "String", "Ej: \"3001234567\""],
+          ["complemento", "String (nullable)", "Ej: \"Ext. 101\""],
+          ["idCliente", "Long (nullable)", "ID del cliente"],
+          ["idProveedor", "Long (nullable)", "ID del proveedor"],
+          ["idTipoTelefono", "Long", "ID del tipo de teléfono"]
+        ]
+      },
+      {
+        "method": "PUT",
+        "route": "/api/telefonos/{id}",
+        "desc": "Actualizar teléfono",
+        "body": [
+          ["numero", "String", "Nuevo número"],
+          ["complemento", "String (nullable)", "Nuevo complemento"],
+          ["idTipoTelefono", "Long", "Nuevo tipo"]
+        ]
+      },
+      {
+        "method": "DELETE",
+        "route": "/api/telefonos/{id}",
+        "desc": "Eliminar teléfono",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/telefonos/{id}",
+        "desc": "Obtener teléfono por ID",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/telefonos",
+        "desc": "Listar todos los teléfonos",
+        "body": null
+      }
+    ]
+  },
+  {
+    "title": "7. Direcciones — /api/direccions",
+    "endpoints": [
+      {
+        "method": "POST",
+        "route": "/api/direccions",
+        "desc": "Agregar dirección",
+        "body": [
+          ["direccion", "String", "Ej: \"Calle 50 # 12-34\""],
+          ["complemento", "String (nullable)", "Ej: \"Apto 301\""],
+          ["idCliente", "Long (nullable)", "ID del cliente"],
+          ["idProveedor", "Long (nullable)", "ID del proveedor"],
+          ["idBarrio", "Long", "ID del barrio"],
+          ["idTipoDireccion", "Long", "ID del tipo de dirección"]
+        ]
+      },
+      {
+        "method": "PUT",
+        "route": "/api/direccions/{id}",
+        "desc": "Actualizar dirección",
+        "body": [
+          ["direccion", "String", "Nueva dirección"],
+          ["complemento", "String (nullable)", "Nuevo complemento"],
+          ["idTipoDireccion", "Long", "Nuevo tipo"],
+          ["idBarrioDireccion", "Long", "Nuevo barrio"]
+        ]
+      },
+      {
+        "method": "DELETE",
+        "route": "/api/direccions/{id}",
+        "desc": "Eliminar dirección",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/direccions/{id}",
+        "desc": "Obtener dirección por ID",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/direccions",
+        "desc": "Listar todas las direcciones",
+        "body": null
+      }
+    ]
+  },
+  {
+    "title": "8. Productos — /api/productos",
+    "endpoints": [
+      {
+        "method": "POST",
+        "route": "/api/productos",
+        "desc": "Crear producto",
+        "body": [
+          ["nombreProducto", "String", "Ej: \"Acetaminofén 500mg\""],
+          ["fechaExpiracion", "LocalDateTime", "Ej: \"2027-12-31T00:00:00\""],
+          ["stock", "Integer", "Cantidad inicial"],
+          ["lote", "String", "Ej: \"L-2025-001\""],
+          ["stockMinimo", "Integer", "Umbral mínimo de alerta"],
+          ["stockMaximo", "Integer", "Umbral máximo"],
+          ["idCategoria", "Long", "ID de la categoría"],
+          ["idUsuario", "Long", "ID del usuario que lo registra"]
+        ]
+      },
+      {
+        "method": "PUT",
+        "route": "/api/productos/{id}",
+        "desc": "Actualizar producto",
+        "body": [
+          ["nombreProducto", "String", "Nuevo nombre"],
+          ["fechaExpiracion", "LocalDateTime", "Nueva fecha"],
+          ["lote", "String", "Nuevo lote"],
+          ["stock", "Integer", "Nuevo stock"],
+          ["stockMinimo", "Integer", "Nuevo mínimo"],
+          ["stockMaximo", "Integer", "Nuevo máximo"],
+          ["idCategoria", "Long", "Nueva categoría"]
+        ]
+      },
+      {
+        "method": "DELETE",
+        "route": "/api/productos/{id}",
+        "desc": "Eliminar producto",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/productos/{id}",
+        "desc": "Obtener producto detallado",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/productos/{id}/historial",
+        "desc": "Historial de movimientos del producto",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/productos",
+        "desc": "Listar todos los productos (resumen)",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/productos/buscar?nombre=",
+        "desc": "Buscar productos por nombre (param: nombre)",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/productos/categoria/{idCat}",
+        "desc": "Filtrar por categoría",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/productos/stock-bajo",
+        "desc": "Productos con stock ≤ stockMínimo",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/productos/proximos-a-vencer?dias=",
+        "desc": "Productos que vencen en X días (param: dias)",
+        "body": null
+      }
+    ]
+  },
+  {
+    "title": "9. Movimientos de Producto — /api/movimiento_prod",
+    "endpoints": [
+      {
+        "method": "POST",
+        "route": "/api/movimiento_prod",
+        "desc": "Registrar movimiento de inventario",
+        "body": [
+          ["cantidad", "Integer", "Unidades del movimiento"],
+          ["movimiento", "String", "Motivo / descripción"],
+          ["pickerChecker", "String (nullable)", "Trazabilidad (ej: \"VENTA-15\")"],
+          ["idProducto", "Long", "ID del producto"],
+          ["idTipoMovimiento", "Long", "ID del tipo de movimiento"],
+          ["idUsuario", "Long", "ID del usuario que registra"]
+        ]
+      },
+      {
+        "method": "GET",
+        "route": "/api/movimiento_prod",
+        "desc": "Listar todos los movimientos",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/movimiento_prod/{idProducto}/producto",
+        "desc": "Movimientos de un producto",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/movimiento_prod/{idUsuario}/usuario",
+        "desc": "Movimientos de un usuario",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/movimiento_prod/{idTipo}/tipo_movimiento",
+        "desc": "Movimientos por tipo",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/movimiento_prod/signo/{signo}",
+        "desc": "Movimientos por signo (+1 entradas / -1 salidas)",
+        "body": null
+      }
+    ]
+  },
+  {
+    "title": "10. Proveedores — /api/proveedores",
+    "endpoints": [
+      {
+        "method": "POST",
+        "route": "/api/proveedores",
+        "desc": "Crear proveedor",
+        "body": [
+          ["nombreProv", "String", "Ej: \"Distribuidora Farma S.A.S\""],
+          ["nit", "String", "Ej: \"900123456-1\""]
+        ]
+      },
+      {
+        "method": "PUT",
+        "route": "/api/proveedores/{id}",
+        "desc": "Actualizar proveedor",
+        "body": [
+          ["nombreProv", "String", "Nuevo nombre"],
+          ["nit", "String", "Nuevo NIT"]
+        ]
+      },
+      {
+        "method": "DELETE",
+        "route": "/api/proveedores/{id}",
+        "desc": "Eliminar proveedor",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/proveedores/{id}",
+        "desc": "Obtener proveedor básico",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/proveedores",
+        "desc": "Listar todos los proveedores",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/proveedores/nit/{nit}",
+        "desc": "Buscar proveedor por NIT",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/proveedores/{id}/detalle",
+        "desc": "Proveedor con correos, teléfonos, direcciones y productos",
+        "body": null
+      }
+    ]
+  },
+  {
+    "title": "11. Catálogo Proveedor-Producto — /api/detalle-proveedor-producto",
+    "endpoints": [
+      {
+        "method": "POST",
+        "route": "/api/detalle-proveedor-producto",
+        "desc": "Asignar producto a proveedor",
+        "body": [
+          ["idProveedor", "Long", "ID del proveedor"],
+          ["idProducto", "Long", "ID del producto"],
+          ["precioUnitario", "BigDecimal", "Precio de compra. Ej: 1500.00"]
+        ]
+      },
+      {
+        "method": "PATCH",
+        "route": "/api/detalle-proveedor-producto/{idProv}/{idProd}/precio",
+        "desc": "Actualizar precio de un producto en el catálogo",
+        "body": [
+          ["nuevoPrecio", "BigDecimal", "Nuevo precio unitario"]
+        ]
+      },
+      {
+        "method": "DELETE",
+        "route": "/api/detalle-proveedor-producto/{idProv}/{idProd}",
+        "desc": "Quitar producto del catálogo del proveedor",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/detalle-proveedor-producto/{idProv}/{idProd}",
+        "desc": "Obtener relación específica",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/detalle-proveedor-producto/proveedor/{idProv}",
+        "desc": "Catálogo completo de un proveedor",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/detalle-proveedor-producto/producto/{idProd}",
+        "desc": "Proveedores que distribuyen un producto",
+        "body": null
+      }
+    ]
+  },
+  {
+    "title": "12. Pedidos de Compra — /api/pedidos",
+    "endpoints": [
+      {
+        "method": "POST",
+        "route": "/api/pedidos",
+        "desc": "Crear pedido (estado inicial: Borrador)",
+        "body": [
+          ["idProveedor", "Long", "ID del proveedor"],
+          ["observacion", "String (nullable)", "Notas del pedido"],
+          ["detalles", "List<DetallePedido>", "Lista de productos: [{idProducto, cantidad, precioUnitario}]"]
+        ]
+      },
+      {
+        "method": "GET",
+        "route": "/api/pedidos/{id}",
+        "desc": "Obtener pedido con detalles",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/pedidos",
+        "desc": "Listar todos los pedidos",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/pedidos/proveedor/{idProv}",
+        "desc": "Pedidos de un proveedor",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/pedidos/estado/{idEstado}",
+        "desc": "Pedidos por estado",
+        "body": null
+      },
+      {
+        "method": "PATCH",
+        "route": "/api/pedidos/cambiar_estado/{id}",
+        "desc": "Cambiar estado del pedido",
+        "body": [
+          ["idEstadoPedido", "Long", "ID del nuevo estado"],
+          ["observacion", "String (nullable)", "Motivo del cambio"]
+        ]
+      }
+    ]
+  },
+  {
+    "title": "13. Ventas — /api/ventas",
+    "endpoints": [
+      {
+        "method": "POST",
+        "route": "/api/ventas",
+        "desc": "Registrar venta y descontar stock automáticamente",
+        "body": [
+          ["idCliente", "Long", "ID del cliente"],
+          ["idUsuario", "Long", "ID del cajero"],
+          ["medioPago", "String", "\"EFECTIVO\" | \"TARJETA\""],
+          ["detalles", "List<DetalleVenta>", "[{idProducto, cantidad, precioUnitario}]"]
+        ]
+      },
+      {
+        "method": "GET",
+        "route": "/api/ventas/{id}",
+        "desc": "Obtener venta con detalles",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/ventas",
+        "desc": "Listar todas las ventas",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/ventas/cliente/{idCliente}",
+        "desc": "Ventas de un cliente",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/ventas/usuario/{idUsuario}",
+        "desc": "Ventas registradas por un usuario",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/ventas/total-dia?inicio=&fin=",
+        "desc": "Total vendido en un rango de fechas (formato: dd/MM/yyyy)",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/ventas/productos-mas-vendidos",
+        "desc": "Ranking de productos más vendidos",
+        "body": null
+      }
+    ]
+  },
+  {
+    "title": "14. Reportes de Inventario — /api/reportes",
+    "endpoints": [
+      {
+        "method": "POST",
+        "route": "/api/reportes/generar",
+        "desc": "Generar y guardar reporte",
+        "body": [
+          ["tipoReporte", "String", "REPORTE_PRODUCTO | REPORTE_CATEGORIA | REPORTE_VENTAS | REPORTE_PEDIDOS | REPORTE_STOCK | REPORTE_VENCIMIENTOS | REPORTE_CLIENTES | REPORTE_PROVEEDORES | REPORTE_GENERAL"],
+          ["idUsuario", "Long", "ID del usuario que genera"],
+          ["idReferencia", "Long (nullable)", "Requerido para REPORTE_PRODUCTO (idProducto) y REPORTE_CATEGORIA (idCategoria)"],
+          ["idFiltroBusqueda", "Long (nullable)", "Filtro adicional (opcional)"],
+          ["fechaInicio", "LocalDateTime (nullable)", "Filtro de fecha inicio"],
+          ["fechaFin", "LocalDateTime (nullable)", "Filtro de fecha fin"]
+        ]
+      },
+      {
+        "method": "GET",
+        "route": "/api/reportes/{id}",
+        "desc": "Obtener reporte por ID",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/reportes",
+        "desc": "Listar todos los reportes",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/reportes/usuario/{id}",
+        "desc": "Reportes generados por un usuario",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/reportes/tipo/{tipo}",
+        "desc": "Reportes filtrados por tipo",
+        "body": null
+      }
+    ]
+  },
+  {
+    "title": "15. Proyecciones — /api/proyecciones",
+    "endpoints": [
+      {
+        "method": "GET",
+        "route": "/api/proyecciones",
+        "desc": "Listar todas las proyecciones",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/proyecciones/tipo/{idTipo}",
+        "desc": "Proyecciones por tipo",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/proyecciones/producto/{id}",
+        "desc": "Proyecciones de un producto",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/proyecciones/categoria/{id}",
+        "desc": "Proyecciones por categoría",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/proyecciones/proveedores-fiables",
+        "desc": "Proveedores con mejor historial de cumplimiento",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/proyecciones/clientes-fieles",
+        "desc": "Clientes con mayor frecuencia de compra",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/proyecciones/precios-mercado",
+        "desc": "Comparativa de precios entre proveedores",
+        "body": null
+      }
+    ]
+  },
+  {
+    "title": "16. Usuarios — /api/usuarios",
+    "endpoints": [
+      {
+        "method": "POST",
+        "route": "/api/usuarios",
+        "desc": "Crear usuario",
+        "body": [
+          ["nombre", "String", "Nombre completo"],
+          ["correo", "String", "Correo único"],
+          ["identificacion", "String", "Número de documento"],
+          ["contrasena", "String", "Contraseña en texto plano (se encripta con BCrypt)"],
+          ["rol", "String", "\"ADMIN\" | \"EMPLEADO\" | \"FARMACEUTICO\""]
+        ]
+      },
+      {
+        "method": "PUT",
+        "route": "/api/usuarios/{id}",
+        "desc": "Actualizar datos del usuario",
+        "body": [
+          ["nombre", "String", "Nuevo nombre"],
+          ["correo", "String", "Nuevo correo"],
+          ["rol", "String", "Nuevo rol"]
+        ]
+      },
+      {
+        "method": "DELETE",
+        "route": "/api/usuarios/{id}",
+        "desc": "Eliminar usuario",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/usuarios/{id}",
+        "desc": "Obtener usuario básico",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/usuarios",
+        "desc": "Listar todos los usuarios",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/usuarios/correo/{correo}",
+        "desc": "Buscar usuario por correo",
+        "body": null
+      },
+      {
+        "method": "PATCH",
+        "route": "/api/usuarios/{id}/cambiar-contrasena",
+        "desc": "Cambiar contraseña",
+        "body": [
+          ["contrasenaActual", "String", "Contraseña actual"],
+          ["nuevaContrasena", "String", "Nueva contraseña"]
+        ]
+      },
+      {
+        "method": "GET",
+        "route": "/api/usuarios/{id}/estados",
+        "desc": "Usuario con historial de estados",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/usuarios/{id}/movimientos",
+        "desc": "Usuario con historial de movimientos",
+        "body": null
+      }
+    ]
+  },
+  {
+    "title": "17. Estado de Usuario — /api/estado_usuarios",
+    "endpoints": [
+      {
+        "method": "POST",
+        "route": "/api/estado_usuarios",
+        "desc": "Crear estado para un usuario",
+        "body": [
+          ["observacion", "String (nullable)", "Motivo del estado"],
+          ["fechaInicio", "LocalDateTime", "Ej: \"2025-01-15T08:00:00\""],
+          ["fechaFin", "LocalDateTime (nullable)", "Fecha de fin (null = activo indefinido)"],
+          ["idUsuario", "Long", "ID del usuario"],
+          ["idTipoEstado", "Long", "ID del tipo de estado"]
+        ]
+      },
+      {
+        "method": "PUT",
+        "route": "/api/estado_usuarios/{id}",
+        "desc": "Actualizar estado",
+        "body": [
+          ["observacion", "String (nullable)", "Nueva observación"],
+          ["fechaInicio", "LocalDateTime", "Nueva fecha inicio"],
+          ["fechaFin", "LocalDateTime (nullable)", "Nueva fecha fin"],
+          ["idUsuario", "Long", "ID del usuario"],
+          ["idTipoEstado", "Long", "Nuevo tipo de estado"]
+        ]
+      },
+      {
+        "method": "DELETE",
+        "route": "/api/estado_usuarios/{id}",
+        "desc": "Eliminar estado",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/estado_usuarios/{id}",
+        "desc": "Obtener estado por ID",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/estado_usuarios",
+        "desc": "Listar todos los estados",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/estado_usuarios/usuario/{id}",
+        "desc": "Estados de un usuario",
+        "body": null
+      }
+    ]
+  },
+  {
+    "title": "18. Catálogos del Sistema",
+    "endpoints": [
+      {
+        "method": "GET",
+        "route": "/api/estado_pedidos",
+        "desc": "Listar estados de pedido",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/tipo_correos",
+        "desc": "Listar tipos de correo",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/tipo_direccions",
+        "desc": "Listar tipos de dirección",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/tipo_estados",
+        "desc": "Listar tipos de estado de usuario",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/tipo_movimientos",
+        "desc": "Listar tipos de movimiento de inventario",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/tipo_proyeccions",
+        "desc": "Listar tipos de proyección",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/tipo_telefonos",
+        "desc": "Listar tipos de teléfono",
+        "body": null
+      },
+      {
+        "method": "GET",
+        "route": "/api/barrio_direccions",
+        "desc": "Listar barrios disponibles",
+        "body": null
+      },
+      {
+        "method": "POST",
+        "route": "/api/tipo_estados",
+        "desc": "Crear tipo de estado",
+        "body": [
+          ["nombreTipo", "String", "Ej: \"Activo\""]
+        ]
+      },
+      {
+        "method": "POST",
+        "route": "/api/tipo_movimientos",
+        "desc": "Crear tipo de movimiento",
+        "body": [
+          ["nombreMovimiento", "String", "Nombre"],
+          ["descripcion", "String", "Descripción"]
+        ]
+      }
+    ]
+  }
+]
