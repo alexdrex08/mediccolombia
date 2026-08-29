@@ -5,7 +5,6 @@
     const infoPedido = document.getElementById('infoPedido');
     const picker = infoPedido.dataset.picker;
 
-    // Si no hay pickerChecker o no tiene formato PRES, mostramos mensaje
     if (!picker || !picker.startsWith('PRES')) {
         document.getElementById('pedidoCargando').style.display = 'none';
         document.getElementById('pedidoNoDisponible').style.display = 'block';

@@ -21,10 +21,12 @@
                     <div class="d-flex gap-2">
                         <a th:if="${esAdmin}" th:href="@{/usuarios/{id}/editar(id=${usuario.id})}"
                             class="btn btn-outline-secondary btn-sm">
-                            <i class="fa-solid fa-pen me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Editar</span>
+                            <i class="fa-solid fa-pen me-0 me-sm-1"></i><span
+                                class="d-none d-sm-inline ms-1">Editar</span>
                         </a>
                         <a th:href="@{/usuarios}" class="btn btn-outline-secondary btn-sm">
-                            <i class="fa-solid fa-arrow-left me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Volver</span>
+                            <i class="fa-solid fa-arrow-left me-0 me-sm-1"></i><span
+                                class="d-none d-sm-inline ms-1">Volver</span>
                         </a>
                     </div>
                 </div>
@@ -60,7 +62,7 @@
                             <i class="fa-solid fa-circle-user fa-2x text-secondary mb-2"></i>
                             <div class="fw-bold fs-5 mt-1">
                                 <span class="badge fs-6" th:classappend="${usuario.rol == 'ADMIN'} ? 'bg-danger' :
-                                                 (${usuario.rol == 'FARMACEUTICO'} ? 'bg-primary' : 'bg-secondary')"
+                                                (${usuario.rol == 'FARMACEUTICO'} ? 'bg-primary' : 'bg-secondary')"
                                     th:text="${usuario.rol}"></span>
                             </div>
                             <p class="text-muted small mb-0 mt-1">Rol del sistema</p>
@@ -91,57 +93,82 @@
                                         <p class="text-muted small mb-1 text-uppercase fw-bold">Correo</p>
                                         <p class="mb-0" th:text="${usuario.correo}"></p>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-3">
                                         <p class="text-muted small mb-1 text-uppercase fw-bold">Rol</p>
                                         <span class="badge"
                                             th:classappend="${usuario.rol == 'ADMIN'} ? 'bg-danger' :
-                                                         (${usuario.rol == 'FARMACEUTICO'} ? 'bg-primary' : 'bg-secondary')"
+                                                        (${usuario.rol == 'FARMACEUTICO'} ? 'bg-primary' : 'bg-secondary')"
                                             th:text="${usuario.rol}"></span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p class="text-muted small mb-1 text-uppercase fw-bold">Estado</p>
+                                        <div>
+                                            <span
+                                                th:if="${usuario.estadoUsuario != null and !#lists.isEmpty(usuario.estadoUsuario)}"
+                                                class="badge fs-6"
+                                                th:classappend="${#strings.toLowerCase(usuario.estadoUsuario[#lists.size(usuario.estadoUsuario) - 1].tipoEstado).contains('activ')} ? 'bg-success' : 'bg-secondary'"
+                                                th:text="${usuario.estadoUsuario[#lists.size(usuario.estadoUsuario) - 1].tipoEstado}">
+                                            </span>
+                                            <span
+                                                th:if="${usuario.estadoUsuario == null or #lists.isEmpty(usuario.estadoUsuario)}"
+                                                class="badge bg-secondary">Sin estado</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Historial de estados -->
-                        <div class="card shadow-sm border-0 mb-4">
-                            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between">
-                                <h6 class="fw-bold mb-0">
-                                    <i class="fa-solid fa-timeline text-warning me-2"></i>
-                                    Historial de estados
-                                </h6>
-                                <span class="badge bg-secondary"
-                                    th:text="${#lists.size(usuario.estadoUsuario)} + ' estado(s)'"></span>
+                        <div class="card shadow-sm mb-4">
+                            <div
+                                class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Historial de Estados</h5>
+                                <span class="badge bg-light text-dark"
+                                    th:text="${#lists.size(usuario.estadoUsuario)} + ' registros'"></span>
                             </div>
                             <div class="card-body p-0">
-                                <div th:if="${usuario.estadoUsuario == null or usuario.estadoUsuario.isEmpty()}"
-                                    class="text-center text-muted py-4 small">
-                                    Sin historial de estados.
+                                <div
+                                    th:if="${usuario.estadoUsuario != null and !#lists.isEmpty(usuario.estadoUsuario)}">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Estado</th>
+                                                    <th>Desde</th>
+                                                    <th>Hasta</th>
+                                                    <th>Observación</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tablaHistorialEstados">
+                                                <tr th:each="estado : ${usuario.estadoUsuario}">
+                                                    <td>
+                                                        <span class="badge bg-primary"
+                                                            th:text="${estado.tipoEstado}"></span>
+                                                    </td>
+                                                    <td
+                                                        th:text="${#temporals.format(estado.fechaInicio, 'dd/MM/yyyy')}">
+                                                    </td>
+                                                    <td>
+                                                        <span th:if="${estado.fechaFin != null}"
+                                                            th:text="${#temporals.format(estado.fechaFin, 'dd/MM/yyyy')}"></span>
+                                                        <span th:if="${estado.fechaFin == null}"
+                                                            class="badge bg-success">Activo</span>
+                                                    </td>
+                                                    <td class="text-muted small" th:text="${estado.observacion} ?: '—'">
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <nav class="mt-2">
+                                        <ul id="paginacionHistorialEstados"
+                                            class="pagination-premium justify-content-end my-0"></ul>
+                                    </nav>
                                 </div>
-                                <table th:unless="${usuario.estadoUsuario == null or usuario.estadoUsuario.isEmpty()}"
-                                    class="table table-hover align-middle mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th class="ps-3">Estado</th>
-                                            <th>Desde</th>
-                                            <th>Hasta</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="e : ${usuario.estadoUsuario}">
-                                            <td class="ps-3">
-                                                <span class="badge"
-                                                    th:classappend="${#strings.toLowerCase(e.tipoEstado).contains('activ')} ? 'bg-success' : 'bg-secondary'"
-                                                    th:text="${e.tipoEstado}"></span>
-                                            </td>
-                                            <td class="small text-muted"
-                                                th:text="${e.fechaInicio != null} ? ${#temporals.format(e.fechaInicio, 'dd/MM/yyyy')} : '—'">
-                                            </td>
-                                            <td class="small text-muted"
-                                                th:text="${e.fechaFin != null} ? ${#temporals.format(e.fechaFin, 'dd/MM/yyyy')} : 'Actual'">
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div th:if="${usuario.estadoUsuario == null or #lists.isEmpty(usuario.estadoUsuario)}"
+                                    class="text-center text-muted py-4">
+                                    <i class="fa-solid fa-circle-info me-2"></i>Sin historial de estados registrado
+                                </div>
                             </div>
                         </div>
 
@@ -193,7 +220,7 @@
 
                     <!-- COLUMNA DERECHA: Actividad reciente -->
                     <div class="col-lg-6">
-                        <div class="card shadow-sm border-0 h-100">
+                        <div class="card shadow-sm border-0">
                             <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between">
                                 <h6 class="fw-bold mb-0">
                                     <i class="fa-solid fa-bolt text-warning me-2"></i>
@@ -202,46 +229,54 @@
                                 <span class="badge bg-primary"
                                     th:text="${totalMovimientos} + ' movimiento(s) total'"></span>
                             </div>
-                            <div class="card-body p-0">
+                            <div class="card-body p-0 d-flex flex-column">
                                 <div th:if="${actividadReciente == null or actividadReciente.isEmpty()}"
                                     class="text-center text-muted py-5 small">
                                     <i class="fa-solid fa-inbox fa-2x mb-2 d-block text-muted"></i>
                                     Sin actividad registrada todavía.
                                 </div>
-                                <table th:unless="${actividadReciente == null or actividadReciente.isEmpty()}"
-                                    class="table table-hover align-middle mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th class="ps-3">Fecha</th>
-                                            <th>Producto</th>
-                                            <th>Tipo</th>
-                                            <th class="text-center">Cant.</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="m : ${actividadReciente}">
-                                            <td class="ps-3 small text-nowrap" th:text="${m.fechaMovimiento != null} ?
-                                                ${#temporals.format(m.fechaMovimiento, 'dd/MM/yyyy HH:mm')} : '—'">
-                                            </td>
-                                            <td class="small fw-semibold" th:text="${m.nombreProducto}"></td>
-                                            <td>
-                                                <span class="badge bg-secondary small"
-                                                    th:text="${m.tipoMovimiento}"></span>
-                                            </td>
-                                            <td class="text-center fw-bold" th:text="${m.cantidad}"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div th:if="${totalMovimientos > actividadReciente.size()}"
-                                class="card-footer bg-transparent text-center py-2">
-                                <small class="text-muted">
-                                    Mostrando los últimos
-                                    <strong th:text="${actividadReciente.size()}"></strong>
-                                    de
-                                    <strong th:text="${totalMovimientos}"></strong>
-                                    movimientos
-                                </small>
+                                <div th:unless="${actividadReciente == null or actividadReciente.isEmpty()}"
+                                    class="d-flex flex-column h-100">
+                                    <div class="table-responsive flex-grow-1">
+                                        <table class="table table-hover align-middle mb-0">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th class="ps-3">Fecha</th>
+                                                    <th>Producto</th>
+                                                    <th>Tipo</th>
+                                                    <th class="text-center">Cant.</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tablaActividadReciente">
+                                                <tr th:each="m : ${actividadReciente}">
+                                                    <td class="ps-3 small text-nowrap" th:text="${m.fechaMovimiento != null} ?
+                                    ${#temporals.format(m.fechaMovimiento, 'dd/MM/yyyy HH:mm')} : '—'">
+                                                    </td>
+                                                    <td class="small fw-semibold" th:text="${m.nombreProducto}"></td>
+                                                    <td>
+                                                        <span class="badge bg-secondary small"
+                                                            th:text="${m.tipoMovimiento}"></span>
+                                                    </td>
+                                                    <td class="text-center fw-bold" th:text="${m.cantidad}"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div th:if="${actividadReciente != null and !#lists.isEmpty(actividadReciente) and totalMovimientos > actividadReciente.size()}"
+                                        class="card-footer bg-transparent text-center py-2">
+                                        <small class="text-muted">
+                                            Mostrando los últimos
+                                            <strong th:text="${actividadReciente.size()}"></strong>
+                                            de
+                                            <strong th:text="${totalMovimientos}"></strong>
+                                            movimientos
+                                        </small>
+                                    </div>
+                                    <nav class="mt-2">
+                                        <ul id="paginacionActividadReciente"
+                                            class="pagination-premium justify-content-end my-0"></ul>
+                                    </nav>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -251,8 +286,98 @@
             </main>
         </div>
     </div>
+
+    <div th:if="${esAdmin}">
+        <div class="modal fade" id="modalEstado" tabindex="-1" aria-labelledby="modalEstadoLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title" id="modalEstadoLabel">
+                            <i class="fa-solid fa-user-gear me-2"></i>
+                            Cambiar estado de: <strong id="modalNombreUsuario"></strong>
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form id="formEstado" method="post" th:action="@{/perfil/usuarios/0/estado}">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Tipo de estado</label>
+                                <select name="idTipoEstado" class="form-select" required>
+                                    <option value="">Seleccionar estado...</option>
+                                    <option th:each="te : ${tiposEstado}" th:value="${te.id}"
+                                        th:text="${te.nombreTipo}"></option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Fecha de inicio</label>
+                                <input type="datetime-local" name="fechaInicio" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    Fecha de fin
+                                    <span class="text-muted small fw-normal">(opcional)</span>
+                                </label>
+                                <input type="datetime-local" name="fechaFin" class="form-control">
+                                <div class="form-text">
+                                    Dejar vacío si el estado es indefinido o activo sin fecha límite.
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    Observación
+                                    <span class="text-muted small fw-normal">(opcional)</span>
+                                </label>
+                                <textarea name="observacion" class="form-control" rows="2"
+                                    placeholder="Ej: Usuario suspendido por inactividad..."></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-warning text-dark fw-bold">
+                                <i class="fa-solid fa-floppy-disk me-1"></i>Guardar estado
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
+    <script th:src="@{/js/general/paginacion.js}"></script>
+    <script th:if="${esAdmin}">
+        function abrirModalEstado(btn) {
+            const id = btn.dataset.id;
+            const nombre = btn.dataset.nombre;
+
+            document.getElementById('modalNombreUsuario').textContent = nombre;
+            document.getElementById('formEstado').action = `/perfil/usuarios/${id}/estado`;
+            document.getElementById('formEstado').reset();
+
+            const ahora = new Date();
+            const fechaLocal = ahora.toISOString().slice(0, 16);
+            document.querySelector('input[name="fechaInicio"]').value = fechaLocal;
+
+            new bootstrap.Modal(document.getElementById('modalEstado')).show();
+        }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            inicializarPaginacionYBusqueda({
+                tablaId: 'tablaHistorialEstados',
+                paginacionId: 'paginacionHistorialEstados',
+                filasPorPagina: getFilasPorPagina()
+            });
+
+            inicializarPaginacionYBusqueda({
+                tablaId: 'tablaActividadReciente',
+                paginacionId: 'paginacionActividadReciente',
+                filasPorPagina: getFilasPorPagina()
+            });
+        });
+    </script>
 </body>
 
 </html>

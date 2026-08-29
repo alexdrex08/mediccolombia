@@ -16,4 +16,6 @@ public interface VentaRegistroDAO extends JpaRepository<VentaRegistro, Long>{
     List<VentaRegistro> findByUsuarioId(Long idUsuario);
 
     List<VentaRegistro> findByFechaVentaBetween(LocalDateTime inicio, LocalDateTime fin);
+
+    List<VentaRegistro> findAllByOrderByFechaVentaDesc();
 }

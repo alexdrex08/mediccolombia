@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head :: head(titulo='Reportes de Ventas - MedicColombia')}"></head>
+<head th:replace="~{fragments/head :: head(titulo='Reportes de Ventas - MedicColombia', linksExtra=~{::#tabs-style})}">
+    <link id="tabs-style" rel="stylesheet" th:href="@{/css/reporte.css}">
+</head>
 
 <body class="toggled">
     <header th:replace="~{fragments/header :: header}"></header>
@@ -235,7 +237,6 @@
     </div>
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
-    <link rel="stylesheet" th:href="@{/css/reporte.css}">
 
 </body>
 

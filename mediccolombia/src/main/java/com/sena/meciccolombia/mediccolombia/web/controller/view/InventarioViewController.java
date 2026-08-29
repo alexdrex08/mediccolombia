@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +33,8 @@ import com.sena.meciccolombia.mediccolombia.web.dto.response.CategoriaDetalleDTO
 import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoDetalleDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoHistorialDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.ProductoResumenDTO;
+
+import jakarta.validation.Valid;
 
 import com.sena.meciccolombia.mediccolombia.dao.DetalleVentaDAO;
 import com.sena.meciccolombia.mediccolombia.dao.DetallePedidoDAO;
@@ -159,7 +163,8 @@ public class InventarioViewController {
     @PostMapping("/editar/{idProducto}")
     public String guardarEdicion(
             @PathVariable Long idProducto,
-            @ModelAttribute ProductoUpdateRequestDTO dto,
+            @Valid @ModelAttribute ProductoUpdateRequestDTO dto,
+            BindingResult bindingResult,
             Authentication auth,
             RedirectAttributes redirectAttributes) {
 
@@ -167,6 +172,14 @@ public class InventarioViewController {
         if (!"ADMIN".equals(user.getRol())) {
             redirectAttributes.addFlashAttribute("error", "No tienes permisos para editar productos.");
             return "redirect:/productos";
+        }
+
+        if (bindingResult.hasErrors()) {
+            String errorMsg = bindingResult.getFieldError() != null
+                    ? bindingResult.getFieldError().getDefaultMessage()
+                    : "Error en validación del formulario";
+            redirectAttributes.addFlashAttribute("error", errorMsg);
+            return "redirect:/productos/editar/" + idProducto;
         }
 
         if (dto.getStockMinimo() >= dto.getStockMaximo()) {
@@ -241,25 +254,51 @@ public class InventarioViewController {
         return "inventario/alertas";
     }
 
-    @PostMapping("/alertas/{id}/eliminar")
-    public String eliminarAlerta(@PathVariable Long id,
+    @PostMapping("/alertas/{id}/resolver")
+    public String resolverAlerta(
+            @PathVariable Long id,
             Authentication auth,
-            Model model,
             RedirectAttributes redirectAttributes) {
 
         MyUserDetails user = (MyUserDetails) auth.getPrincipal();
         if (!"ADMIN".equals(user.getRol())) {
-            redirectAttributes.addFlashAttribute("error", "No tienes permisos para eliminar alertas.");
+            redirectAttributes.addFlashAttribute("error", "No tienes permisos para resolver alertas.");
             return "redirect:/productos/alertas";
         }
+
         try {
+            AlertaInvResponseDTO alerta = alertaInvService.obtenerPorId(id);
+            String tipoAlerta = alerta.getTipoAlerta();
+            String nombreProducto = alerta.getNombreProducto();
+
             alertaInvService.resolverAlerta(id);
-            redirectAttributes.addFlashAttribute("mensaje", "Alerta resuelta correctamente.");
+
+            String mensajeExito;
+            switch (tipoAlerta) {
+                case "STOCK_BAJO":
+                    mensajeExito = "Alerta de stock bajo para '" + nombreProducto + "' resuelta correctamente.";
+                    break;
+                case "PROXIMO_A_VENCER":
+                    mensajeExito = "Alerta de producto próximo a vencer ('" + nombreProducto + "') resuelta.";
+                    break;
+                case "PRODUCTO_VENCIDO":
+                    mensajeExito = "Alerta de producto vencido ('" + nombreProducto
+                            + "') resuelta. Stock ajustado a 0.";
+                    break;
+                default:
+                    mensajeExito = "Alerta resuelta correctamente.";
+            }
+            redirectAttributes.addFlashAttribute("mensaje", mensajeExito);
+
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error",
+                    "No se pudo resolver la alerta de stock bajo: " + e.getMessage() +
+                            ". Realiza un pedido de reposición primero.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error",
-                    "Error al eliminar la alerta: " + e.getMessage());
+                    "Error al resolver la alerta: " + e.getMessage());
         }
-        model.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
+
         return "redirect:/productos/alertas";
     }
 
@@ -290,9 +329,18 @@ public class InventarioViewController {
 
     @PostMapping("/nuevo")
     public String crearProducto(
-            @ModelAttribute ProductoCreateRequestDto dto,
+            @Valid @ModelAttribute ProductoCreateRequestDto dto,
+            BindingResult bindingResult,
             Authentication auth,
             RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            String errorMsg = bindingResult.getFieldError() != null
+                    ? bindingResult.getFieldError().getDefaultMessage()
+                    : "Error de validación en el formulario";
+            redirectAttributes.addFlashAttribute("error", errorMsg);
+            return "redirect:/productos/nuevo";
+        }
 
         // Esto trae el usuario autenticado en el DTO
         MyUserDetails user = (MyUserDetails) auth.getPrincipal();

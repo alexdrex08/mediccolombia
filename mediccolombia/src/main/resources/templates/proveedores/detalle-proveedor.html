@@ -12,7 +12,8 @@
             <main class="container-fluid p-4 my-5">
 
                 <!-- ENCABEZADO -->
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center align-items-md-center gap-3 mb-4">
+                <div
+                    class="d-flex flex-column flex-md-row justify-content-between align-items-center align-items-md-center gap-3 mb-4">
                     <div class="text-center">
                         <h2 class="fw-bold text-dark mb-0">
                             <i class="fa-solid fa-building me-2 text-primary"></i>
@@ -26,18 +27,18 @@
                     </div>
                     <div class="d-flex gap-2">
                         <a th:href="@{'/proveedores/' + ${proveedor.id} + '/editar'}"
-                           class="btn btn-outline-primary btn-sm">
-                            <i class="fa-solid fa-pen me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Editar</span>
+                            class="btn btn-outline-primary btn-sm">
+                            <i class="fa-solid fa-pen me-0 me-sm-1"></i><span
+                                class="d-none d-sm-inline ms-1">Editar</span>
                         </a>
-                        <form th:action="@{'/proveedores/' + ${proveedor.id} + '/eliminar'}"
-                              method="post"
-                              onsubmit="return confirm('¿Eliminar este proveedor?')">
-                            <button type="submit" class="btn btn-outline-danger btn-sm">
-                                <i class="fa-solid fa-trash me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Eliminar</span>
-                            </button>
-                        </form>
+                        <button th:if="${esAdmin}" type="button" class="btn btn-outline-danger btn-sm"
+                            th:onclick="eliminarProveedor([[${proveedor.id}]], [[${proveedor.nombreProv}]])">
+                            <i class="fa-solid fa-trash me-0 me-sm-1"></i>
+                            <span class="d-none d-sm-inline ms-1">Eliminar</span>
+                        </button>
                         <a th:href="@{/proveedores}" class="btn btn-outline-secondary btn-sm">
-                            <i class="fa-solid fa-arrow-left me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Volver</span>
+                            <i class="fa-solid fa-arrow-left me-0 me-sm-1"></i><span
+                                class="d-none d-sm-inline ms-1">Volver</span>
                         </a>
                     </div>
                 </div>
@@ -56,8 +57,7 @@
                             <div class="card-body text-center py-4">
                                 <div class="rounded-circle bg-primary bg-opacity-10
                                             d-inline-flex align-items-center
-                                            justify-content-center mb-3"
-                                     style="width:80px; height:80px;">
+                                            justify-content-center mb-3" style="width:80px; height:80px;">
                                     <i class="fa-solid fa-building text-primary fs-2"></i>
                                 </div>
                                 <h5 class="fw-bold mb-1" th:text="${proveedor.nombreProv}"></h5>
@@ -66,19 +66,23 @@
                                 <div class="text-start small">
                                     <p class="mb-2">
                                         <i class="fa-solid fa-boxes-stacked me-2 text-muted"></i>
-                                        <span th:text="${productosAsignados != null} ? (${#lists.size(productosAsignados)} + ' producto(s) asignado(s)') : '0 productos'"></span>
+                                        <span
+                                            th:text="${productosAsignados != null} ? (${#lists.size(productosAsignados)} + ' producto(s) asignado(s)') : '0 productos'"></span>
                                     </p>
                                     <p class="mb-2">
                                         <i class="fa-solid fa-envelope me-2 text-muted"></i>
-                                        <span th:text="${proveedor.correos == null or proveedor.correos.isEmpty()} ? 'Sin correos' : (${#lists.size(proveedor.correos)} + ' correo(s)')"></span>
+                                        <span
+                                            th:text="${proveedor.correos == null or proveedor.correos.isEmpty()} ? 'Sin correos' : (${#lists.size(proveedor.correos)} + ' correo(s)')"></span>
                                     </p>
                                     <p class="mb-2">
                                         <i class="fa-solid fa-phone me-2 text-muted"></i>
-                                        <span th:text="${proveedor.telefonos == null or proveedor.telefonos.isEmpty()} ? 'Sin teléfonos' : (${#lists.size(proveedor.telefonos)} + ' teléfono(s)')"></span>
+                                        <span
+                                            th:text="${proveedor.telefonos == null or proveedor.telefonos.isEmpty()} ? 'Sin teléfonos' : (${#lists.size(proveedor.telefonos)} + ' teléfono(s)')"></span>
                                     </p>
                                     <p class="mb-0">
                                         <i class="fa-solid fa-location-dot me-2 text-muted"></i>
-                                        <span th:text="${proveedor.direcciones == null or proveedor.direcciones.isEmpty()} ? 'Sin direcciones' : (${#lists.size(proveedor.direcciones)} + ' dirección(es)')"></span>
+                                        <span
+                                            th:text="${proveedor.direcciones == null or proveedor.direcciones.isEmpty()} ? 'Sin direcciones' : (${#lists.size(proveedor.direcciones)} + ' dirección(es)')"></span>
                                     </p>
                                 </div>
                             </div>
@@ -90,15 +94,16 @@
 
                         <!-- PRODUCTOS ASIGNADOS -->
                         <div class="card shadow-sm border-0 mb-4">
-                            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                            <div
+                                class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
                                 <span class="fw-bold">
                                     <i class="fa-solid fa-boxes-stacked me-2 text-primary"></i>
                                     Catálogo de Productos
                                 </span>
-                                <button class="btn btn-sm btn-outline-primary"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalAgregarProducto">
-                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Agregar producto</span>
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                    data-bs-target="#modalAgregarProducto">
+                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i><span
+                                        class="d-none d-sm-inline ms-1">Agregar producto</span>
                                 </button>
                             </div>
                             <div class="card-body table-wrapper table-rounded">
@@ -116,11 +121,12 @@
                                                 <tr th:each="dp : ${productosAsignados}">
                                                     <td class="fw-bold" th:text="${dp.nombreProducto}"></td>
                                                     <td class="text-end text-success fw-bold">
-                                                        $&nbsp;<span th:text="${#numbers.formatDecimal(dp.precioUnitario, 0, 'COMMA', 0, 'POINT')}"></span>
+                                                        $&nbsp;<span
+                                                            th:text="${#numbers.formatDecimal(dp.precioUnitario, 0, 'COMMA', 0, 'POINT')}"></span>
                                                     </td>
                                                     <td class="text-center">
                                                         <button class="btn btn-sm btn-outline-danger"
-                                                                th:attr="onclick='quitarProducto(' + ${proveedor.id} + ',' + ${dp.idProducto} + ')'">
+                                                            th:attr="onclick='quitarProducto(' + ${proveedor.id} + ',' + ${dp.idProducto} + ')'">
                                                             <i class="fa-solid fa-xmark"></i>
                                                         </button>
                                                     </td>
@@ -130,7 +136,7 @@
                                     </div>
                                 </div>
                                 <div th:if="${productosAsignados == null or productosAsignados.isEmpty()}"
-                                     class="text-center text-muted py-4">
+                                    class="text-center text-muted py-4">
                                     <i class="fa-solid fa-box-open me-2"></i>
                                     Sin productos asignados — usa el botón "Agregar producto"
                                 </div>
@@ -139,13 +145,15 @@
 
                         <!-- CORREOS -->
                         <div class="card shadow-sm border-0 mb-4">
-                            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                            <div
+                                class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
                                 <span class="fw-bold">
                                     <i class="fa-solid fa-envelope me-2 text-primary"></i>Correos
                                 </span>
-                                <button class="btn btn-sm btn-outline-primary"
-                                        data-bs-toggle="modal" data-bs-target="#modalCorreo">
-                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Agregar</span>
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                    data-bs-target="#modalCorreo">
+                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i><span
+                                        class="d-none d-sm-inline ms-1">Agregar</span>
                                 </button>
                             </div>
                             <div class="card-body table-wrapper table-rounded">
@@ -162,10 +170,11 @@
                                             <tbody>
                                                 <tr th:each="c : ${proveedor.correos}">
                                                     <td th:text="${c.correoElectronico}"></td>
-                                                    <td><span class="badge bg-primary" th:text="${c.tipoCorreo}"></span></td>
+                                                    <td><span class="badge bg-primary" th:text="${c.tipoCorreo}"></span>
+                                                    </td>
                                                     <td class="text-center">
                                                         <button class="btn btn-sm btn-outline-danger"
-                                                                th:attr="onclick='eliminarCorreo(' + ${c.id} + ')'">
+                                                            th:attr="onclick='eliminarCorreo(' + ${c.id} + ')'">
                                                             <i class="fa-solid fa-trash"></i>
                                                         </button>
                                                     </td>
@@ -175,7 +184,7 @@
                                     </div>
                                 </div>
                                 <div th:if="${proveedor.correos == null or proveedor.correos.isEmpty()}"
-                                     class="text-center text-muted py-3">
+                                    class="text-center text-muted py-3">
                                     <i class="fa-solid fa-envelope-open me-2"></i>Sin correos
                                 </div>
                             </div>
@@ -183,13 +192,15 @@
 
                         <!-- TELÉFONOS -->
                         <div class="card shadow-sm border-0 mb-4">
-                            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                            <div
+                                class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
                                 <span class="fw-bold">
                                     <i class="fa-solid fa-phone me-2 text-success"></i>Teléfonos
                                 </span>
-                                <button class="btn btn-sm btn-outline-success"
-                                        data-bs-toggle="modal" data-bs-target="#modalTelefono">
-                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Agregar</span>
+                                <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
+                                    data-bs-target="#modalTelefono">
+                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i><span
+                                        class="d-none d-sm-inline ms-1">Agregar</span>
                                 </button>
                             </div>
                             <div class="card-body table-wrapper table-rounded">
@@ -207,11 +218,12 @@
                                             <tbody>
                                                 <tr th:each="t : ${proveedor.telefonos}">
                                                     <td class="fw-bold" th:text="${t.numero}"></td>
-                                                    <td><span class="badge bg-success" th:text="${t.tipoTelefono}"></span></td>
+                                                    <td><span class="badge bg-success"
+                                                            th:text="${t.tipoTelefono}"></span></td>
                                                     <td class="text-muted small" th:text="${t.complemento} ?: '—'"></td>
                                                     <td class="text-center">
                                                         <button class="btn btn-sm btn-outline-danger"
-                                                                th:attr="onclick='eliminarTelefono(' + ${t.id} + ')'">
+                                                            th:attr="onclick='eliminarTelefono(' + ${t.id} + ')'">
                                                             <i class="fa-solid fa-trash"></i>
                                                         </button>
                                                     </td>
@@ -221,7 +233,7 @@
                                     </div>
                                 </div>
                                 <div th:if="${proveedor.telefonos == null or proveedor.telefonos.isEmpty()}"
-                                     class="text-center text-muted py-3">
+                                    class="text-center text-muted py-3">
                                     <i class="fa-solid fa-phone-slash me-2"></i>Sin teléfonos
                                 </div>
                             </div>
@@ -229,13 +241,15 @@
 
                         <!-- DIRECCIONES -->
                         <div class="card shadow-sm border-0">
-                            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                            <div
+                                class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
                                 <span class="fw-bold">
                                     <i class="fa-solid fa-location-dot me-2 text-warning"></i>Direcciones
                                 </span>
-                                <button class="btn btn-sm btn-outline-warning text-dark"
-                                        data-bs-toggle="modal" data-bs-target="#modalDireccion">
-                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline ms-1">Agregar</span>
+                                <button class="btn btn-sm btn-outline-warning text-dark" data-bs-toggle="modal"
+                                    data-bs-target="#modalDireccion">
+                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i><span
+                                        class="d-none d-sm-inline ms-1">Agregar</span>
                                 </button>
                             </div>
                             <div class="card-body table-wrapper table-rounded">
@@ -254,10 +268,11 @@
                                                 <tr th:each="d : ${proveedor.direcciones}">
                                                     <td class="fw-bold" th:text="${d.direccion}"></td>
                                                     <td class="text-muted small" th:text="${d.barrio} ?: '—'"></td>
-                                                    <td><span class="badge bg-warning text-dark" th:text="${d.tipoDireccion}"></span></td>
+                                                    <td><span class="badge bg-warning text-dark"
+                                                            th:text="${d.tipoDireccion}"></span></td>
                                                     <td class="text-center">
                                                         <button class="btn btn-sm btn-outline-danger"
-                                                                th:attr="onclick='eliminarDireccion(' + ${d.id} + ')'">
+                                                            th:attr="onclick='eliminarDireccion(' + ${d.id} + ')'">
                                                             <i class="fa-solid fa-trash"></i>
                                                         </button>
                                                     </td>
@@ -267,7 +282,7 @@
                                     </div>
                                 </div>
                                 <div th:if="${proveedor.direcciones == null or proveedor.direcciones.isEmpty()}"
-                                     class="text-center text-muted py-3">
+                                    class="text-center text-muted py-3">
                                     <i class="fa-solid fa-map-pin me-2"></i>Sin direcciones
                                 </div>
                             </div>
@@ -296,8 +311,7 @@
                     <div class="input-group mb-3">
                         <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
                         <input type="text" id="filtroProductosModal" class="form-control"
-                               placeholder="Filtrar productos disponibles..."
-                               oninput="filtrarProductosModal(this.value)">
+                            placeholder="Filtrar productos disponibles..." oninput="filtrarProductosModal(this.value)">
                     </div>
 
                     <div class="table-responsive" style="max-height:320px; overflow-y:auto;">
@@ -311,26 +325,24 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="p : ${productosDisponibles}"
-                                    th:attr="data-nombre=${p.nombreProducto}">
+                                <tr th:each="p : ${productosDisponibles}" th:attr="data-nombre=${p.nombreProducto}">
                                     <td>
                                         <span class="fw-bold" th:text="${p.nombreProducto}"></span>
                                         <br>
                                         <small class="text-muted" th:text="${p.categoria.nombre}"></small>
                                     </td>
                                     <td class="text-center">
-                                        <span th:classappend="${p.stock == 0} ? 'bg-danger' : (${p.stock <= p.stockMinimo} ? 'bg-warning text-dark' : 'bg-success')"
-                                              class="badge"
-                                              th:text="${p.stock} + ' ud'"></span>
+                                        <span
+                                            th:classappend="${p.stock == 0} ? 'bg-danger' : (${p.stock <= p.stockMinimo} ? 'bg-warning text-dark' : 'bg-success')"
+                                            class="badge" th:text="${p.stock} + ' ud'"></span>
                                     </td>
                                     <td>
                                         <input type="number" class="form-control form-control-sm precio-input"
-                                               th:id="'precio-' + ${p.id}"
-                                               min="0" step="0.01" placeholder="0.00">
+                                            th:id="'precio-' + ${p.id}" min="0" step="0.01" placeholder="0.00">
                                     </td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-sm btn-outline-success"
-                                                th:attr="onclick='agregarProducto(' + ${p.id} + ')'">
+                                            th:attr="onclick='agregarProducto(' + ${p.id} + ')'">
                                             <i class="fa-solid fa-plus"></i>
                                         </button>
                                     </td>
@@ -347,8 +359,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary"
-                            data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -367,16 +378,15 @@
                         <label class="form-label fw-bold">Correo electrónico</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fa-solid fa-at"></i></span>
-                            <input type="email" id="inputCorreo" class="form-control"
-                                   placeholder="ejemplo@correo.com">
+                            <input type="email" id="inputCorreo" class="form-control" placeholder="ejemplo@correo.com">
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Tipo de correo</label>
                         <select id="selectTipoCorreo" class="form-select">
                             <option value="">Seleccionar...</option>
-                            <option th:each="tc : ${tiposCorreo}"
-                                    th:value="${tc.id}" th:text="${tc.nombreTipo}"></option>
+                            <option th:each="tc : ${tiposCorreo}" th:value="${tc.id}" th:text="${tc.nombreTipo}">
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -403,22 +413,21 @@
                         <label class="form-label fw-bold">Número</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
-                            <input type="text" id="inputNumero" class="form-control"
-                                   placeholder="Ej: 3001234567">
+                            <input type="text" id="inputNumero" class="form-control" placeholder="Ej: 3001234567">
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Tipo</label>
                         <select id="selectTipoTelefono" class="form-select">
                             <option value="">Seleccionar...</option>
-                            <option th:each="tt : ${tiposTelefono}"
-                                    th:value="${tt.id}" th:text="${tt.nombreTipo}"></option>
+                            <option th:each="tt : ${tiposTelefono}" th:value="${tt.id}" th:text="${tt.nombreTipo}">
+                            </option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Complemento <span class="text-muted fw-normal small">(opcional)</span></label>
-                        <input type="text" id="inputComplementoTel" class="form-control"
-                               placeholder="Ej: Ext. 101">
+                        <label class="form-label fw-bold">Complemento <span
+                                class="text-muted fw-normal small">(opcional)</span></label>
+                        <input type="text" id="inputComplementoTel" class="form-control" placeholder="Ej: Ext. 101">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -445,29 +454,29 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="fa-solid fa-map-marker-alt"></i></span>
                             <input type="text" id="inputDireccion" class="form-control"
-                                   placeholder="Ej: Calle 50 # 12-34">
+                                placeholder="Ej: Calle 50 # 12-34">
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Barrio</label>
                         <select id="selectBarrio" class="form-select">
                             <option value="">Seleccionar...</option>
-                            <option th:each="b : ${barrios}"
-                                    th:value="${b.id}" th:text="${b.nombreBarrio}"></option>
+                            <option th:each="b : ${barrios}" th:value="${b.id}" th:text="${b.nombreBarrio}"></option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Tipo de dirección</label>
                         <select id="selectTipoDireccion" class="form-select">
                             <option value="">Seleccionar...</option>
-                            <option th:each="td : ${tiposDireccion}"
-                                    th:value="${td.id}" th:text="${td.nombreTipo}"></option>
+                            <option th:each="td : ${tiposDireccion}" th:value="${td.id}" th:text="${td.nombreTipo}">
+                            </option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Complemento <span class="text-muted fw-normal small">(opcional)</span></label>
+                        <label class="form-label fw-bold">Complemento <span
+                                class="text-muted fw-normal small">(opcional)</span></label>
                         <input type="text" id="inputComplementoDir" class="form-control"
-                               placeholder="Ej: Piso 3, Oficina 301">
+                            placeholder="Ej: Piso 3, Oficina 301">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -483,6 +492,9 @@
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
 
+    <div th:replace="~{fragments/modal-confirmacion :: modalConfirmacion}"></div>
+    <div th:replace="~{fragments/modal-confirmacion :: modalScripts}"></div>
+
     <script th:src="@{/js/proveedor/utils.js}"></script>
     <script th:src="@{/js/proveedor/catalogo.js}"></script>
     <script th:src="@{/js/proveedor/correos.js}"></script>
@@ -493,4 +505,5 @@
         const PROVEEDOR_ID = /*[[${proveedor.id}]]*/ 0;
     </script>
 </body>
+
 </html>

@@ -1,0 +1,133 @@
+.supplier-section {
+    background: #f8f9fa;
+    border: 1px solid rgba(0, 0, 0, 0.055);
+    border-radius: 12px;
+    padding: 1.15rem;
+    transition:
+        background-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.supplier-section:hover {
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.045);
+}
+
+.supplier-icon {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: rgba(13, 110, 253, 0.08);
+    color: #0d6efd;
+
+    font-size: 1rem;
+}
+
+
+.min-w-0 {
+    min-width: 0;
+}
+
+.supplier-order {
+    display: flex;
+    flex-direction: column;
+}
+
+.supplier-section-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #6c757d;
+
+    padding: 0.25rem 0.5rem;
+
+    border-radius: 6px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.order-data {
+    min-width: 0;
+}
+
+.order-label {
+    display: block;
+
+    font-size: 0.72rem;
+    color: #6c757d;
+
+    margin-bottom: 0.15rem;
+}
+
+.order-value {
+    display: block;
+
+    font-size: 0.88rem;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+.empty-order {
+    display: flex;
+    align-items: center;
+
+    min-height: 70px;
+
+    color: #6c757d;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.supplier-actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.actions-title {
+    color: #6c757d;
+
+    font-size: 0.7rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.04em;
+
+    margin-bottom: 0.75rem;
+}
+
+
+@media (max-width: 1199.98px) {
+
+    .supplier-actions {
+        justify-content: flex-start;
+    }
+
+}
+
+
+/* Móviles */
+@media (max-width: 575.98px) {
+
+    .supplier-section {
+        padding: 1rem;
+        border-radius: 10px;
+    }
+
+    .supplier-actions .btn {
+        width: 100%;
+    }
+
+    .order-value {
+        font-size: 0.82rem;
+    }
+
+}

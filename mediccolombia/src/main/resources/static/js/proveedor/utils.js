@@ -36,3 +36,37 @@ async function deleteAPI(url) {
     const res = await fetch(url, { method: 'DELETE' });
     if (!res.ok) throw new Error(`Error ${res.status}`);
 }
+
+function eliminarProveedor(id, nombre) {
+    mostrarModalConfirmacion(
+        'Eliminar proveedor',
+        `¿Estás seguro de que deseas eliminar este proveedor <strong>${nombre}</strong>?<br><br>
+         <span class="text-danger fw-semibold">
+             <i class="fa-solid fa-circle-exclamation me-1"></i>
+             Esta acción no se puede deshacer.
+         </span>`,
+        'danger',
+        function () {
+            fetch(`/proveedores/${id}/eliminar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    '_method': 'delete'
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        mostrarMensaje('Error al eliminar el proveedor.', 'danger');
+                    }
+                })
+                .catch(() => {
+                    mostrarMensaje('Error de conexión al eliminar el proveedor.', 'danger');
+                });
+        },
+        'Sí, eliminar proveedor'
+    );
+}

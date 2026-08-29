@@ -15,6 +15,7 @@ public interface MovimientoProdDAO extends JpaRepository<MovimientoProd, Long>{
     List<MovimientoProd> findByTipoMovimientoId(Long tipoMovimientoId);
     boolean existsByPickerChecker(String pickerChecker);
     List<MovimientoProd> findByTipoMovimientoSigno(int signo);
+    List<MovimientoProd> findByTipoMovimientoSignoOrderByFechaMovimientoDesc(int signo);
 
     
 }

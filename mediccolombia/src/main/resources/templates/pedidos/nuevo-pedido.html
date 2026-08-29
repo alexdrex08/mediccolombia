@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head :: head(titulo='Nuevo Pedido - MedicColombia')}"></head>
+<head th:replace="~{fragments/head :: head(titulo='Nuevo Pedido - MedicColombia', linksExtra=~{::#tabs-style})}">
+    <link id="tabs-style" rel="stylesheet" th:href="@{/css/reporte.css}">
+</head>
 
 <body class="bg-light">
 
@@ -324,8 +326,6 @@
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
 
-    <link rel="stylesheet" th:href="@{/css/reporte.css}">
-
     <!-- //LOGICA DE PEDIDOS -->
     <script th:src="@{/js/general/actualizarFecha.js}"></script>
     <script th:src="@{/js/pedido/estado.js}"></script>
@@ -335,6 +335,8 @@
     <script th:src="@{/js/pedido/carrito.js}"></script>
     <script th:src="@{/js/pedido/sincronizacion.js}"></script>
     <script th:src="@{/js/pedido/inicializacion.js}"></script>
+
+    
 
     <!-- Para el modal -->
     <div th:replace="~{fragments/modal-confirmacion :: modalConfirmacion}"></div>

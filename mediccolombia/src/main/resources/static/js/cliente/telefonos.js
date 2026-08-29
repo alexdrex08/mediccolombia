@@ -28,13 +28,20 @@ async function agregarTelefono() {
 }
 
 // DELETE /api/telefonos/{id}
-async function eliminarTelefono(id) {
-    if (!confirm('¿Eliminar este teléfono?')) return;
-    try {
-        await deleteAPI(`/api/telefonos/${id}`);
-        mostrarMensaje('Teléfono eliminado.');
-        setTimeout(() => location.reload(), 800);
-    } catch (e) {
-        mostrarMensaje('Error al eliminar el teléfono.', 'danger');
-    }
+function eliminarTelefono(id) {
+    mostrarModalConfirmacion(
+        'Eliminar teléfono',
+        '¿Estás seguro de que deseas eliminar este teléfono? Esta acción no se puede deshacer.',
+        'danger',
+        async function () {
+            try {
+                await deleteAPI(`/api/telefonos/${id}`);
+                mostrarMensaje('Teléfono eliminado.');
+                setTimeout(() => location.reload(), 800);
+            } catch (e) {
+                mostrarMensaje('Error al eliminar.', 'danger');
+            }
+        },
+        'Sí, eliminar'
+    );
 }

@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head :: head(titulo='Vencimientos y Alertas - MedicColombia')}"></head>
+<head
+    th:replace="~{fragments/head :: head(titulo='Vencimientos y Alertas - MedicColombia', linksExtra=~{::#alerta-style})}">
+</head>
+
+<th:block id="alerta-style">
+    <link rel="stylesheet" th:href="@{/css/reporte.css}">
+    <link rel="stylesheet" th:href="@{/css/paginacion.css}">
+</th:block>
 
 <body class="toggled">
     <header th:replace="~{fragments/header :: header}"></header>
@@ -18,6 +25,7 @@
                         <h2 class="fw-bold text-dark mb-0">
                             <i class="fa-solid fa-bell me-2 text-warning"></i>Vencimientos y Alertas
                         </h2>
+
                         <p class="text-muted small mb-0 d-none d-sm-inline ms-1">
                             Las alertas son generadas automáticamente por el sistema cada medianoche.
                         </p>
@@ -39,14 +47,19 @@
                     </div>
                 </div>
 
+
                 <!-- Mensajes flash -->
-                <div th:if="${mensaje}" class="alert alert-success py-2 mb-3">
+                <div th:if="${mensaje != null and !mensaje.isEmpty()}"
+                    class="alert alert-success alert-dismissible fade show shadow-sm py-2 mb-3">
                     <i class="fa-solid fa-circle-check me-2"></i>
                     <span th:text="${mensaje}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-                <div th:if="${error}" class="alert alert-danger py-2 mb-3">
+                <div th:if="${error != null and !error.isEmpty()}"
+                    class="alert alert-danger alert-dismissible fade show shadow-sm py-2 mb-3">
                     <i class="fa-solid fa-circle-exclamation me-2"></i>
                     <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
 
                 <!-- TARJETAS DE RESUMEN -->
@@ -177,16 +190,17 @@
                                                     <td th:if="${esAdmin}" class="text-center">
                                                         <div class="d-flex gap-2">
                                                             <a th:href="@{/pedidos/nuevo}"
-                                                                class="btn btn-sm btn-warning"
+                                                                class="btn  btn-sm btn-warning"
                                                                 title="Crear pedido de reposición">
-                                                                <i class="fa-solid fa-cart-plus me-0 me-sm-1"></i><span
-                                                                    class="d-none d-sm-inline ms-1">Hacer pedido</span>
+                                                                <span class="d-none d-sm-inline ms-1">
+                                                                    <i class="fa-solid fa-cart-plus me-0 me-sm-1"></i>
+                                                                    Hacer pedido</span>
                                                             </a>
 
                                                             <button type="button"
                                                                 class="btn btn-sm btn-outline-secondary"
                                                                 title="Marcar como resuelta"
-                                                                th:onclick="prepararEliminar([[${alerta.id}]], '[[${alerta.nombreProducto}]]')">
+                                                                th:onclick="prepararResolver([[${alerta.id}]], '[[${alerta.nombreProducto}]]')">
                                                                 <i class="fa-solid fa-check me-0 me-sm-1"></i><span
                                                                     class="d-none d-sm-inline ms-1">Resolver</span>
                                                             </button>
@@ -238,7 +252,7 @@
                                                     <td th:if="${esAdmin}" class="text-center">
                                                         <button type="button" class="btn btn-sm btn-outline-secondary"
                                                             title="Marcar como resuelta"
-                                                            th:onclick="prepararEliminar([[${alerta.id}]], '[[${alerta.nombreProducto}]]')">
+                                                            th:onclick="prepararResolver([[${alerta.id}]], '[[${alerta.nombreProducto}]]')">
                                                             <i class="fa-solid fa-check me-0 me-sm-1"></i><span
                                                                 class="d-none d-sm-inline ms-1">Resolver</span>
                                                         </button>
@@ -291,7 +305,7 @@
                                                     <td th:if="${esAdmin}" class="text-center">
                                                         <button type="button" class="btn btn-sm btn-outline-secondary"
                                                             title="Marcar como resuelta"
-                                                            th:onclick="prepararEliminar([[${alerta.id}]], '[[${alerta.nombreProducto}]]')">
+                                                            th:onclick="prepararResolver([[${alerta.id}]], '[[${alerta.nombreProducto}]]')">
                                                             <i class="fa-solid fa-check me-0 me-sm-1"></i><span
                                                                 class="d-none d-sm-inline ms-1">Resolver</span>
                                                         </button>
@@ -427,15 +441,16 @@
         </div>
     </div>
 
+    <!-- Formulario oculto para resolver alertas -->
+    <form id="formResolverAlerta" method="post" style="display:none;">
+    </form>
+
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
 
     <!-- MODAL DE CONFIRMACIÓN REUTILIZABLE -->
     <div th:replace="~{fragments/modal-confirmacion :: modalConfirmacion}"></div>
     <div th:replace="~{fragments/modal-confirmacion :: modalScripts}"></div>
-
-    <link rel="stylesheet" th:href="@{/css/reporte.css}">
-    <link rel="stylesheet" th:href="@{/css/paginacion.css}">
 
     <script th:src="@{/js/general/paginacion.js}"></script>
     <script th:src="@{/js/alerta/alerta.js}"></script>

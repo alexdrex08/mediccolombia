@@ -33,13 +33,11 @@
                                 Editar
                             </span>
                         </a>
-                        <form th:action="@{'/clientes/' + ${cliente.id} + '/eliminar'}" method="post"
-                            onsubmit="return confirm('¿Eliminar este cliente? Esta acción no se puede deshacer.')">
-                            <button type="submit" class="btn btn-outline-danger btn-sm ">
-                                <i class="fa-solid fa-trash me-0 me-sm-1"></i>
-                                <span class="d-none d-sm-inline ms-1">Eliminar</span>
-                            </button>
-                        </form>
+                        <button th:if="${esAdmin}" type="button" class="btn btn-outline-danger btn-sm"
+                            th:onclick="eliminarCliente([[${cliente.id}]], [[${cliente.nombreCliente}]])">
+                            <i class="fa-solid fa-trash me-0 me-sm-1"></i>
+                            <span class="d-none d-sm-inline ms-1">Eliminar</span>
+                        </button>
                         <a th:href="@{/clientes}" class="btn btn-outline-secondary btn-sm">
                             <i class="fa-solid fa-arrow-left me-0 me-sm-1"></i> <span class="d-none d-sm-inline ms-1">
                                 Volver
@@ -113,9 +111,11 @@
                                 <span class="fw-bold">
                                     <i class="fa-solid fa-envelope me-2 text-primary"></i>Correos electrónicos
                                 </span>
-                                <button class="btn btn-sm btn-outline-primary text-dark d-inline-flex align-items-center justify-content-center" data-bs-toggle="modal"
-                                    data-bs-target="#modalCorreo">
-                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i> <span class="d-none d-sm-inline ms-1"></span>
+                                <button
+                                    class="btn btn-sm btn-outline-primary text-dark d-inline-flex align-items-center justify-content-center"
+                                    data-bs-toggle="modal" data-bs-target="#modalCorreo">
+                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i> <span
+                                        class="d-none d-sm-inline ms-1">Agregar</span>
                                 </button>
                             </div>
                             <div class="card-body table-wrapper table-rounded">
@@ -160,9 +160,11 @@
                                 <span class="fw-bold">
                                     <i class="fa-solid fa-phone me-2 text-success"></i>Teléfonos
                                 </span>
-                                <button class="btn btn-sm btn-outline-success text-dark d-inline-flex align-items-center justify-content-center" data-bs-toggle="modal"
-                                    data-bs-target="#modalTelefono">
-                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i> <span class="d-none d-sm-inline ms-1">Agregar
+                                <button
+                                    class="btn btn-sm btn-outline-success text-dark d-inline-flex align-items-center justify-content-center"
+                                    data-bs-toggle="modal" data-bs-target="#modalTelefono">
+                                    <i class="fa-solid fa-plus me-0 me-sm-1"></i> <span
+                                        class="d-none d-sm-inline ms-1">Agregar
                                     </span>
                                 </button>
                             </div>
@@ -404,6 +406,9 @@
 
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
+
+    <div th:replace="~{fragments/modal-confirmacion :: modalConfirmacion}"></div>
+    <div th:replace="~{fragments/modal-confirmacion :: modalScripts}"></div>
 
     <script th:src="@{/js/cliente/utils.js}"></script>
     <script th:src="@{/js/cliente/correos.js}"></script>

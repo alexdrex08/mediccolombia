@@ -25,15 +25,22 @@ async function agregarProducto(idProducto) {
     }
 }
 
-async function quitarProducto(idProveedor, idProducto) {
-    if (!confirm('¿Quitar este producto del catálogo del proveedor?')) return;
-    try {
-        await deleteAPI(`/api/detalle-proveedor-producto/${idProveedor}/${idProducto}`);
-        mostrarMensaje('Producto removido del catálogo.');
-        setTimeout(() => location.reload(), 800);
-    } catch (e) {
-        mostrarMensaje('Error al quitar el producto.', 'danger');
-    }
+function quitarProducto(idProveedor, idProducto) {
+    mostrarModalConfirmacion(
+        'Quitar producto del catálogo',
+        '¿Estás seguro de que deseas quitar este producto del catálogo del proveedor? Esta acción no se puede deshacer.',
+        'danger',
+        async function () {
+            try {
+                await deleteAPI(`/api/detalle-proveedor-producto/${idProveedor}/${idProducto}`);
+                mostrarMensaje('Producto removido del catálogo.');
+                setTimeout(() => location.reload(), 800);
+            } catch (e) {
+                mostrarMensaje('Error al quitar el producto.', 'danger');
+            }
+        },
+        'Sí, quitar'
+    );
 }
 
 function filtrarProductosModal(texto) {

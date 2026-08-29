@@ -1,0 +1,46 @@
+<th:block xmlns:th="http://www.thymeleaf.org">
+    <div th:fragment="modalCambiarEstado" class="modal fade" id="modalCambiarEstado" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title">
+                        <i class="fa-solid fa-user-gear me-2"></i>
+                        Cambiar estado de: <strong id="modalNombreUsuario"></strong>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formCambiarEstado">
+                        <input type="hidden" id="idUsuarioCambio" value="">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tipo de estado</label>
+                            <select id="selectTipoEstado" class="form-select" required>
+                                <option value="">Seleccionar estado...</option>
+                                <option th:each="te : ${tiposEstado}" th:value="${te.id}" th:text="${te.nombreTipo}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Fecha de inicio</label>
+                            <input type="datetime-local" id="inputFechaInicio" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Fecha de fin <span class="text-muted small fw-normal">(opcional)</span></label>
+                            <input type="datetime-local" id="inputFechaFin" class="form-control">
+                            <div class="form-text">Dejar vacío si el estado es indefinido o activo sin fecha límite.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Observación <span class="text-muted small fw-normal">(opcional)</span></label>
+                            <textarea id="inputObservacionEstado" class="form-control" rows="2" placeholder="Motivo del cambio de estado..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning text-dark fw-bold" id="btnConfirmarCambioEstado">
+                        <i class="fa-solid fa-floppy-disk me-1"></i>Guardar estado
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>

@@ -133,7 +133,7 @@ public class VentaRegistroServiceImpl implements IVentaRegistroService {
         @Override
         @Transactional(readOnly = true)
         public List<VentaRegistroResponseDTO> listarVentas() {
-                return ventaRegistroDAO.findAll().stream()
+                return ventaRegistroDAO.findAllByOrderByFechaVentaDesc().stream()
                                 .map(venta -> {
                                         List<DetalleVentaResponseDTO> detalles = detalleVentaDAO
                                                         .findByVentaId(venta.getId())

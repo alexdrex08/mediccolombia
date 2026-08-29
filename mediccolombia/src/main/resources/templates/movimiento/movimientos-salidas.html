@@ -21,26 +21,38 @@
                 <div class="row g-4 mb-4">
                     <div class="col-md-3">
                         <div class="card shadow-sm border-0 p-3 h-100">
-                            <h6 class="fw-bold">Salidas Totales</h6>
-                            <p class="fs-4 text-warning fw-bold" th:text="${totalSalidas}"></p>
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-boxes-stacked fa-2x text-warning mb-2"></i>
+                                <p class="text-muted small mb-1">Salidas Totales</p>
+                                <h3 class="fw-bold text-warning" th:text="${totalSalidas}"></h3>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="card shadow-sm border-0 p-3 h-100">
-                            <h6 class="fw-bold">Última salida</h6>
-                            <p class="fs-4 text-success fw-bold" th:text="${ultimaSalida}"></p>
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-clock fa-2x text-success mb-2"></i>
+                                <p class="text-muted small mb-1">Última salida</p>
+                                <h3 class="fw-bold text-success" th:text="${ultimaSalida}"></h3>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="card shadow-sm border-0 p-3 h-100">
-                            <h6 class="fw-bold">Producto más despachado</h6>
-                            <p class="fs-6 fw-bold text-muted" th:text="${productoMasDespachado}"></p>
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-capsules fa-2x text-info mb-2"></i>
+                                <p class="text-muted small mb-1">Producto más despachado</p>
+                                <h6 class="fw-bold text-muted" th:text="${productoMasDespachado}"></h6>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="card shadow-sm border-0 p-3 h-100">
-                            <h6 class="fw-bold">Responsable más activo</h6>
-                            <p class="fs-6 fw-bold text-muted" th:text="${responsableMasActivo}"></p>
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-user-check fa-2x text-primary mb-2"></i>
+                                <p class="text-muted small mb-1">Responsable más activo</p>
+                                <h6 class="fw-bold text-muted" th:text="${responsableMasActivo}"></h6>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -134,8 +146,6 @@
     </div>
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
-
-    <link rel="stylesheet" th:href="@{/css/paginacion.css}">
 
     <script th:src="@{/js/general/paginacion.js}"></script>
 

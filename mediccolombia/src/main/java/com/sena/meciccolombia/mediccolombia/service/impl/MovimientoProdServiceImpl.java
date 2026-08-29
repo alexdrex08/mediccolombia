@@ -118,7 +118,7 @@ public class MovimientoProdServiceImpl implements MovimientoProdService {
     @Transactional(readOnly = true)
     @Override
     public List<MovimientoProdResponseDTO> listarPorSigno(int signo) {
-        return movimientoProdDAO.findByTipoMovimientoSigno(signo)
+        return movimientoProdDAO.findByTipoMovimientoSignoOrderByFechaMovimientoDesc(signo)
                 .stream()
                 .map(movimientoProdMapper::toResponseDTO)
                 .toList();

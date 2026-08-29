@@ -28,4 +28,6 @@
 
 
     <title th:text="${titulo} ? ${nombreSistema} : 'MedicColombia'">MedicColombia</title>
+
+    <th:block th:replace="${linksExtra} ?: _" />
 </head>

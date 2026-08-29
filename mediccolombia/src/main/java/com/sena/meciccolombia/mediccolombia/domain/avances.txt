@@ -61,6 +61,10 @@ vista proyecciones actualizada y corregida para las nuevas funcionalidades.
 
 ultimos detalles: imagenes en la ubicacion correcta y graficos. (libreria)
 
+
+detalle-pedido (agregando modales de confirmacion para eliminacion) (26-8-26)
+corregir filtrado y end-pont de agregarproductos catalogo proveedores 
+
 6. APLICACION TERMINADA.
 
 

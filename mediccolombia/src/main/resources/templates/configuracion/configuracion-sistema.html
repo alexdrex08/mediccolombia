@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head :: head(titulo='Parámetros del Sistema - MedicColombia')}"></head>
+<head th:replace="~{fragments/head :: head(titulo='Parámetros del Sistema - MedicColombia', linksExtra=~{::#config-css})}">
+    <link id="config-css" rel="stylesheet" th:href="@{/css/tarjetas.css}">
+</head>
 
 <body class="toggled">
     <header th:replace="~{fragments/header :: header}"></header>
@@ -127,8 +129,6 @@
     </div>
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: scripts}"></script>
-
-    <link rel="stylesheet" th:href="@{/css/tarjetas.css}">
 
     <script th:src="@{/js/configuracion/rotate.js}"></script>
 

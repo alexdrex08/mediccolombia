@@ -37,3 +37,41 @@ async function deleteAPI(url) {
     const res = await fetch(url, { method: 'DELETE' });
     if (!res.ok) throw new Error(`Error ${res.status}`);
 }
+
+/**
+ * @param {number} id
+ * @param {string} nombre -
+ */
+function eliminarCliente(id, nombre) {
+    mostrarModalConfirmacion(
+        'Eliminar cliente',
+        `¿Estás seguro de que deseas eliminar al cliente <strong>${nombre}</strong>?<br><br>
+        <span class="text-danger fw-semibold">
+            <i class="fa-solid fa-circle-exclamation me-1"></i>
+            Esta acción no se puede deshacer.
+        </span>`,
+        'danger',
+        function () {
+            fetch(`/clientes/${id}/eliminar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    '_method': 'delete'
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        mostrarMensaje('Error al eliminar el cliente.', 'danger');
+                    }
+                })
+                .catch(() => {
+                    mostrarMensaje('Error de conexión al eliminar el cliente.', 'danger');
+                });
+        },
+        'Sí, eliminar cliente'
+    );
+}

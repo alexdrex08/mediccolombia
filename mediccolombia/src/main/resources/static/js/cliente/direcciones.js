@@ -31,13 +31,20 @@ async function agregarDireccion() {
 }
 
 // DELETE /api/direccions/{id}
-async function eliminarDireccion(id) {
-    if (!confirm('¿Eliminar esta dirección?')) return;
-    try {
-        await deleteAPI(`/api/direccions/${id}`);
-        mostrarMensaje('Dirección eliminada.');
-        setTimeout(() => location.reload(), 800);
-    } catch (e) {
-        mostrarMensaje('Error al eliminar la dirección.', 'danger');
-    }
+function eliminarDireccion(id) {
+    mostrarModalConfirmacion(
+        'Eliminar dirección',
+        '¿Estás seguro de que deseas eliminar esta dirección? Esta acción no se puede deshacer.',
+        'danger',
+        async function () {
+            try {
+                await deleteAPI(`/api/direccions/${id}`);
+                mostrarMensaje('Dirección eliminada.');
+                setTimeout(() => location.reload(), 800);
+            } catch (e) {
+                mostrarMensaje('Error al eliminar.', 'danger');
+            }
+        },
+        'Sí, eliminar'
+    );
 }

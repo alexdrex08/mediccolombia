@@ -14,4 +14,6 @@ public interface PedidoCompraDAO extends JpaRepository<PedidoCompra, Long>{
     List<PedidoCompra> findByProveedorId(Long proveedorId);
     List<PedidoCompra> findByEstadoPedidoId(Long estadoPedidoId);
     List<PedidoCompra> findByFechaPedidoBetween(LocalDateTime inicio, LocalDateTime fin);
+
+    List<PedidoCompra> findAllByOrderByFechaPedidoDesc();
 }

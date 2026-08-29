@@ -20,10 +20,19 @@ async function agregarCorreo() {
 }
 
 async function eliminarCorreo(id) {
-    if (!confirm('¿Eliminar este correo?')) return;
-    try {
-        await deleteAPI(`/api/correos/${id}`);
-        mostrarMensaje('Correo eliminado.');
-        setTimeout(() => location.reload(), 800);
-    } catch (e) { mostrarMensaje('Error al eliminar.', 'danger'); }
+    mostrarModalConfirmacion(
+        'Eliminar correo',
+        '¿Estás seguro de que deseas eliminar este correo? Esta acción no se puede deshacer.',
+        'danger',
+        async function () {
+            try {
+                await deleteAPI(`/api/correos/${id}`);
+                mostrarMensaje('Correo eliminado.');
+                setTimeout(() => location.reload(), 800);
+            } catch (e) {
+                mostrarMensaje('Error al eliminar.', 'danger');
+            }
+        },
+        'Sí, eliminar'
+    );
 }

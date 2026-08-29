@@ -2,6 +2,7 @@ package com.sena.meciccolombia.mediccolombia.service.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import com.sena.meciccolombia.mediccolombia.domain.DetalleVenta;
 import com.sena.meciccolombia.mediccolombia.domain.Direccion;
 import com.sena.meciccolombia.mediccolombia.domain.EstadoPedido;
 import com.sena.meciccolombia.mediccolombia.domain.FiltroBusqueda;
+import com.sena.meciccolombia.mediccolombia.domain.MovimientoProd;
 import com.sena.meciccolombia.mediccolombia.domain.PedidoCompra;
 import com.sena.meciccolombia.mediccolombia.domain.Producto;
 import com.sena.meciccolombia.mediccolombia.domain.Proveedor;
@@ -142,15 +144,18 @@ public class ReporteInvServiceImpl implements ReporteInvService {
 
         private Object generarContenido(ReporteInvRequestDTO dto) {
                 return switch (dto.getTipoReporte()) {
-                        case "REPORTE_PRODUCTO" -> generarReporteProducto(dto.getIdReferencia());
-                        case "REPORTE_CATEGORIA" -> generarReporteCategoria(dto.getIdReferencia());
+                        case "REPORTE_PRODUCTO" ->
+                                generarReporteProducto(dto.getIdReferencia());
+                        case "REPORTE_CATEGORIA" ->
+                                generarReporteCategoria(dto.getIdReferencia());
                         case "REPORTE_VENTAS" -> generarReporteVentas(dto.getFechaInicio(), dto.getFechaFin());
                         case "REPORTE_PEDIDOS" -> generarReportePedidos(dto.getFechaInicio(), dto.getFechaFin());
                         case "REPORTE_CLIENTES" -> generarReporteClientes(dto.getFechaInicio(), dto.getFechaFin());
                         case "REPORTE_PROVEEDORES" ->
                                 generarReporteProveedores(dto.getFechaInicio(), dto.getFechaFin());
                         case "REPORTE_STOCK" -> generarReporteStock();
-                        case "REPORTE_VENCIMIENTOS" -> generarReporteVencimientos();
+                        case "REPORTE_VENCIMIENTOS" ->
+                                generarReporteVencimientos(dto.getFechaInicio(), dto.getFechaFin());
                         case "REPORTE_GENERAL" -> generarReporteGeneral();
                         default -> throw new ResourceNotFoundException(
                                         "Tipo de Reporte no reconocido" + dto.getTipoReporte());
@@ -463,21 +468,42 @@ public class ReporteInvServiceImpl implements ReporteInvService {
         // REPORTE PARA VENCIMIENTO
         // ===============================================================================================
 
-        private Map<String, Object> generarReporteVencimientos() {
-                LocalDateTime ahora = LocalDateTime.now();
-                int diasProximo = leerConfigInt("dias_proximo_vencer", 30);
-                LocalDateTime limite = ahora.plusDays(diasProximo);
+        private Map<String, Object> generarReporteVencimientos(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+
                 List<Producto> todos = productoDAO.findAll();
-                List<Producto> vencidos = todos.stream()
-                                .filter(p -> p.getFechaExpiracion() != null
-                                                && p.getFechaExpiracion().isBefore(ahora))
-                                .toList();
-                List<Producto> proximosAVencer = todos.stream()
-                                .filter(p -> p.getFechaExpiracion() != null
-                                                && p.getFechaExpiracion().isAfter(ahora)
-                                                && p.getFechaExpiracion().isBefore(limite)
-                                                && p.getStock() > 0)
-                                .toList();
+                LocalDateTime ahora = LocalDateTime.now();
+
+                List<Producto> vencidos = new ArrayList<>();
+                List<Producto> proximosAVencer = new ArrayList<>();
+
+                if (fechaInicio != null && fechaFin != null) {
+                        todos = todos.stream()
+                                        .filter(p -> p.getFechaExpiracion() != null &&
+                                                        p.getFechaExpiracion().isAfter(fechaInicio) &&
+                                                        p.getFechaExpiracion().isBefore(fechaFin))
+                                        .toList();
+                        vencidos = todos.stream()
+                                        .filter(p -> p.getFechaExpiracion().isBefore(ahora))
+                                        .toList();
+
+                        proximosAVencer = todos.stream()
+                                        .filter(p -> p.getFechaExpiracion().isAfter(ahora))
+                                        .toList();
+                } else {
+                        int diasProximo = leerConfigInt("dias_proximo_vencer", 30);
+                        LocalDateTime limite = ahora.plusDays(diasProximo);
+                        vencidos = todos.stream()
+                                        .filter(p -> p.getFechaExpiracion() != null
+                                                        && p.getFechaExpiracion().isBefore(ahora))
+                                        .toList();
+                        proximosAVencer = todos.stream()
+                                        .filter(p -> p.getFechaExpiracion() != null
+                                                        && p.getFechaExpiracion().isAfter(ahora)
+                                                        && p.getFechaExpiracion().isBefore(limite)
+                                                        && p.getStock() > 0)
+                                        .toList();
+                }
+
                 Map<String, Object> contenido = new LinkedHashMap<>();
                 contenido.put("cantidadVencidos", vencidos.size());
                 contenido.put("cantidadProximosAVencer", proximosAVencer.size());
@@ -1265,7 +1291,7 @@ public class ReporteInvServiceImpl implements ReporteInvService {
 
                 contenido.put(
                                 "vencimientos",
-                                generarReporteVencimientos());
+                                generarReporteVencimientos(null, null));
 
                 return contenido;
         }

@@ -54,8 +54,6 @@ public class PedidoCompraServiceImpl implements PedidoCompraService {
     private static final Long ESTADO_COMPLETADO = 6L;
     private static final Long ESTADO_DEVULEVO = 9L;
 
-    private static final Long USUARIO_ADMIN = 1L;
-
     @Override
     @Transactional
     public PedidoCompraResponseDTO crearPedido(PedidoCompraRequestDTO dto) {
@@ -226,7 +224,7 @@ public class PedidoCompraServiceImpl implements PedidoCompraService {
     @Override
     @Transactional(readOnly = true)
     public List<PedidoCompraResponseDTO> listar() {
-        return pedidoCompraDAO.findAll().stream()
+        return pedidoCompraDAO.findAllByOrderByFechaPedidoDesc().stream()
                 .map(pedido -> {
                     List<DetallePedidoResponseDTO> detalles = detallePedidoDAO.findByPedidoId(pedido.getId())
                             .stream()

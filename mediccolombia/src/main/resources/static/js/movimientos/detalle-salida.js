@@ -18,14 +18,10 @@
     const elVenta = document.getElementById('origenVenta');
     const elOtro = document.getElementById('origenOtro');
 
-    // ── Caso: salida tipo Venta con pickerChecker "VENTA-{id}" ── ESTE SERIA EL FLUJO NORMAL
     if (picker && picker.startsWith('VENTA-')) {
         const idVenta = picker.replace('VENTA-', '').trim();
 
         try {
-            // Llama al RestController: GET /api/ventas/{id}
-            // Devuelve VentaRegistroResponseDTO:
-            // { id, fechaVenta, nombreCliente, nombreUsuario, totalVenta, detalles }
             const res = await fetch(`/api/ventas/${idVenta}`);
             if (!res.ok) throw new Error('Venta no encontrada');
             const venta = await res.json();
@@ -36,8 +32,6 @@
             document.getElementById('ventaCliente').textContent = venta.nombreCliente ?? '—';
             document.getElementById('ventaTotal').textContent =
                 '$ ' + Number(venta.totalVenta).toLocaleString('es-CO');
-
-            // Formatear fecha
             if (venta.fechaVenta) {
                 const fecha = new Date(Array.isArray(venta.fechaVenta)
                     ? venta.fechaVenta[0] + '-' +
@@ -51,11 +45,7 @@
                     + ' ' + fecha.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
             }
 
-            // Link al detalle completo
             document.getElementById('linkVerVenta').href = '/ventas/' + venta.id;
-
-            // Tabla de detalles de la venta
-            // detalles: [{ nombreProducto, cantidad, precioUnitario, subtotal }]
             const tbodyDetalles = document.getElementById('ventaDetalles');
             if (venta.detalles && venta.detalles.length > 0) {
                 tbodyDetalles.innerHTML = venta.detalles.map(d => `
@@ -77,13 +67,11 @@
             elVenta.style.display = 'block';
 
         } catch (e) {
-            // Si falla el fetch, mostramos el bloque genérico igualmente
             console.error('Error cargando venta origen:', e);
             mostrarBloqueGenerico(tipoMov, motivoMov);
         }
 
     } else {
-        // ── Caso: salida sin pickerChecker tipo VENTA (retiro, daño, ajuste...) ──
         mostrarBloqueGenerico(tipoMov, motivoMov);
     }
 })();
@@ -93,7 +81,6 @@ function mostrarBloqueGenerico(tipo, motivo) {
     document.getElementById('origenTipoLabel').textContent = tipo || 'Salida de inventario';
     document.getElementById('origenMotivo').textContent = motivo || 'Sin descripción registrada';
 
-    // Nota especial para retiros automáticos por vencimiento
     if (tipo && tipo.toLowerCase().includes('vencimiento')) {
         document.getElementById('notaVencimiento').style.display = 'block';
     }

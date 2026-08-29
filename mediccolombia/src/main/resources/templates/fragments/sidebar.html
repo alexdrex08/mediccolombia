@@ -100,6 +100,18 @@
                 th:classappend="${vistaActiva == 'proveedores' or vistaActiva == 'proveedores-lista' or vistaActiva == 'proveedores-nuevo' or vistaActiva == 'pedidos-lista' or vistaActiva == 'pedidos-nuevo'} ? 'show' : ''">
 
                 <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase"
+                    style="font-size:0.7rem; letter-spacing:0.05em;">Pedidos</span>
+                    <a th:href="@{/pedidos/nuevo}"
+                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'pedidos-nuevo'} ? 'active' : ''">
+                    <i class="fa-solid fa-plus me-2"></i> Nuevo Pedido
+                </a>
+                <a th:href="@{/pedidos}" class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
+                    th:classappend="${vistaActiva == 'pedidos-lista'} ? 'active' : ''">
+                    <i class="fa-solid fa-list me-2"></i> Ver Pedidos
+                </a>
+                
+                <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase"
                     style="font-size:0.7rem; letter-spacing:0.05em;">Proveedores</span>
                 <a th:href="@{/proveedores}"
                     class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
@@ -111,17 +123,7 @@
                     th:classappend="${vistaActiva == 'proveedores-nuevo'} ? 'active' : ''">
                     <i class="fa-solid fa-plus me-2"></i> Registrar Nuevo
                 </a>
-                <span class="list-group-item bg-dark text-secondary small px-4 py-2 border-0 text-uppercase"
-                    style="font-size:0.7rem; letter-spacing:0.05em;">Pedidos</span>
-                <a th:href="@{/pedidos}" class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
-                    th:classappend="${vistaActiva == 'pedidos-lista'} ? 'active' : ''">
-                    <i class="fa-solid fa-list me-2"></i> Ver Pedidos
-                </a>
-                <a th:href="@{/pedidos/nuevo}"
-                    class="list-group-item list-group-item-action bg-dark text-white p-4 border-0"
-                    th:classappend="${vistaActiva == 'pedidos-nuevo'} ? 'active' : ''">
-                    <i class="fa-solid fa-plus me-2"></i> Nuevo Pedido
-                </a>
+                
             </div>
 
             <!-- REPORTES -->

@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head :: head(titulo='Dashboard - MedicColombia')}"></head>
+<head th:replace="~{fragments/head :: head(titulo='Dashboard - MedicColombia', linksExtra=~{::#dash-style})}">
+    <link id="dash-style" rel="stylesheet" th:href="@{/css/reporte.css}">
+</head>
 
 <body class="toggled">
     <header th:replace="~{fragments/header ::  header}"></header>
@@ -65,7 +67,7 @@
                     </div>
                 </div>
 
-                <!-- TABLA DE MOVIMIENTOS RECIENTES (visible siempre) -->
+                <!-- TABLA DE MOVIMIENTOS RECIENTES -->
                 <div class="card shadow-sm border-0 mb-4 dash-table">
                     <div class="card-header bg-white fw-bold">
                         <i class="fa-solid fa-clock me-2 text-secondary"></i>Últimos Movimientos de Inventario
@@ -107,64 +109,77 @@
                     </div>
                 </div>
 
-                <!-- ════════════════════════════════════════════════════════
-                     GRÁFICOS ORGANIZADOS POR TABS (Solución UX)
-                ════════════════════════════════════════════════════════ -->
                 <div class="card shadow-sm border-0">
-                    <div class="card-header bg-white p-0 border-bottom">
-                        <ul class="nav nav-tabs nav-fill border-0 p-2" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active fw-bold" id="tab-inventario" data-bs-toggle="tab"
-                                    data-bs-target="#content-inventario" type="button" role="tab">
-                                    <i class="fa-solid fa-boxes-stacked me-2 text-primary"></i>Inventario
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link fw-bold" id="tab-ventas" data-bs-toggle="tab"
-                                    data-bs-target="#content-ventas" type="button" role="tab">
-                                    <i class="fa-solid fa-chart-line me-2 text-success"></i>Ventas
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link fw-bold" id="tab-alertas" data-bs-toggle="tab"
-                                    data-bs-target="#content-alertas" type="button" role="tab">
-                                    <i class="fa-solid fa-bell me-2 text-warning"></i>Alertas
-                                </button>
-                            </li>
-                        </ul>
+                    <div class="card-body p-0">
+                        <div class="bg-light rounded-top p-2 border-bottom">
+
+                            <ul class="nav nav-tabs nav-fill border-0 p-2" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active fw-bold" id="tab-inventario" data-bs-toggle="tab"
+                                        data-bs-target="#content-inventario" type="button" role="tab">
+                                        <i class="fa-solid fa-boxes-stacked me-2 text-primary"></i>Inventario
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link fw-bold" id="tab-ventas" data-bs-toggle="tab"
+                                        data-bs-target="#content-ventas" type="button" role="tab">
+                                        <i class="fa-solid fa-chart-line me-2 text-success"></i>Ventas
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link fw-bold" id="tab-alertas" data-bs-toggle="tab"
+                                        data-bs-target="#content-alertas" type="button" role="tab">
+                                        <i class="fa-solid fa-bell me-2 text-warning"></i>Alertas
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="card-body tab-content">
+                    <div class="tab-content">
 
                         <!-- TAB 1: INVENTARIO -->
-                        <div class="tab-pane fade show active" id="content-inventario" role="tabpanel">
+                        <div class="tab-pane fade show active p-3" id="content-inventario" role="tabpanel">
                             <div class="row g-4">
                                 <!-- Doughnut: Distribución de Stock -->
                                 <div class="col-lg-5">
                                     <div class="card shadow-sm border-0 h-100">
-                                        <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
-                                            <span><i class="fa-solid fa-chart-pie me-2 text-primary"></i>Distribución de Stock</span>
-                                            <span id="spinnerStock" class="spinner-border spinner-border-sm text-primary" role="status"></span>
+                                        <div
+                                            class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+                                            <span><i class="fa-solid fa-chart-pie me-2 text-primary"></i>Distribución de
+                                                Stock</span>
+                                            <span id="spinnerStock"
+                                                class="spinner-border spinner-border-sm text-primary"
+                                                role="status"></span>
                                         </div>
-                                        <div class="card-body d-flex flex-column align-items-center justify-content-center" style="min-height:260px;">
-                                            <div id="errorStock" class="text-muted small text-center" style="display:none;">
+                                        <div class="card-body d-flex flex-column align-items-center justify-content-center"
+                                            style="min-height:260px;">
+                                            <div id="errorStock" class="text-muted small text-center"
+                                                style="display:none;">
                                                 <i class="fa-solid fa-circle-exclamation me-1"></i> No se pudo cargar.
                                             </div>
                                             <canvas id="graficoStock" style="max-height:220px;"></canvas>
                                         </div>
                                         <div class="card-footer bg-transparent border-0 pt-0 pb-3">
-                                            <div class="d-flex justify-content-center gap-4 small" id="leyendaStock"></div>
+                                            <div class="d-flex justify-content-center gap-4 small" id="leyendaStock">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- Bar: Entradas vs Salidas -->
                                 <div class="col-lg-7">
                                     <div class="card shadow-sm border-0 h-100">
-                                        <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
-                                            <span><i class="fa-solid fa-chart-column me-2 text-success"></i>Entradas vs Salidas — <span id="labelMesMovimientos" class="text-muted fw-normal small"></span></span>
-                                            <span id="spinnerMovimientos" class="spinner-border spinner-border-sm text-success" role="status"></span>
+                                        <div
+                                            class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+                                            <span><i class="fa-solid fa-chart-column me-2 text-success"></i>Entradas vs
+                                                Salidas — <span id="labelMesMovimientos"
+                                                    class="text-muted fw-normal small"></span></span>
+                                            <span id="spinnerMovimientos"
+                                                class="spinner-border spinner-border-sm text-success"
+                                                role="status"></span>
                                         </div>
                                         <div class="card-body" style="min-height:260px;">
-                                            <div id="errorMovimientos" class="text-muted small text-center pt-5" style="display:none;">
+                                            <div id="errorMovimientos" class="text-muted small text-center pt-5"
+                                                style="display:none;">
                                                 <i class="fa-solid fa-circle-exclamation me-1"></i> No se pudo cargar.
                                             </div>
                                             <canvas id="graficoMovimientos" style="max-height:230px;"></canvas>
@@ -175,17 +190,21 @@
                         </div>
 
                         <!-- TAB 2: VENTAS -->
-                        <div class="tab-pane fade" id="content-ventas" role="tabpanel">
+                        <div class="tab-pane fade p-2" id="content-ventas" role="tabpanel">
                             <div class="row g-4">
                                 <!-- Line: Ventas 30 días -->
                                 <div class="col-lg-8">
                                     <div class="card shadow-sm border-0 h-100">
-                                        <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
-                                            <span><i class="fa-solid fa-chart-line me-2 text-info"></i>Ventas — últimos 30 días</span>
-                                            <span id="spinnerVentas" class="spinner-border spinner-border-sm text-info" role="status"></span>
+                                        <div
+                                            class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+                                            <span><i class="fa-solid fa-chart-line me-2 text-info"></i>Ventas — últimos
+                                                30 días</span>
+                                            <span id="spinnerVentas" class="spinner-border spinner-border-sm text-info"
+                                                role="status"></span>
                                         </div>
                                         <div class="card-body" style="min-height:260px;">
-                                            <div id="errorVentas" class="text-muted small text-center pt-5" style="display:none;">
+                                            <div id="errorVentas" class="text-muted small text-center pt-5"
+                                                style="display:none;">
                                                 <i class="fa-solid fa-circle-exclamation me-1"></i> No se pudo cargar.
                                             </div>
                                             <canvas id="graficoVentas" style="max-height:230px;"></canvas>
@@ -195,12 +214,16 @@
                                 <!-- Horizontal Bar: Top 5 más vendidos -->
                                 <div class="col-lg-4">
                                     <div class="card shadow-sm border-0 h-100">
-                                        <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
-                                            <span><i class="fa-solid fa-trophy me-2 text-warning"></i>Top 5 más vendidos</span>
-                                            <span id="spinnerTop" class="spinner-border spinner-border-sm text-warning" role="status"></span>
+                                        <div
+                                            class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+                                            <span><i class="fa-solid fa-trophy me-2 text-warning"></i>Top 5 más
+                                                vendidos</span>
+                                            <span id="spinnerTop" class="spinner-border spinner-border-sm text-warning"
+                                                role="status"></span>
                                         </div>
                                         <div class="card-body" style="min-height:260px;">
-                                            <div id="errorTop" class="text-muted small text-center pt-5" style="display:none;">
+                                            <div id="errorTop" class="text-muted small text-center pt-5"
+                                                style="display:none;">
                                                 <i class="fa-solid fa-circle-exclamation me-1"></i> No se pudo cargar.
                                             </div>
                                             <div id="sinTop" class="text-center text-muted small" style="display:none;">
@@ -215,20 +238,27 @@
                         </div>
 
                         <!-- TAB 3: ALERTAS -->
-                        <div class="tab-pane fade" id="content-alertas" role="tabpanel">
+                        <div class="tab-pane fade p-2" id="content-alertas" role="tabpanel">
                             <div class="row g-4">
                                 <!-- Doughnut: Alertas por tipo -->
                                 <div class="col-lg-6">
                                     <div class="card shadow-sm border-0 h-100">
-                                        <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
-                                            <span><i class="fa-solid fa-bell me-2 text-warning"></i>Alertas Activas</span>
-                                            <span id="spinnerAlertas" class="spinner-border spinner-border-sm text-warning" role="status"></span>
+                                        <div
+                                            class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+                                            <span><i class="fa-solid fa-bell me-2 text-warning"></i>Alertas
+                                                Activas</span>
+                                            <span id="spinnerAlertas"
+                                                class="spinner-border spinner-border-sm text-warning"
+                                                role="status"></span>
                                         </div>
-                                        <div class="card-body d-flex flex-column align-items-center justify-content-center" style="min-height:260px;">
-                                            <div id="errorAlertas" class="text-muted small text-center" style="display:none;">
+                                        <div class="card-body d-flex flex-column align-items-center justify-content-center"
+                                            style="min-height:260px;">
+                                            <div id="errorAlertas" class="text-muted small text-center"
+                                                style="display:none;">
                                                 <i class="fa-solid fa-circle-exclamation me-1"></i> No se pudo cargar.
                                             </div>
-                                            <div id="sinAlertas" class="text-center text-muted small" style="display:none;">
+                                            <div id="sinAlertas" class="text-center text-muted small"
+                                                style="display:none;">
                                                 <i class="fa-solid fa-circle-check fa-3x text-success mb-2 d-block"></i>
                                                 Sin alertas activas
                                             </div>
@@ -243,11 +273,13 @@
                                 <div class="col-lg-6">
                                     <div class="card shadow-sm border-0 h-100">
                                         <div class="card-header bg-white fw-bold">
-                                            <i class="fa-solid fa-circle-info me-2 text-secondary"></i>Resumen de Alertas
+                                            <i class="fa-solid fa-circle-info me-2 text-secondary"></i>Resumen de
+                                            Alertas
                                         </div>
                                         <div class="card-body d-flex flex-column justify-content-center">
                                             <div id="resumenAlertasTexto" class="text-muted small">
-                                                <p><i class="fa-solid fa-spinner fa-spin me-1"></i> Cargando resumen...</p>
+                                                <p><i class="fa-solid fa-spinner fa-spin me-1"></i> Cargando resumen...
+                                                </p>
                                             </div>
                                             <div id="alertasDetalle" style="display:none;">
                                                 <div class="alert alert-warning py-2">
@@ -284,8 +316,6 @@
 
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <div th:replace="~{fragments/scripts :: scripts}"></div>
-
-    <link rel="stylesheet" th:href="@{/css/reporte.css}">
 
     <script th:src="@{/js/dashboard/graficos.js}"></script>
 

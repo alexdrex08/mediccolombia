@@ -142,7 +142,9 @@ public class ProveedorViewController {
     // ─────────────────────────────────────────────
     // GET /proveedores/{id} → detalle
     @GetMapping("/{id}")
-    public String verProveedor(@PathVariable Long id, Model model) {
+    public String verProveedor(@PathVariable Long id, Model model, Authentication auth) {
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
+
         ProveedorDetalleResponseDTO proveedor = proveedorService.obtenerDetalles(id);
         model.addAttribute("proveedor", proveedor);
 
@@ -157,7 +159,7 @@ public class ProveedorViewController {
                 .collect(Collectors.toSet());
 
         // Productos disponibles = todos menos los ya asignados
-        List<Producto> productosDisponibles = productoDAO.findAll().stream()
+        List<Producto> productosDisponibles = productoDAO.findByActivoTrue().stream()
                 .filter(p -> !idsAsignados.contains(p.getId()))
                 .toList();
 
@@ -167,6 +169,7 @@ public class ProveedorViewController {
         model.addAttribute("tiposTelefono", tipoTelefonoDAO.findAll());
         model.addAttribute("tiposDireccion", tipoDireccionDAO.findAll());
         model.addAttribute("barrios", barrioDireccionDAO.findAll());
+        model.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
 
         model.addAttribute("vistaActiva", "proveedores-lista");
         return "proveedores/detalle-proveedor";

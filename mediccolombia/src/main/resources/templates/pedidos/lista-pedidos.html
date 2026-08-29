@@ -20,7 +20,8 @@
                         <p class="text-muted small mb-0">Gestión de órdenes de compra a proveedores</p>
                     </div>
                     <a th:href="@{/pedidos/nuevo}" class="btn btn-primary">
-                        <i class="fa-solid fa-plus me-0 me-sm-1"></i> <span class="d-none d-sm-inline ms-1">Nuevo Pedido</span>
+                        <i class="fa-solid fa-plus me-0 me-sm-1"></i> <span class="d-none d-sm-inline ms-1">Nuevo
+                            Pedido</span>
                     </a>
                 </div>
 
@@ -38,33 +39,37 @@
                 <div class="row g-3 mb-4">
                     <div class="col-6 col-md-3">
                         <div class="card shadow-sm border-0 h-100 p-3">
-                            <div class="card-body">
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-file-invoice fa-2x text-primary mb-2"></i>
                                 <p class="text-muted small mb-1">Total pedidos</p>
-                                <h3 class="fw-bold mb-0" th:text="${totalPedidos}">0</h3>
+                                <h3 class="fw-bold mb-0">14</h3>
                             </div>
                         </div>
                     </div>
                     <div class="col-6 col-md-3">
                         <div class="card shadow-sm border-0 h-100 p-3">
-                            <div class="card-body">
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-spinner fa-2x text-warning mb-2"></i>
                                 <p class="text-muted small mb-1">En proceso</p>
-                                <h3 class="fw-bold mb-0 text-warning" th:text="${pedidosEnProceso}">0</h3>
+                                <h3 class="fw-bold mb-0 text-warning">1</h3>
                             </div>
                         </div>
                     </div>
                     <div class="col-6 col-md-3">
                         <div class="card shadow-sm border-0 h-100 p-3">
-                            <div class="card-body">
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-circle-check fa-2x text-success mb-2"></i>
                                 <p class="text-muted small mb-1">Completados</p>
-                                <h3 class="fw-bold mb-0 text-success" th:text="${pedidosCompletados}">0</h3>
+                                <h3 class="fw-bold mb-0 text-success">0</h3>
                             </div>
                         </div>
                     </div>
                     <div class="col-6 col-md-3">
                         <div class="card shadow-sm border-0 h-100 p-3">
-                            <div class="card-body">
+                            <div class="card-body text-center">
+                                <i class="fa-solid fa-circle-xmark fa-2x text-danger mb-2"></i>
                                 <p class="text-muted small mb-1">Cancelados / Devueltos</p>
-                                <h3 class="fw-bold mb-0 text-danger" th:text="${pedidosCancelados}">0</h3>
+                                <h3 class="fw-bold mb-0 text-danger">7</h3>
                             </div>
                         </div>
                     </div>
@@ -126,9 +131,8 @@
                                         <td class="fw-bold">#<span th:text="${p.id}"></span></td>
                                         <td th:text="${p.nombreProveedor}"></td>
                                         <td>
-                                            <span
-                                            th:text="${#temporals.format(p.fechaPedido, 'dd/MM/yyyy HH:mm')}"
-                                            class="badge bg-light text-dark border small">
+                                            <span th:text="${#temporals.format(p.fechaPedido, 'dd/MM/yyyy HH:mm')}"
+                                                class="badge bg-light text-dark border small">
                                             </span>
                                         </td>
                                         <td class="text-center">
@@ -175,19 +179,17 @@
 
     <script th:src="@{/js/general/paginacion.js}"></script>
 
-    <link rel="stylesheet" th:href="@{/css/paginacion.css}">
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             inicializarPaginacionYBusqueda({
                 tablaId: 'tablaPedidos',
                 paginacionId: 'paginacion',
-                inputId: 'filtroBuscar',   
+                inputId: 'filtroBuscar',
                 filtrosSelect: [
                     { id: 'filtroEstado', attr: 'estado' }
                 ],
                 btnLimpiarId: 'limpiarFiltros',
-                inputsAdicional: ['filtroFecha'],      
+                inputsAdicional: ['filtroFecha'],
                 inputsLimpiar: ['filtroFecha'],
                 filasPorPagina: getFilasPorPagina(),
                 filtroAdicional: function (fila) {

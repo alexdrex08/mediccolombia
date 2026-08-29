@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head :: head(titulo='Clientes - MedicColombia')}"></head>
+<head th:replace="~{fragments/head :: head(titulo='Clientes - MedicColombia', linksExtra=~{::#clientes-css})}">
+    <th:block id="clientes-css">
+        <link rel="stylesheet" th:href="@{/css/tarjetas-informacion.css}">
+        <link rel="stylesheet" th:href="@{/css/paginacion.css}">
+    </th:block>
+</head>
 
 <body class="toggled">
     <header th:replace="~{fragments/header :: header}"></header>
@@ -79,110 +84,162 @@
 
                 <div th:if="${clientes != null and !clientes.isEmpty()}">
                     <div id="contenedorClientes">
-                        <div th:each="cliente : ${clientes}" class="card shadow-sm border-0 mb-3 cliente-card"
-                            th:attr="data-nombre=${#strings.toLowerCase(cliente.nombreCliente)}, data-identificacion=${#strings.toLowerCase(cliente.identificacion)}">
-
-                            <div class="card-body p-0">
-                                <div class="row g-0 align-items-stretch">
-
-                                    <div class="col-12 col-md-3 border-end p-4">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <div class="rounded-circle bg-primary bg-opacity-10
-                                                        d-flex align-items-center justify-content-center me-3"
-                                                style="width:44px; height:44px; flex-shrink:0;">
-                                                <i class="fa-solid fa-building text-primary"></i>
+                        <div th:each="cliente : ${clientes}" class="card shadow-sm border-0 mb-3 cliente-card" th:attr="data-nombre=${#strings.toLowerCase(cliente.nombreCliente)},
+                                    data-identificacion=${#strings.toLowerCase(cliente.identificacion)}">
+                            <div class="card-body p-3 p-lg-4">
+                                <div class="row g-3 align-items-stretch">
+                                    <!-- ═══════════════════════════════════════════════
+                                        COLUMNA 1 · IDENTIDAD DEL CLIENTE
+                                    ═══════════════════════════════════════════════ -->
+                                    <div class="col-12 col-lg-4 col-xl-3">
+                                        <div class="supplier-section h-100">
+                                            <div class="d-flex align-items-start gap-3">
+                                                <div class="supplier-icon flex-shrink-0">
+                                                    <i class="fa-solid fa-user"></i>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <h6 class="fw-bold mb-1 text-truncate"
+                                                        th:text="${cliente.nombreCliente}">
+                                                    </h6>
+                                                    <small class="text-muted d-block text-truncate">C.C.:
+                                                        <span th:text="${cliente.identificacion}"></span>
+                                                    </small>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h6 class="fw-bold mb-0" th:text="${cliente.nombreCliente}"></h6>
-                                                <small class="text-muted">C.C.: <span
-                                                        th:text="${cliente.identificacion}"></span></small>
+
+                                            <div class="d-flex flex-wrap gap-2 mt-3">
+                                                <span
+                                                    class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">
+
+                                                    <i class="fa-solid fa-star me-1"></i>
+                                                    <span th:text="${cliente.productoMasComprado}"></span>
+                                                </span>
+                                                <span class="badge bg-light text-dark border">
+                                                    <i class="fa-solid fa-bag-shopping me-1"></i>
+                                                    <span th:text="${cliente.totalCompras}"></span>compra(s)
+                                                </span>
                                             </div>
-                                        </div>
-                                        <div class="mt-2">
-                                            <span class="badge bg-info text-dark me-1">
-                                                <i class="fa-solid fa-tag me-1"></i>
-                                                <span th:text="${cliente.productoMasComprado}"></span>
-                                            </span>
-                                            <span class="badge bg-light text-dark border">
-                                                <i class="fa-solid fa-boxes-stacked me-1"></i>
-                                                <span th:text="${cliente.totalCompras}"></span> compras(s)
-                                            </span>
                                         </div>
                                     </div>
 
-                                    <div class="col-12 col-md-6 p-4">
-                                        <p class="text-muted small text-uppercase fw-bold mb-2">
-                                            <i class="fa-solid fa-clock-rotate-left me-1"></i>Última compra
-                                        </p>
-                                        <div th:if="${cliente.ultimaCompraId != null}">
-                                            <div class="row g-2">
-                                                <div class="col-6 col-md-3">
-                                                    <p class="text-muted small mb-0">N° Compra</p>
-                                                    <p class="fw-bold mb-0">
-                                                        #<span th:text="${cliente.ultimaCompraId}"></span>
-                                                    </p>
+
+                                    <!-- ═══════════════════════════════════════════════
+                                        COLUMNA 2 · ÚLTIMA COMPRA
+                                        ══════════════════════════════════════════════ -->
+                                    <div class="col-12 col-lg-8 col-xl-6">
+                                        <div class="supplier-section supplier-order h-100">
+                                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                                <p class="text-muted small text-uppercase fw-bold mb-0">
+                                                    <i class="fa-solid fa-clock-rotate-left me-1"></i>Última compra
+                                                </p>
+                                                <span class="supplier-section-label">Historial</span>
+                                            </div>
+
+                                            <div th:if="${cliente.ultimaCompraId != null}">
+                                                <div class="row g-3">
+                                                    <div class="col-6 col-sm-3">
+                                                        <div class="order-data">
+                                                            <span class="order-label">N.º Compra</span>
+                                                            <span class="order-value">
+                                                                #<span th:text="${cliente.ultimaCompraId}"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-6 col-sm-3">
+                                                        <div class="order-data">
+                                                            <span class="order-label">Fecha</span>
+                                                            <span class="order-value small"
+                                                                th:text="${#temporals.format(cliente.ultimaCompraFecha, 'dd/MM/yyyy')}">
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-6 col-sm-3">
+                                                        <div class="order-data">
+                                                            <span class="order-label">Medio de pago</span>
+
+                                                            <span th:classappend="
+                                                                    ${cliente.ultimoMedioPago == 'EFECTIVO'} ? 'bg-success' :
+                                                                    (${cliente.ultimoMedioPago == 'TARJETA'} ? 'bg-primary' :
+                                                                    'bg-secondary')" class="badge mt-1 text-wrap"
+                                                                th:text="${cliente.ultimoMedioPago}">
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-6 col-sm-3">
+                                                        <div class="order-data">
+                                                            <span class="order-label">Total</span>
+                                                            <span class="order-value text-success small">
+                                                                $&nbsp;
+                                                                <span th:text="${#numbers.formatDecimal(
+                                                                        cliente.ultimaCompraTotal,
+                                                                        0,
+                                                                        'COMMA',
+                                                                        0,
+                                                                        'POINT'
+                                                                    )}">
+                                                                </span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="col-6 col-md-3">
-                                                    <p class="text-muted small mb-0">Fecha</p>
-                                                    <p class="fw-bold mb-0 small"
-                                                        th:text="${#temporals.format(cliente.ultimaCompraFecha, 'dd/MM/yyyy')}">
-                                                    </p>
-                                                </div>
-                                                <div class="col-6 col-md-3">
-                                                    <p class="text-muted small mb-0">Medio de pago</p>
-                                                    <span th:classappend="
-                                                        ${cliente.ultimoMedioPago == 'EFECTIVO'} ? 'bg-success' :
-                                                        (${cliente.ultimoMedioPago == 'TARJETA'} ? 'bg-primary')"
-                                                        class="badge small" th:text="${cliente.ultimoMedioPago}"></span>
-                                                </div>
-                                                <div class="col-6 col-md-3">
-                                                    <p class="text-muted small mb-0">Total</p>
-                                                    <p class="fw-bold mb-0 text-success small">
-                                                        $&nbsp;<span
-                                                            th:text="${#numbers.formatDecimal(cliente.ultimaCompraTotal, 0, 'COMMA', 0, 'POINT')}"></span>
-                                                    </p>
+
+                                                <div class="mt-3 pt-3 border-top border-light-subtle">
+                                                    <a th:href="@{'/ventas/' + ${cliente.ultimaCompraId}}"
+                                                        class="btn btn-sm btn-outline-secondary">
+                                                        <i class="fa-solid fa-arrow-right me-1"></i>
+                                                        Ver detalle de la compra
+                                                    </a>
                                                 </div>
                                             </div>
-                                            <div class="mt-3">
-                                                <a th:href="@{'/ventas/' + ${cliente.ultimaCompraId}}"
-                                                    class="btn btn-sm btn-outline-secondary">
-                                                    <i class="fa-solid fa-arrow-right me-1"></i>
-                                                    Ver detalle de la compra
+
+                                            <div th:if="${cliente.ultimaCompraId == null}" class="empty-order">
+                                                <i class="fa-solid fa-inbox me-2"></i>
+                                                Sin compras registradas aún
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- ═══════════════════════════════════════════════
+                                        COLUMNA 3 · ACCIONES
+                                        ═══════════════════════════════════════════════ -->
+                                    <div class="col-12 col-xl-3">
+                                        <div class="supplier-section supplier-actions h-100">
+                                            <div class="actions-title">Acciones
+                                            </div>
+                                            <div class="d-flex flex-column flex-sm-row flex-xl-column gap-2">
+                                                <a th:href="@{'/clientes/' + ${cliente.id}}"
+                                                    class="btn btn-outline-primary btn-sm flex-fill">
+                                                    <i class="fa-solid fa-eye me-1"></i>Ver detalle</a>
+
+                                                <a th:href="@{'/clientes/' + ${cliente.id} + '/editar'}"
+                                                    class="btn btn-outline-secondary btn-sm flex-fill">
+                                                    <i class="fa-solid fa-pen me-1"></i>Editar
                                                 </a>
+                                                <!-- Eliminar — solo ADMIN -->
+                                                <button th:if="${esAdmin}" type="button"
+                                                    class="btn btn-sm btn-outline-danger flex-fill"
+                                                    th:onclick="prepararEliminar({ id: [[${cliente.id}]], nombre: [[${cliente.nombreCliente}]], urlPattern: '/clientes/{id}/eliminar' })">
+                                                    <i class="fa-solid fa-trash"></i> Eliminar
+                                                </button>
                                             </div>
                                         </div>
-                                        <div th:if="${cliente.ultimaCompraId == null}"
-                                            class="text-muted small fst-italic">
-                                            <i class="fa-solid fa-inbox me-1"></i>
-                                            Sin compras registradas aún
-                                        </div>
                                     </div>
-
-                                    <div class="col-12 col-md-3 p-4 d-flex flex-column
-                                                justify-content-center align-items-end gap-2
-                                                border-start">
-                                        <a th:href="@{'/clientes/' + ${cliente.id}}"
-                                            class="btn btn-outline-primary btn-sm w-100">
-                                            <i class="fa-solid fa-eye me-1"></i> Ver detalle
-                                        </a>
-                                        <a th:href="@{'/clientes/' + ${cliente.id} + '/editar'}"
-                                            class="btn btn-outline-secondary btn-sm w-100">
-                                            <i class="fa-solid fa-pen me-1"></i> Editar
-                                        </a>
-                                        <button th:if="${esAdmin}" type="button" class="btn btn-sm btn-outline-danger"
-                                            th:onclick="prepararEliminar([[${cliente.id}]], [[${cliente.nombreCliente}]])">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </div>
-
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- PAGINACIÓN -->
                     <nav aria-label="Paginación de clientes">
-                        <ul id="paginacionClientes" class="pagination-premium"></ul>
+
+                        <ul id="paginacionClientes" class="pagination-premium">
+                        </ul>
+
                     </nav>
+
                 </div>
 
                 <div th:if="${clientes == null or clientes.isEmpty()}" class="text-center text-muted py-5">
@@ -224,16 +281,9 @@
         </div>
     </div>
 
-    <link rel="stylesheet" th:href="@{/css/paginacion.css}">
     <script th:src="@{/js/general/paginacion.js}"></script>
-
+    <script th:src="@{/js/general/prepararEliminar.js}"></script>
     <script>
-        function prepararEliminar(id, nombre) {
-            document.getElementById('nombreClienteModal').textContent = nombre;
-            document.getElementById('formEliminar').action = `/clientes/${id}/eliminar`;
-            new bootstrap.Modal(document.getElementById('modalEliminar')).show();
-        }
-
         document.addEventListener('DOMContentLoaded', function () {
             inicializarPaginacionYBusqueda({
                 tablaId: 'contenedorClientes',

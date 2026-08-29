@@ -62,7 +62,7 @@
                                     <p class="text-muted small mb-1 text-uppercase fw-bold">Estado</p>
                                     <span
                                         th:classappend="
-                                        ${pedido.estadoPedido == 'Completado/Recibido'} ? 'bg-success' :
+                                        ${pedido.estadoPedido == 'Completado / Recibido'} ? 'bg-success' :
                                         (${pedido.estadoPedido == 'Cancelado' or pedido.estadoPedido == 'Rechazado' or pedido.estadoPedido == 'Devuelto'} ? 'bg-danger' : 'bg-warning text-dark')"
                                         class="badge px-3 py-2" th:text="${pedido.estadoPedido}"></span>
                                 </div>
@@ -208,8 +208,14 @@
                                         </small>
                                     </div>
 
-                                    <button type="submit" class="btn btn-primary w-100 fw-bold">
-                                        <i class="fa-solid fa-floppy-disk me-2"></i>Actualizar estado
+                                    <button type="submit" class="btn btn-primary w-100 fw-bold"
+                                        th:disabled="${pedido != null and pedido.estadoPedido == 'Completado / Recibido'}">
+                                        <i class="fa-solid fa-floppy-disk me-2"></i>
+                                        <span
+                                            th:if="${pedido == null or pedido.estadoPedido != 'Completado / Recibido'}">Actualizar
+                                            estado</span>
+                                        <span
+                                            th:if="${pedido != null and pedido.estadoPedido == 'Completado / Recibido'}">Completado</span>
                                     </button>
                                 </form>
 

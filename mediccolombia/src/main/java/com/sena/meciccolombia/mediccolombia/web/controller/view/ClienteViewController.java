@@ -134,6 +134,7 @@ public class ClienteViewController {
     // ─────────────────────────────────────────────
     @GetMapping("/{id}/editar")
     public String editarCliente(@PathVariable Long id, Model modelo) {
+
         ClienteResponseDTO cliente = clienteService.obtenerPorId(id);
         modelo.addAttribute("cliente", cliente);
         modelo.addAttribute("modoEdicion", true);
@@ -145,15 +146,17 @@ public class ClienteViewController {
     // GET /clientes/{id} → detalle del cliente
     // ─────────────────────────────────────────────
     @GetMapping("/{id}")
-    public String verCliente(@PathVariable Long id, Model modelo) {
+    public String verCliente(@PathVariable Long id, Model modelo,  Authentication auth) {
+        
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
         ClienteDetalleResponseDTO cliente = clienteService.obtenerDetalles(id);
         modelo.addAttribute("cliente", cliente);
-
-        // Catálogos para los selects de los modales
+        
         modelo.addAttribute("tiposCorreo", tipoCorreoDAO.findAll());
         modelo.addAttribute("tiposTelefono", tipoTelefonoDAO.findAll());
         modelo.addAttribute("tiposDireccion", tipoDireccionDAO.findAll());
         modelo.addAttribute("barrios", barrioDireccionDAO.findAll());
+        modelo.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
 
         modelo.addAttribute("vistaActiva", "clientes-lista");
         return "clientes/detalle-cliente";

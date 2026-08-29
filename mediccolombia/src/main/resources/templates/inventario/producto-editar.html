@@ -211,75 +211,7 @@
 
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <div th:replace="~{fragments/scripts :: scripts}"></div>
-
-    <script>
-        (function () {
-            const minimoInput = document.getElementById('stockMinimo');
-            const maximoInput = document.getElementById('stockMaximo');
-            const fechaInput  = document.getElementById('fechaExpiracion');
-            const indicador   = document.getElementById('indicadorStock');
-            const textoRango  = document.getElementById('textoRango');
-            const diasCard    = document.getElementById('diasRestantes');
-            const textoDias   = document.getElementById('textoDiasRestantes');
-
-            function calcularDias(valor) {
-                if (!valor) return;
-                const seleccionada = new Date(valor);
-                const ahora = new Date();
-                const dias = Math.ceil((seleccionada - ahora) / (1000 * 60 * 60 * 24));
-                if (dias > 0) {
-                    textoDias.textContent = dias + ' día(s)';
-                    textoDias.className = 'fw-bold fs-5 ' + (dias <= 30 ? 'text-warning' : 'text-success');
-                    fechaInput.classList.remove('is-invalid');
-                    fechaInput.classList.add('is-valid');
-                } else {
-                    textoDias.textContent = 'Fecha pasada';
-                    textoDias.className = 'fw-bold fs-5 text-danger';
-                    fechaInput.classList.add('is-invalid');
-                    fechaInput.classList.remove('is-valid');
-                }
-            }
-
-            // Calcular al cargar con el valor actual
-            calcularDias(fechaInput.value);
-            fechaInput.addEventListener('change', () => calcularDias(fechaInput.value));
-
-            function actualizarRango() {
-                const min = parseInt(minimoInput.value);
-                const max = parseInt(maximoInput.value);
-                if (!isNaN(min) && !isNaN(max) && max > 0) {
-                    indicador.style.display = '';
-                    textoRango.textContent = min + ' (mínimo) → ' + max + ' (máximo)';
-                    const valido = min < max;
-                    minimoInput.classList.toggle('is-invalid', !valido);
-                    maximoInput.classList.toggle('is-invalid', !valido);
-                    minimoInput.classList.toggle('is-valid', valido);
-                    maximoInput.classList.toggle('is-valid', valido);
-                }
-            }
-            // Ejecutar al cargar
-            actualizarRango();
-            minimoInput.addEventListener('input', actualizarRango);
-            maximoInput.addEventListener('input', actualizarRango);
-
-            document.getElementById('formEditar').addEventListener('submit', function (e) {
-                let valido = true;
-                this.querySelectorAll('[required]').forEach(campo => {
-                    if (!campo.value.trim()) {
-                        campo.classList.add('is-invalid');
-                        valido = false;
-                    }
-                });
-                const min = parseInt(minimoInput.value) || 0;
-                const max = parseInt(maximoInput.value) || 0;
-                if (min >= max) { minimoInput.classList.add('is-invalid'); maximoInput.classList.add('is-invalid'); valido = false; }
-                if (fechaInput.value && new Date(fechaInput.value) <= new Date()) {
-                    fechaInput.classList.add('is-invalid'); valido = false;
-                }
-                if (!valido) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-            });
-        })();
-    </script>
+    <script th:src="@{/js/inventario/producto-editar.js}"></script>
 </body>
 
 </html>
