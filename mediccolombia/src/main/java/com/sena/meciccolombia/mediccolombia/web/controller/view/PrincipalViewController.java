@@ -36,4 +36,11 @@ public class PrincipalViewController {
 
         return "principal/principal";
     }
+
+    @GetMapping("/nosotros")
+    public String nosotros(Model modelo, Authentication auth){
+        MyUserDetails user = (MyUserDetails) auth.getPrincipal();
+        modelo.addAttribute("esAdmin", "ADMIN".equals(user.getRol()));
+        return "principal/nosotros";
+    }
 }

@@ -1,3 +1,5 @@
+<div id="notification-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;"></div>
+
 <footer th:fragment="footer" class="bg-dark pt-5 border-top text-white" style="border-top-color: #686767 !important;">
     <div class="container">
         <div class="row pb-4">
@@ -9,7 +11,7 @@
                     Suscríbete para recibir notificaciones o envíanos un mensaje corto.
                 </p>
                 <form th:action="@{/contacto}" method="post" class="d-grid gap-2">
-                    <input type="email" name="correo" id="correo" class="form-control" placeholder="Tu correo">
+                    <input type="email" name="correo" id="correo" class="form-control" placeholder="Tu correo" required>
                     <button type="submit" class="btn btn-primary">Enviar</button>
                 </form>
             </div>
@@ -50,9 +52,9 @@
             <div class="col-12 text-center text-md-start">
                 <p class="text-white-50 small mb-0">
                     &copy; 2026
-                    <span th:text="${nombreEmpresa}">Asuras Col</span>
+                    <span th:text="${nombreSistema}">Asuras Col</span>
                     para
-                    <span th:text="${nombreSistema}">MedicColombia</span>.
+                    <span th:text="${nombreEmpresa}">MedicColombia</span>.
                     Todos los derechos reservados. · v<span th:text="${versionSistema}">1.0.0</span>
                 </p>
             </div>
