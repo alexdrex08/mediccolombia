@@ -11,6 +11,7 @@ import com.sena.meciccolombia.mediccolombia.domain.Proyecciones;
 public interface ProyeccionesDAO extends JpaRepository<Proyecciones, Long>{
     List<Proyecciones> findByTipoProyeccionId(Long tipoProyeccionId);
     
+    List<Proyecciones> findByOrderByFechaGeneracionDesc();
     List<Proyecciones> findByProductoId(Long productoId);
     List<Proyecciones> findByCategoriaId(Long categoriaId);
 }

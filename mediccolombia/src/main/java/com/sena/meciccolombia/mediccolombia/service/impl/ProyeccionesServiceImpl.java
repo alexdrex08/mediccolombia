@@ -58,7 +58,7 @@ public class ProyeccionesServiceImpl implements ProyeccionesService {
         @Override
         @Transactional(readOnly = true)
         public List<ProyeccionesResponseDTO> listar() {
-                return proyeccionesDAO.findAll().stream()
+                return proyeccionesDAO.findByOrderByFechaGeneracionDesc().stream()
                                 .map(proyeccionesMapper::toResponseDTO)
                                 .toList();
         }
