@@ -1,5 +1,6 @@
 package com.sena.meciccolombia.mediccolombia.dao;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +12,6 @@ import com.sena.meciccolombia.mediccolombia.domain.Proveedor;
 public interface ProveedorDAO extends JpaRepository<Proveedor, Long>{
 
     Optional<Proveedor> findByNit(String nit);
+
+    List<Proveedor> findByActivoTrue();
 }

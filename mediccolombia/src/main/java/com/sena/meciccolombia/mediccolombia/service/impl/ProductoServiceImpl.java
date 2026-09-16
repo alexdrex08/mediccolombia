@@ -79,7 +79,6 @@ public class ProductoServiceImpl implements ProductoService {
 
         @Transactional
         public void eliminarProducto(Long idProducto) {
-                // 1. Buscamos el producto en la base de datos
                 Producto producto = productoDAO.findById(idProducto)
                                 .orElseThrow(() -> new EntityNotFoundException(
                                                 "El producto con ID " + idProducto + " no existe."));

@@ -27,6 +27,8 @@ public class Proveedor implements Serializable{
     
     private String nit;
 
+    private Boolean activo = true;
+
     @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

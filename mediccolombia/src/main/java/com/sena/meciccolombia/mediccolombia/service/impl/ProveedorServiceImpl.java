@@ -23,12 +23,12 @@ import com.sena.meciccolombia.mediccolombia.web.dto.response.ProveedorDetalleRes
 import com.sena.meciccolombia.mediccolombia.web.dto.response.ProveedorResponseDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.TelefonoResponseProveedorDTO;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ProveedorServiceImpl implements ProveedorService{
-    
+public class ProveedorServiceImpl implements ProveedorService {
 
     private final ProveedorDAO proveedorDAO;
     private final TelefonoDAO telefonoDAO;
@@ -36,32 +36,36 @@ public class ProveedorServiceImpl implements ProveedorService{
     private final DireccionDAO direccionDAO;
 
     private final ProveedorMapper proveedorMapper;
-     private final TelefonoMapper telefonoMapper;
+    private final TelefonoMapper telefonoMapper;
     private final CorreoMapper correoMapper;
     private final DireccionMapper direccionMapper;
 
-@Override
+    @Override
     public ProveedorResponseDTO crear(ProveedorRequestDTO dto) {
 
-        if(dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
+        if (dto == null)
+            throw new IllegalArgumentException("El DTO no puede ser nulo");
 
-        if(proveedorDAO.findByNit(dto.getNit()).isPresent()){
-            throw new ResourceNotFoundException("El proveedor con el NIT: "+ dto.getNit() + " ya existe");
+        if (proveedorDAO.findByNit(dto.getNit()).isPresent()) {
+            throw new ResourceNotFoundException("El proveedor con el NIT: " + dto.getNit() + " ya existe");
         }
 
         Proveedor proveedor = proveedorMapper.toEntity(dto);
+        proveedor.setActivo(true);
         return proveedorMapper.toResponseDTO(proveedorDAO.save(proveedor));
     }
 
     @Override
     public ProveedorResponseDTO actualizar(Long id, ProveedorRequestDTO dto) {
-        if(dto == null) throw new IllegalArgumentException("El DTO no puedeo ser nulo");
+        if (dto == null)
+            throw new IllegalArgumentException("El DTO no puedeo ser nulo");
 
-        if(id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
+        if (id == null)
+            throw new IllegalArgumentException("El ID no puede ser nulo");
 
         Proveedor proveedor = proveedorDAO.findById(id)
-                                            .orElseThrow(() -> new RuntimeException("El proveedor con el ID" + id + "no fue encontrado"));
-        
+                .orElseThrow(() -> new RuntimeException("El proveedor con el ID" + id + "no fue encontrado"));
+
         proveedor.setNombreProv(dto.getNombreProv());
         proveedor.setNit(dto.getNit());
 
@@ -70,55 +74,62 @@ public class ProveedorServiceImpl implements ProveedorService{
 
     @Override
     public void eliminar(Long id) {
-        if(id == null) throw new IllegalArgumentException("El ID no puede ser nulo");
-        if(!proveedorDAO.existsById(id)) throw new ResourceNotFoundException("El cliente con ID: "+ id+ " no fue encontrado");
-        proveedorDAO.deleteById(id);
-     }
+        Proveedor proveedor = proveedorDAO.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "El proveedor con el ID" + id + " no fue encontrado"));
+        proveedor.setActivo(false);
+        proveedorDAO.save(proveedor);
+    }
 
     @Override
     public ProveedorResponseDTO buscarPorId(Long id) {
-        if(id == null ) throw new IllegalArgumentException("El ID no puede ser nulo");
+        if (id == null)
+            throw new IllegalArgumentException("El ID no puede ser nulo");
         return proveedorDAO.findById(id)
-                            .map(proveedorMapper::toResponseDTO)
-                            .orElseThrow(() -> new RuntimeException("El cliente con el ID:" + id + " no fue encontrado"));
+                .map(proveedorMapper::toResponseDTO)
+                .orElseThrow(() -> new RuntimeException("El cliente con el ID:" + id + " no fue encontrado"));
     }
 
     @Override
     public List<ProveedorResponseDTO> listar() {
-        return proveedorDAO.findAll().stream()
-                                    .map(proveedorMapper::toResponseDTO)
-                                    .toList();
+        return proveedorDAO.findByActivoTrue()
+                .stream()
+                .map(proveedorMapper::toResponseDTO)
+                .toList();
     }
 
     @Override
     public ProveedorResponseDTO buscarPorNit(String nit) {
-       if (nit  == null ) throw new IllegalArgumentException("El nit no puede ser nulo"); 
-       return proveedorDAO.findByNit(nit)
-                        .map(proveedorMapper::toResponseDTO)
-                        .orElseThrow(() -> new RuntimeException("El nit: " + nit + " no fue encontrado"));
+        if (nit == null)
+            throw new IllegalArgumentException("El nit no puede ser nulo");
+        return proveedorDAO.findByNit(nit)
+                .map(proveedorMapper::toResponseDTO)
+                .orElseThrow(() -> new RuntimeException("El nit: " + nit + " no fue encontrado"));
     }
 
     @Override
     public ProveedorDetalleResponseDTO obtenerDetalles(Long id) {
-      if (id == null)throw new IllegalArgumentException("El ID no puede ser nulo");
+        if (id == null)
+            throw new IllegalArgumentException("El ID no puede ser nulo");
 
-      Proveedor proveedor = proveedorDAO.findById(id)
-                                        .orElseThrow( () -> new RuntimeException("El proveedor con el ID: " + id + " no existe o no fue encontrado"));
+        Proveedor proveedor = proveedorDAO.findById(id)
+                .orElseThrow(
+                        () -> new RuntimeException("El proveedor con el ID: " + id + " no existe o no fue encontrado"));
         List<CorreoResponseProveedorDTO> correos = correoDAO.findByProveedorId(id)
-                                        .stream().map(correoMapper::toResponseProveedorDTO).toList();
+                .stream().map(correoMapper::toResponseProveedorDTO).toList();
         List<DireccionResponseProveedorDTO> direcciones = direccionDAO.findByProveedorId(id)
-                                            .stream().map(direccionMapper::toResponseProveedorDTO).toList();
+                .stream().map(direccionMapper::toResponseProveedorDTO).toList();
         List<TelefonoResponseProveedorDTO> telefonos = telefonoDAO.findByProveedorId(id)
-                                            .stream().map(telefonoMapper::toResponseProveedorDTO).toList();
-        
+                .stream().map(telefonoMapper::toResponseProveedorDTO).toList();
+
         return ProveedorDetalleResponseDTO.builder()
-                            .id(proveedor.getId())
-                            .nombreProv(proveedor.getNombreProv())
-                            .nit(proveedor.getNit())
-                            .correos(correos)
-                            .direcciones(direcciones)
-                            .telefonos(telefonos)
-                            .build();
+                .id(proveedor.getId())
+                .nombreProv(proveedor.getNombreProv())
+                .nit(proveedor.getNit())
+                .correos(correos)
+                .direcciones(direcciones)
+                .telefonos(telefonos)
+                .build();
     }
-    
+
 }

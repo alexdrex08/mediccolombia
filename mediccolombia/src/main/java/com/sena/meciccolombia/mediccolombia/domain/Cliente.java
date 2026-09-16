@@ -28,6 +28,8 @@ public class Cliente implements Serializable {
     @Column(name ="identificacion_cliente", unique = true, nullable = false)
     private String identificacion;
 
+    private Boolean activo = true;
+
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
