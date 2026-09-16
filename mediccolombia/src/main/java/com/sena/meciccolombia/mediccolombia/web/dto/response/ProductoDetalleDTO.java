@@ -1,6 +1,7 @@
 package com.sena.meciccolombia.mediccolombia.web.dto.response;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -17,6 +18,8 @@ public class ProductoDetalleDTO {
     private String nombreProducto;
 
     private String categoria;
+
+    private BigDecimal precioVenta;
 
     private Integer stock;
 

@@ -1,5 +1,6 @@
 package com.sena.meciccolombia.mediccolombia.web.dto.response;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import lombok.*;
@@ -20,6 +21,8 @@ public class ProductoResumenDTO {
     private Integer stock;
 
     private String estadoStock;
+
+    private BigDecimal precioVenta;
 
     private LocalDateTime fechaExpiracion;
 

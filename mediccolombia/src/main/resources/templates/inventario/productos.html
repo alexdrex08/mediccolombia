@@ -197,6 +197,7 @@
                                         <th>Nombre</th>
                                         <th>Categoría</th>
                                         <th>Stock actual</th>
+                                        <th class="text-end">Precio venta</th>
                                         <th>Estado</th>
                                         <th class="text-center">Acciones</th>
                                     </tr>
@@ -214,6 +215,10 @@
                                         <td class="fw-semibold" th:text="${m.nombreProducto}"></td>
                                         <td th:text="${m.categoria}"></td>
                                         <td th:text="${m.stock}"></td>
+                                        <td class="text-end fw-bold text-success">
+                                            $&nbsp;<span
+                                                th:text="${#numbers.formatDecimal(m.precioVenta, 0, 'COMMA', 0, 'POINT')}"></span>
+                                        </td>
                                         <td>
                                             <span class="badge"
                                                 th:classappend="${m.estadoStock == 'Crítico'} ? 'bg-danger' : (${m.estadoStock == 'Suficiente'} ? 'bg-success' : 'bg-warning text-dark')"

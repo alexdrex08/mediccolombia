@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,42 +26,45 @@ public class Producto implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name ="id_producto")
+    @Column(name = "id_producto")
     private Long id;
 
-    @Column(name ="nombre_prod", nullable = false)
+    @Column(name = "nombre_prod", nullable = false)
     private String nombreProducto;
 
-    @Column(name ="fecha_expiracion", nullable = false)
+    @Column(name = "fecha_expiracion", nullable = false)
     private LocalDateTime fechaExpiracion;
 
-    @Column(name ="stock", nullable = false)
+    @Column(name = "stock", nullable = false)
     private Integer stock;
 
-    @Column(name ="lote_producto", nullable = false)
+    @Column(name = "lote_producto", nullable = false)
     private String lote;
 
-    @Column(name ="stock_minimo", nullable = false)
+    @Column(name = "stock_minimo", nullable = false)
     private Integer stockMinimo;
 
-    @Column(name ="stock_maximo", nullable = false)
+    @Column(name = "stock_maximo", nullable = false)
     private Integer stockMaximo;
 
     @CreatedDate
-    @Column(name ="fecha_creacion", nullable = false, updatable = false)
+    @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaIngreso;
 
     @LastModifiedDate
-    @Column(name ="fecha_modificacion", nullable = false)
+    @Column(name = "fecha_modificacion", nullable = false)
     private LocalDateTime fechaModificacion;
 
     private Boolean activo = true;
+
+    @Column(name = "precio_venta")
+    private BigDecimal precioVenta;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
-     @ManyToOne
+    @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
@@ -73,6 +77,5 @@ public class Producto implements Serializable {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<DetalleProveedorProducto> proveedores;
-
 
 }

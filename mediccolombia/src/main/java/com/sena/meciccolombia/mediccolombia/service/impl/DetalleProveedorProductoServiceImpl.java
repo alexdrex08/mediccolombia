@@ -1,6 +1,7 @@
 package com.sena.meciccolombia.mediccolombia.service.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import com.sena.meciccolombia.mediccolombia.domain.DetalleProveedorProducto;
 import com.sena.meciccolombia.mediccolombia.domain.Producto;
 import com.sena.meciccolombia.mediccolombia.domain.Proveedor;
 import com.sena.meciccolombia.mediccolombia.exception.ResourceNotFoundException;
+import com.sena.meciccolombia.mediccolombia.service.ConfiguracionSistemaService;
 import com.sena.meciccolombia.mediccolombia.service.IDetalleProveedorProductoService;
 import com.sena.meciccolombia.mediccolombia.web.dto.request.DetalleProveedorProductoRequestDTO;
 import com.sena.meciccolombia.mediccolombia.web.dto.response.DetalleProveedorProductoResponseDTO;
@@ -30,10 +32,13 @@ public class DetalleProveedorProductoServiceImpl implements IDetalleProveedorPro
     private final ProductoDAO productoDAO;
     private final DetalleProveedorProductoMapper detalleProveedorProductoMapper;
 
+    private final ConfiguracionSistemaService configuracionService;
+
     @Override
     @Transactional
     public DetalleProveedorProductoResponseDTO asignar(DetalleProveedorProductoRequestDTO dto) {
-        if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
+        if (dto == null)
+            throw new IllegalArgumentException("El DTO no puede ser nulo");
 
         DetalleId detalleId = new DetalleId(dto.getIdProveedor(), dto.getIdProducto());
 
@@ -48,13 +53,21 @@ public class DetalleProveedorProductoServiceImpl implements IDetalleProveedorPro
                 .orElseThrow(() -> new RuntimeException("Producto con ID " + dto.getIdProducto() + " no encontrado"));
 
         DetalleProveedorProducto detalle = detalleProveedorProductoMapper.toEntity(dto, proveedor, producto);
-        return detalleProveedorProductoMapper.toResponseDTO(detalleProveedorProductoDAO.save(detalle));
+
+        DetalleProveedorProducto guardado = detalleProveedorProductoDAO.save(detalle);
+
+        producto.setPrecioVenta(calcularPrecioVenta(dto.getPrecioUnitario()));
+        productoDAO.save(producto);
+
+        return detalleProveedorProductoMapper.toResponseDTO(guardado);
     }
 
     @Override
     @Transactional
-    public DetalleProveedorProductoResponseDTO actualizarPrecio(Long idProveedor, Long idProducto, BigDecimal nuevoPrecio) {
-        if (idProveedor == null || idProducto == null) throw new IllegalArgumentException("Los IDs no pueden ser nulos");
+    public DetalleProveedorProductoResponseDTO actualizarPrecio(Long idProveedor, Long idProducto,
+            BigDecimal nuevoPrecio) {
+        if (idProveedor == null || idProducto == null)
+            throw new IllegalArgumentException("Los IDs no pueden ser nulos");
         if (nuevoPrecio == null || nuevoPrecio.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("El precio debe ser mayor a cero");
         }
@@ -64,13 +77,20 @@ public class DetalleProveedorProductoServiceImpl implements IDetalleProveedorPro
                 .orElseThrow(() -> new RuntimeException("Relación proveedor-producto no encontrada"));
 
         detalle.setPrecioUnitario(nuevoPrecio);
-        return detalleProveedorProductoMapper.toResponseDTO(detalleProveedorProductoDAO.save(detalle));
+        DetalleProveedorProducto guardado = detalleProveedorProductoDAO.save(detalle);
+
+        Producto producto = detalle.getProducto();
+        producto.setPrecioVenta(calcularPrecioVenta(nuevoPrecio));
+        productoDAO.save(producto);
+
+        return detalleProveedorProductoMapper.toResponseDTO(guardado);
     }
 
     @Override
     @Transactional
     public void eliminar(Long idProveedor, Long idProducto) {
-        if (idProveedor == null || idProducto == null) throw new IllegalArgumentException("Los IDs no pueden ser nulos");
+        if (idProveedor == null || idProducto == null)
+            throw new IllegalArgumentException("Los IDs no pueden ser nulos");
 
         DetalleId detalleId = new DetalleId(idProveedor, idProducto);
         if (!detalleProveedorProductoDAO.existsById(detalleId)) {
@@ -82,7 +102,8 @@ public class DetalleProveedorProductoServiceImpl implements IDetalleProveedorPro
     @Override
     @Transactional(readOnly = true)
     public DetalleProveedorProductoResponseDTO obtenerPorId(Long idProveedor, Long idProducto) {
-        if (idProveedor == null || idProducto == null) throw new IllegalArgumentException("Los IDs no pueden ser nulos");
+        if (idProveedor == null || idProducto == null)
+            throw new IllegalArgumentException("Los IDs no pueden ser nulos");
 
         DetalleId detalleId = new DetalleId(idProveedor, idProducto);
         return detalleProveedorProductoDAO.findById(detalleId)
@@ -93,7 +114,8 @@ public class DetalleProveedorProductoServiceImpl implements IDetalleProveedorPro
     @Override
     @Transactional(readOnly = true)
     public List<DetalleProveedorProductoResponseDTO> listarPorProveedor(Long idProveedor) {
-        if (idProveedor == null) throw new IllegalArgumentException("El ID no puede ser nulo");
+        if (idProveedor == null)
+            throw new IllegalArgumentException("El ID no puede ser nulo");
         return detalleProveedorProductoDAO.findByProveedorId(idProveedor)
                 .stream()
                 .map(detalleProveedorProductoMapper::toResponseDTO)
@@ -103,10 +125,26 @@ public class DetalleProveedorProductoServiceImpl implements IDetalleProveedorPro
     @Override
     @Transactional(readOnly = true)
     public List<DetalleProveedorProductoResponseDTO> listarPorProducto(Long idProducto) {
-        if (idProducto == null) throw new IllegalArgumentException("El ID no puede ser nulo");
+        if (idProducto == null)
+            throw new IllegalArgumentException("El ID no puede ser nulo");
         return detalleProveedorProductoDAO.findByProductoId(idProducto)
                 .stream()
                 .map(detalleProveedorProductoMapper::toResponseDTO)
                 .toList();
+    }
+
+    private BigDecimal calcularPrecioVenta(BigDecimal precioCompra) {
+        if (precioCompra == null)
+            return BigDecimal.ZERO;
+        int margen;
+        try {
+            String valor = configuracionService.obtenerValor("margen_ganancia_porcentaje");
+            margen = (valor != null && !valor.isBlank()) ? Integer.parseInt(valor.trim()) : 150;
+        } catch (Exception e) {
+            margen = 150;
+        }
+        BigDecimal factor = BigDecimal.ONE.add(
+                BigDecimal.valueOf(margen).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
+        return precioCompra.multiply(factor).setScale(0, RoundingMode.HALF_UP);
     }
 }

@@ -57,7 +57,7 @@ async function buscarProducto(nombre) {
 
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'list-group-item list-group-item-action';
+                btn.className = 'list-group-item list-group-item-action w-100 text-start';
 
                 btn.innerHTML = `
                     <div class="d-flex justify-content-between align-items-center">
@@ -86,6 +86,12 @@ function seleccionarProducto(p) {
     document.getElementById('nombreProductoSeleccionado').textContent = p.nombreProducto;
     document.getElementById('stockProductoSeleccionado').textContent = p.stock;
     document.getElementById('productoSeleccionado').classList.remove('d-none');
+
+    if (p.precioVenta != null && p.precioVenta > 0) {
+        document.getElementById('inputPrecio').value = p.precioVenta;
+        console.log("hola mndo");
+    }
+
 }
 
 document.addEventListener('click', e => {

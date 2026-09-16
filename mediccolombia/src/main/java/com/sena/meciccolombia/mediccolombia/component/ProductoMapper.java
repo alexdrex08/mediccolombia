@@ -48,6 +48,7 @@ public class ProductoMapper {
                 .stock(producto.getStock())
                 .fechaExpiracion(producto.getFechaExpiracion())
                 .estadoStock(calcularEstadoStock(producto))
+                .precioVenta(producto.getPrecioVenta())
                 .build();                
     }
 
@@ -73,6 +74,7 @@ public class ProductoMapper {
                 .usuarioIngresado(producto.getUsuario().getNombre())
                 .nombreProducto(producto.getNombreProducto())
                 .categoria(producto.getCategoria().getNombre())
+                .precioVenta(producto.getPrecioVenta())
                 .stock(producto.getStock())
                 .stockMinimo(producto.getStockMinimo())
                 .stockMaximo(producto.getStockMaximo())
